@@ -1,0 +1,53 @@
+version: '3'
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - REACT_APP_API_URL=/api
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - kulcha-network
+    volumes:
+      - ./frontend/public:/app/public
+      - ./frontend/src:/app/src
+    environment:
+      - TUNNEL_URL=${TUNNEL_URL:-}
+      - LHR_LIFE_DOMAIN=${LHR_LIFE_DOMAIN:-ec4db675c64c9f.lhr.life}
+      - REACT_APP_API_URL=/api
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      - DEBUG=True
+      - ALLOWED_HOSTS=*,localhost,127.0.0.1,backend,frontend
+      - CORS_ALLOWED_ORIGINS=http://localhost,http://frontend,http://localhost:80,http://127.0.0.1,http://127.0.0.1:80,http://0.0.0.0,http://0.0.0.0:80
+      - TUNNEL_URL=${TUNNEL_URL:-}
+      - LHR_LIFE_DOMAIN=${LHR_LIFE_DOMAIN:-ec4db675c64c9f.lhr.life}
+      - DJANGO_SECRET_KEY=django-insecure-rw$s6dlz*zpdcyf=rocqmy#85j4f-1%6_%d42^deg4xncp7nw4
+    volumes:
+      - ./backend:/app
+      - ./backend/media:/app/media
+      - ./backend/static:/app/static
+    ports:
+      - "8000:8000"
+    networks:
+      - kulcha-network
+    command: >
+      bash -c "
+        python manage.py migrate --noinput &&
+        python manage.py runserver 0.0.0.0:8000
+      "
+    restart: unless-stopped
+
+networks:
+  kulcha-network:
+    driver: bridge 
