@@ -9527,3 +9527,116 @@ INFO 2025-06-16 01:53:10,629 basehttp 24936 2876 "GET /api/auth/csrf/ HTTP/1.1" 
 INFO 2025-06-16 01:53:11,242 basehttp 24936 13700 "OPTIONS /api/menu-items/1/ HTTP/1.1" 200 0
 DEBUG 2025-06-16 01:53:11,244 middleware 24936 2876 Request from origin: http://localhost:3000
 INFO 2025-06-16 01:53:11,253 basehttp 24936 2876 "PUT /api/menu-items/1/ HTTP/1.1" 200 385
+INFO 2025-06-16 01:55:19,458 autoreload 11964 22952 Watching for file changes with StatReloader
+INFO 2025-06-16 01:55:19,849 middleware 11964 18856 CORS Middleware initialized with allowed origins: ['http://localhost', 'http://localhost:3000', 'http://localhost:80', 'http://127.0.0.1', 'http://127.0.0.1:3000', 'http://127.0.0.1:80', 'http://frontend', 'http://localhost:3001', 'http://127.0.0.1:3001', 'http://localhost:8000', 'http://127.0.0.1:8000', 'https://ec4db675c64c9f.lhr.life']
+INFO 2025-06-16 01:55:19,849 middleware 11964 18856 Custom CSRF Middleware initialized with exempt paths: ['/api/auth/login/', '/api/auth/csrf/']
+DEBUG 2025-06-16 01:55:26,571 middleware 11964 28848 Request from origin: http://localhost:3000
+INFO 2025-06-16 01:55:26,576 views 11964 28848 Health check запрос от 127.0.0.1: ok
+INFO 2025-06-16 01:55:26,577 basehttp 11964 28848 "GET /api/health/ HTTP/1.1" 200 252
+DEBUG 2025-06-16 01:55:26,579 middleware 11964 28364 Request from origin: http://localhost:3000
+INFO 2025-06-16 01:55:26,581 views 11964 28364 Health check запрос от 127.0.0.1: ok
+INFO 2025-06-16 01:55:26,582 basehttp 11964 28364 "GET /api/health/ HTTP/1.1" 200 252
+DEBUG 2025-06-16 01:55:26,605 middleware 11964 28364 Request from origin: http://localhost:3000
+INFO 2025-06-16 01:55:26,611 basehttp 11964 28364 "GET /api/cities/ HTTP/1.1" 200 168
+DEBUG 2025-06-16 01:55:26,612 middleware 11964 28848 Request from origin: http://localhost:3000
+INFO 2025-06-16 01:55:26,616 basehttp 11964 28848 "GET /api/cities/ HTTP/1.1" 200 168
+INFO 2025-06-16 01:55:26,616 basehttp 11964 23656 "OPTIONS /api/cafes/?city=3&t=1750010126612 HTTP/1.1" 200 0
+DEBUG 2025-06-16 01:55:26,618 middleware 11964 28848 Request from origin: http://localhost:3000
+INFO 2025-06-16 01:55:26,620 basehttp 11964 23656 "OPTIONS /api/cafes/?city=3&t=1750010126617 HTTP/1.1" 200 0
+DEBUG 2025-06-16 01:55:26,622 middleware 11964 28364 Request from origin: http://localhost:3000
+INFO 2025-06-16 01:55:26,625 basehttp 11964 28848 "GET /api/cafes/?city=3&t=1750010126612 HTTP/1.1" 200 592
+INFO 2025-06-16 01:55:26,628 basehttp 11964 28364 "GET /api/cafes/?city=3&t=1750010126617 HTTP/1.1" 200 592
+DEBUG 2025-06-16 01:55:26,630 middleware 11964 28848 Request from origin: http://localhost:3000
+INFO 2025-06-16 01:55:26,634 basehttp 11964 28848 "GET /api/menu-items/?cafe=9 HTTP/1.1" 200 807
+DEBUG 2025-06-16 01:55:26,635 middleware 11964 28364 Request from origin: http://localhost:3000
+INFO 2025-06-16 01:55:26,639 basehttp 11964 28364 "GET /api/menu-items/?cafe=9 HTTP/1.1" 200 807
+INFO 2025-06-16 01:55:28,912 basehttp 11964 23656 "OPTIONS /api/cafes/?city=3&t=1750010128910 HTTP/1.1" 200 0
+INFO 2025-06-16 01:55:28,913 basehttp 11964 24932 "OPTIONS /api/cafes/?city=3&t=1750010128910 HTTP/1.1" 200 0
+DEBUG 2025-06-16 01:55:28,914 middleware 11964 28364 Request from origin: http://localhost:3000
+INFO 2025-06-16 01:55:28,918 basehttp 11964 28364 "GET /api/cafes/?city=3&t=1750010128910 HTTP/1.1" 200 592
+DEBUG 2025-06-16 01:55:28,919 middleware 11964 28848 Request from origin: http://localhost:3000
+INFO 2025-06-16 01:55:28,923 basehttp 11964 28848 "GET /api/cafes/?city=3&t=1750010128910 HTTP/1.1" 200 592
+DEBUG 2025-06-16 01:55:32,113 middleware 11964 5708 Request from origin: http://localhost:3000
+INFO 2025-06-16 01:55:32,117 basehttp 11964 5708 "GET /api/menu-items/?cafe=9 HTTP/1.1" 200 807
+DEBUG 2025-06-16 01:55:32,119 middleware 11964 5708 Request from origin: http://localhost:3000
+INFO 2025-06-16 01:55:32,123 basehttp 11964 5708 "GET /api/menu-items/?cafe=9 HTTP/1.1" 200 807
+DEBUG 2025-06-16 01:59:06,716 middleware 11964 28848 Request from origin: http://localhost:3000
+INFO 2025-06-16 01:59:06,718 views 11964 28848 Health check запрос от 127.0.0.1: ok
+INFO 2025-06-16 01:59:06,719 basehttp 11964 28848 "GET /api/health/ HTTP/1.1" 200 251
+DEBUG 2025-06-16 01:59:06,720 middleware 11964 28364 Request from origin: http://localhost:3000
+INFO 2025-06-16 01:59:06,721 views 11964 28364 Health check запрос от 127.0.0.1: ok
+INFO 2025-06-16 01:59:06,722 basehttp 11964 28364 "GET /api/health/ HTTP/1.1" 200 252
+DEBUG 2025-06-16 01:59:06,743 middleware 11964 28364 Request from origin: http://localhost:3000
+INFO 2025-06-16 01:59:06,745 basehttp 11964 28364 "GET /api/cities/ HTTP/1.1" 200 168
+DEBUG 2025-06-16 01:59:06,747 middleware 11964 28848 Request from origin: http://localhost:3000
+INFO 2025-06-16 01:59:06,750 basehttp 11964 28848 "GET /api/cities/ HTTP/1.1" 200 168
+INFO 2025-06-16 01:59:06,758 basehttp 11964 24932 "OPTIONS /api/cafes/?city=3&t=1750010346755 HTTP/1.1" 200 0
+INFO 2025-06-16 01:59:06,758 basehttp 11964 23656 "OPTIONS /api/cafes/?city=3&t=1750010346755 HTTP/1.1" 200 0
+DEBUG 2025-06-16 01:59:06,760 middleware 11964 28848 Request from origin: http://localhost:3000
+INFO 2025-06-16 01:59:06,764 basehttp 11964 28848 "GET /api/cafes/?city=3&t=1750010346755 HTTP/1.1" 200 592
+DEBUG 2025-06-16 01:59:06,765 middleware 11964 28364 Request from origin: http://localhost:3000
+INFO 2025-06-16 01:59:06,769 basehttp 11964 28364 "GET /api/cafes/?city=3&t=1750010346755 HTTP/1.1" 200 592
+DEBUG 2025-06-16 01:59:06,771 middleware 11964 28364 Request from origin: http://localhost:3000
+INFO 2025-06-16 01:59:06,774 basehttp 11964 28364 "GET /api/menu-items/?cafe=9 HTTP/1.1" 200 807
+DEBUG 2025-06-16 01:59:06,775 middleware 11964 28848 Request from origin: http://localhost:3000
+INFO 2025-06-16 01:59:06,779 basehttp 11964 28848 "GET /api/menu-items/?cafe=9 HTTP/1.1" 200 807
+DEBUG 2025-06-16 01:59:17,194 middleware 11964 28848 Request from origin: http://localhost:3000
+INFO 2025-06-16 01:59:17,196 views 11964 28848 Health check запрос от 127.0.0.1: ok
+INFO 2025-06-16 01:59:17,197 basehttp 11964 28848 "GET /api/health/ HTTP/1.1" 200 252
+DEBUG 2025-06-16 01:59:17,197 middleware 11964 28364 Request from origin: http://localhost:3000
+INFO 2025-06-16 01:59:17,200 views 11964 28364 Health check запрос от 127.0.0.1: ok
+INFO 2025-06-16 01:59:17,201 basehttp 11964 28364 "GET /api/health/ HTTP/1.1" 200 249
+DEBUG 2025-06-16 01:59:17,207 middleware 11964 28364 Request from origin: http://localhost:3000
+INFO 2025-06-16 01:59:17,210 basehttp 11964 28364 "GET /api/cities/ HTTP/1.1" 200 168
+DEBUG 2025-06-16 01:59:17,231 middleware 11964 28364 Request from origin: http://localhost:3000
+INFO 2025-06-16 01:59:17,232 basehttp 11964 23656 "OPTIONS /api/cafes/?city=3&t=1750010357228 HTTP/1.1" 200 0
+DEBUG 2025-06-16 01:59:17,235 middleware 11964 28848 Request from origin: http://localhost:3000
+INFO 2025-06-16 01:59:17,236 basehttp 11964 28364 "GET /api/cities/ HTTP/1.1" 200 168
+INFO 2025-06-16 01:59:17,239 basehttp 11964 23656 "OPTIONS /api/cafes/?city=3&t=1750010357236 HTTP/1.1" 200 0
+DEBUG 2025-06-16 01:59:17,240 middleware 11964 28364 Request from origin: http://localhost:3000
+INFO 2025-06-16 01:59:17,242 basehttp 11964 28848 "GET /api/cafes/?city=3&t=1750010357228 HTTP/1.1" 200 592
+DEBUG 2025-06-16 01:59:17,245 middleware 11964 28848 Request from origin: http://localhost:3000
+INFO 2025-06-16 01:59:17,246 basehttp 11964 28364 "GET /api/cafes/?city=3&t=1750010357236 HTTP/1.1" 200 592
+INFO 2025-06-16 01:59:17,248 basehttp 11964 28848 "GET /api/menu-items/?cafe=9 HTTP/1.1" 200 807
+DEBUG 2025-06-16 01:59:17,249 middleware 11964 28364 Request from origin: http://localhost:3000
+INFO 2025-06-16 01:59:17,252 basehttp 11964 28364 "GET /api/menu-items/?cafe=9 HTTP/1.1" 200 807
+INFO 2025-06-16 01:59:18,277 basehttp 11964 23656 "OPTIONS /api/cafes/?city=3&t=1750010358275 HTTP/1.1" 200 0
+INFO 2025-06-16 01:59:18,277 basehttp 11964 24932 "OPTIONS /api/cafes/?city=3&t=1750010358275 HTTP/1.1" 200 0
+DEBUG 2025-06-16 01:59:18,279 middleware 11964 28364 Request from origin: http://localhost:3000
+INFO 2025-06-16 01:59:18,284 basehttp 11964 28364 "GET /api/cafes/?city=3&t=1750010358275 HTTP/1.1" 200 592
+DEBUG 2025-06-16 01:59:18,284 middleware 11964 28848 Request from origin: http://localhost:3000
+INFO 2025-06-16 01:59:18,288 basehttp 11964 28848 "GET /api/cafes/?city=3&t=1750010358275 HTTP/1.1" 200 592
+DEBUG 2025-06-16 01:59:19,283 middleware 11964 5708 Request from origin: http://localhost:3000
+INFO 2025-06-16 01:59:19,287 basehttp 11964 5708 "GET /api/menu-items/?cafe=9 HTTP/1.1" 200 807
+DEBUG 2025-06-16 01:59:19,289 middleware 11964 5708 Request from origin: http://localhost:3000
+INFO 2025-06-16 01:59:19,294 basehttp 11964 5708 "GET /api/menu-items/?cafe=9 HTTP/1.1" 200 807
+DEBUG 2025-06-16 02:04:07,688 middleware 11964 28848 Request from origin: http://localhost:3000
+INFO 2025-06-16 02:04:07,691 views 11964 28848 Health check запрос от 127.0.0.1: ok
+INFO 2025-06-16 02:04:07,692 basehttp 11964 28848 "GET /api/health/ HTTP/1.1" 200 250
+DEBUG 2025-06-16 02:04:07,693 middleware 11964 28364 Request from origin: http://localhost:3000
+INFO 2025-06-16 02:04:07,695 views 11964 28364 Health check запрос от 127.0.0.1: ok
+INFO 2025-06-16 02:04:07,696 basehttp 11964 28364 "GET /api/health/ HTTP/1.1" 200 252
+DEBUG 2025-06-16 02:04:07,701 middleware 11964 28364 Request from origin: http://localhost:3000
+INFO 2025-06-16 02:04:07,703 basehttp 11964 28364 "GET /api/cities/ HTTP/1.1" 200 168
+DEBUG 2025-06-16 02:04:07,723 middleware 11964 28364 Request from origin: http://localhost:3000
+INFO 2025-06-16 02:04:07,726 basehttp 11964 28364 "GET /api/cities/ HTTP/1.1" 200 168
+INFO 2025-06-16 02:04:07,730 basehttp 11964 24932 "OPTIONS /api/cafes/?city=3&t=1750010647726 HTTP/1.1" 200 0
+DEBUG 2025-06-16 02:04:07,734 middleware 11964 28364 Request from origin: http://localhost:3000
+INFO 2025-06-16 02:04:07,734 basehttp 11964 24932 "OPTIONS /api/cafes/?city=3&t=1750010647729 HTTP/1.1" 200 0
+DEBUG 2025-06-16 02:04:07,735 middleware 11964 28848 Request from origin: http://localhost:3000
+INFO 2025-06-16 02:04:07,738 basehttp 11964 28364 "GET /api/cafes/?city=3&t=1750010647726 HTTP/1.1" 200 592
+INFO 2025-06-16 02:04:07,741 basehttp 11964 28848 "GET /api/cafes/?city=3&t=1750010647729 HTTP/1.1" 200 592
+DEBUG 2025-06-16 02:04:07,741 middleware 11964 28364 Request from origin: http://localhost:3000
+INFO 2025-06-16 02:04:07,744 basehttp 11964 28364 "GET /api/menu-items/?cafe=9 HTTP/1.1" 200 807
+DEBUG 2025-06-16 02:04:07,746 middleware 11964 28848 Request from origin: http://localhost:3000
+INFO 2025-06-16 02:04:07,749 basehttp 11964 28848 "GET /api/menu-items/?cafe=9 HTTP/1.1" 200 807
+INFO 2025-06-16 02:04:08,647 basehttp 11964 24932 "OPTIONS /api/cafes/?city=3&t=1750010648645 HTTP/1.1" 200 0
+INFO 2025-06-16 02:04:08,647 basehttp 11964 23656 "OPTIONS /api/cafes/?city=3&t=1750010648645 HTTP/1.1" 200 0
+DEBUG 2025-06-16 02:04:08,650 middleware 11964 28848 Request from origin: http://localhost:3000
+INFO 2025-06-16 02:04:08,654 basehttp 11964 28848 "GET /api/cafes/?city=3&t=1750010648645 HTTP/1.1" 200 592
+DEBUG 2025-06-16 02:04:08,655 middleware 11964 28364 Request from origin: http://localhost:3000
+INFO 2025-06-16 02:04:08,659 basehttp 11964 28364 "GET /api/cafes/?city=3&t=1750010648645 HTTP/1.1" 200 592
+DEBUG 2025-06-16 02:04:09,462 middleware 11964 5708 Request from origin: http://localhost:3000
+INFO 2025-06-16 02:04:09,467 basehttp 11964 5708 "GET /api/menu-items/?cafe=9 HTTP/1.1" 200 807
+DEBUG 2025-06-16 02:04:09,468 middleware 11964 5708 Request from origin: http://localhost:3000
+INFO 2025-06-16 02:04:09,472 basehttp 11964 5708 "GET /api/menu-items/?cafe=9 HTTP/1.1" 200 807

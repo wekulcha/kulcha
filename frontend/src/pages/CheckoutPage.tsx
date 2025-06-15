@@ -180,6 +180,22 @@ const ConfirmButton = styled(Button)`
   }
 `;
 
+const AddressInputGroup = styled.div`
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+`;
+
+const AddressFieldContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const AddressField = styled(Input)`
+  width: 100%;
+`;
+
 const CheckoutPage: React.FC = () => {
   const { cart, placeOrder, deliveryMethod, setDeliveryMethod, userAddress, updateUserAddress } = useAppContext();
   const navigate = useNavigate();
@@ -190,6 +206,8 @@ const CheckoutPage: React.FC = () => {
     phone: '',
     address: '',
     city: '',
+    floor: '',
+    apartment: ''
   });
   
   const [formErrors, setFormErrors] = useState({
@@ -197,6 +215,8 @@ const CheckoutPage: React.FC = () => {
     phone: '',
     address: '',
     city: '',
+    floor: '',
+    apartment: ''
   });
   
   useEffect(() => {
@@ -214,11 +234,29 @@ const CheckoutPage: React.FC = () => {
   useEffect(() => {
     // Загрузить данные адреса пользователя, если они есть
     if (userAddress) {
+      // Try to extract floor and apartment if they exist in the address
+      const addressParts = userAddress.address ? userAddress.address.split(',') : [''];
+      let mainAddress = addressParts[0] || '';
+      let floorValue = '';
+      let apartmentValue = '';
+      
+      // Look for floor and apartment in address parts
+      addressParts.forEach(part => {
+        const trimmedPart = part.trim().toLowerCase();
+        if (trimmedPart.includes('этаж')) {
+          floorValue = trimmedPart.replace(/[^\d]/g, '');
+        } else if (trimmedPart.includes('кв')) {
+          apartmentValue = trimmedPart.replace(/[^\d]/g, '');
+        }
+      });
+      
       setFormData({
         name: userAddress.name || '',
         phone: userAddress.phone || '',
-        address: userAddress.address || '',
+        address: mainAddress,
         city: userAddress.city || '',
+        floor: floorValue,
+        apartment: apartmentValue
       });
     }
   }, [userAddress]);
@@ -255,6 +293,8 @@ const CheckoutPage: React.FC = () => {
       phone: '',
       address: '',
       city: '',
+      floor: '',
+      apartment: ''
     };
     
     let isValid = true;
@@ -270,13 +310,24 @@ const CheckoutPage: React.FC = () => {
     }
     
     if (deliveryMethod === 'delivery') {
-      if (!formData.address.trim()) {
-        errors.address = 'Введите адрес доставки';
+      if (!formData.city.trim()) {
+        errors.city = 'Введите город';
         isValid = false;
       }
       
-      if (!formData.city.trim()) {
-        errors.city = 'Введите город';
+      if (!formData.address.trim()) {
+        errors.address = 'Введите адрес';
+        isValid = false;
+      }
+      
+      // Floor and apartment are optional but should be numbers if provided
+      if (formData.floor && !/^\d+$/.test(formData.floor)) {
+        errors.floor = 'Этаж должен быть числом';
+        isValid = false;
+      }
+      
+      if (formData.apartment && !/^\d+$/.test(formData.apartment)) {
+        errors.apartment = 'Квартира должна быть числом';
         isValid = false;
       }
     }
@@ -287,11 +338,22 @@ const CheckoutPage: React.FC = () => {
   
   const handleSubmit = () => {
     if (validateForm()) {
+      // Format the complete address with floor and apartment if provided
+      let completeAddress = formData.address.trim();
+      
+      if (formData.floor) {
+        completeAddress += `, этаж ${formData.floor}`;
+      }
+      
+      if (formData.apartment) {
+        completeAddress += `, кв. ${formData.apartment}`;
+      }
+      
       // Сохранить адрес пользователя
       updateUserAddress({
         name: formData.name,
         phone: formData.phone,
-        address: formData.address,
+        address: completeAddress,
         city: formData.city,
       });
       
@@ -404,18 +466,46 @@ const CheckoutPage: React.FC = () => {
                     {formErrors.city && <span style={{ color: '#F44336', fontSize: '0.85rem' }}>{formErrors.city}</span>}
                   </FormGroup>
                   
-                  <FormGroup>
-                    <Label>Адрес доставки*</Label>
-                    <Input
-                      type="text"
-                      name="address"
-                      value={formData.address}
-                      onChange={handleInputChange}
-                      placeholder="ул. Пушкина, д. 10, кв. 5"
-                      error={formErrors.address}
-                    />
-                    {formErrors.address && <span style={{ color: '#F44336', fontSize: '0.85rem' }}>{formErrors.address}</span>}
-                  </FormGroup>
+                  <AddressInputGroup>
+                    <AddressFieldContainer>
+                      <Label>Адрес*</Label>
+                      <AddressField
+                        type="text"
+                        name="address"
+                        value={formData.address}
+                        onChange={handleInputChange}
+                        placeholder="ул. Пушкина, д. 10"
+                        error={formErrors.address}
+                      />
+                      {formErrors.address && <span style={{ color: '#F44336', fontSize: '0.85rem' }}>{formErrors.address}</span>}
+                    </AddressFieldContainer>
+                    
+                    <AddressFieldContainer>
+                      <Label>Этаж</Label>
+                      <AddressField
+                        type="text"
+                        name="floor"
+                        value={formData.floor}
+                        onChange={handleInputChange}
+                        placeholder="2"
+                        error={formErrors.floor}
+                      />
+                      {formErrors.floor && <span style={{ color: '#F44336', fontSize: '0.85rem' }}>{formErrors.floor}</span>}
+                    </AddressFieldContainer>
+                    
+                    <AddressFieldContainer>
+                      <Label>Квартира</Label>
+                      <AddressField
+                        type="text"
+                        name="apartment"
+                        value={formData.apartment}
+                        onChange={handleInputChange}
+                        placeholder="42"
+                        error={formErrors.apartment}
+                      />
+                      {formErrors.apartment && <span style={{ color: '#F44336', fontSize: '0.85rem' }}>{formErrors.apartment}</span>}
+                    </AddressFieldContainer>
+                  </AddressInputGroup>
                 </>
               )}
             </FormContainer>
