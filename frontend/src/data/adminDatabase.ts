@@ -101,12 +101,22 @@ function getCookie(name: string): string | null {
 export const getCSRFToken = async (): Promise<string | null> => {
   try {
     // Запрос к эндпоинту, который возвращает CSRF токен в куки
-    await fetch(`${API_BASE_URL}/auth/csrf/`, {
+    const response = await fetch(`${API_BASE_URL}/auth/csrf/`, {
       method: 'GET',
       credentials: 'include',
+      mode: 'cors'
     });
-    console.log('CSRF token fetched successfully');
-    return getCookie('csrftoken');
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch CSRF token: ${response.status}`);
+    }
+    
+    // Добавляем небольшую задержку, чтобы убедиться, что куки установился
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
+    const token = getCookie('csrftoken');
+    console.log('CSRF token fetched successfully:', token ? `${token.substring(0, 6)}...` : 'null');
+    return token;
   } catch (error) {
     console.error('Error fetching CSRF token:', error);
     return null;
@@ -126,6 +136,28 @@ const handleError = (error: any, fallback: any = null) => {
   
   console.error('Full Error:', error);
   return fallback;
+};
+
+// Утилита для получения заголовков с CSRF токеном для API запросов
+const getApiHeaders = async (contentType: boolean = true, needsCSRF: boolean = false): Promise<HeadersInit> => {
+  const headers: Record<string, string> = {};
+  
+  if (contentType) {
+    headers['Content-Type'] = 'application/json';
+  }
+  headers['Accept'] = 'application/json';
+  
+  // Для небезопасных методов (POST, PUT, DELETE, PATCH) получаем CSRF токен
+  if (needsCSRF) {
+    const csrfToken = await getCSRFToken();
+    if (csrfToken) {
+      headers['X-CSRFToken'] = csrfToken;
+    } else {
+      console.warn('No CSRF token available for API request');
+    }
+  }
+  
+  return headers;
 };
 
 // Инициализация админ базы данных больше не требуется - данные будут загружаться с API
@@ -611,12 +643,12 @@ export const updateMenuItem = async (menuItem: MenuItem): Promise<MenuItem> => {
     
     console.log('Updating menu item:', menuItem.id, apiData);
     
+    // Получаем заголовки с CSRF токеном
+    const headers = await getApiHeaders(true, true);
+    
     const response = await fetch(`${API_BASE_URL}/menu-items/${menuItem.id}/`, {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
+      headers,
       body: JSON.stringify(apiData),
       credentials: 'include',
       mode: 'cors'
@@ -671,12 +703,12 @@ export const createMenuItem = async (menuItem: MenuItem): Promise<MenuItem> => {
     
     console.log('Creating new menu item:', apiData);
     
+    // Получаем заголовки с CSRF токеном
+    const headers = await getApiHeaders(true, true);
+    
     const response = await fetch(`${API_BASE_URL}/menu-items/`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
+      headers,
       body: JSON.stringify(apiData),
       credentials: 'include',
       mode: 'cors'
@@ -721,13 +753,14 @@ export const deleteMenuItem = async (itemId: number): Promise<boolean> => {
   try {
     console.log(`Deleting menu item with ID: ${itemId}`);
     
+    // Получаем заголовки с CSRF токеном
+    const headers = await getApiHeaders(false, true);
+    
     const response = await fetch(`${API_BASE_URL}/menu-items/${itemId}/`, {
       method: 'DELETE',
       credentials: 'include',
       mode: 'cors',
-      headers: {
-        'Accept': 'application/json',
-      }
+      headers
     });
     
     if (!response.ok) {
@@ -747,11 +780,12 @@ export const deleteMenuItem = async (itemId: number): Promise<boolean> => {
 // Обновление статуса заказа
 export const updateOrderStatus = async (orderId: number, status: AdminOrder['status']): Promise<boolean> => {
   try {
+    // Получаем заголовки с CSRF токеном
+    const headers = await getApiHeaders(true, true);
+    
     const response = await fetch(`${API_BASE_URL}/orders/${orderId}/update_status/`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers,
       body: JSON.stringify({ status }),
       credentials: 'include'
     });

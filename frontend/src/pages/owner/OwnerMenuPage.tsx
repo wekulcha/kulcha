@@ -160,7 +160,7 @@ const CategoryFilters = styled.div`
   }
 `;
 
-const CategoryFilter = styled.button<{ active: boolean }>`
+const CategoryFilter = styled.button<{ $active: boolean }>`
   display: flex;
   align-items: center;
   gap: 6px;
@@ -170,15 +170,15 @@ const CategoryFilter = styled.button<{ active: boolean }>`
   font-size: 14px;
   cursor: pointer;
   transition: all 0.3s ease;
-  background-color: ${props => props.active ? '#FF9F0D' : '#333'};
+  background-color: ${props => props.$active ? '#FF9F0D' : '#333'};
   color: white;
-  font-weight: ${props => props.active ? '600' : '400'};
-  box-shadow: ${props => props.active ? '0 4px 12px rgba(255, 159, 13, 0.3)' : 'none'};
+  font-weight: ${props => props.$active ? '600' : '400'};
+  box-shadow: ${props => props.$active ? '0 4px 12px rgba(255, 159, 13, 0.3)' : 'none'};
   
   &:hover {
-    background-color: ${props => props.active ? '#f08c00' : '#444'};
+    background-color: ${props => props.$active ? '#f08c00' : '#444'};
     transform: translateY(-2px);
-    box-shadow: ${props => props.active 
+    box-shadow: ${props => props.$active 
       ? '0 6px 14px rgba(255, 159, 13, 0.4)' 
       : '0 4px 10px rgba(0, 0, 0, 0.2)'};
   }
@@ -240,9 +240,9 @@ const MenuCard = styled.div`
   }
 `;
 
-const FoodImage = styled.div<{ imageUrl: string }>`
+const FoodImage = styled.div<{ $imageUrl: string }>`
   height: 200px;
-  background-image: url(${props => props.imageUrl || 'https://via.placeholder.com/400x300/333/555?text=Нет+изображения'});
+  background-image: url(${props => props.$imageUrl || 'https://via.placeholder.com/400x300/333/555?text=Нет+изображения'});
   background-size: cover;
   background-position: center;
   position: relative;
@@ -297,7 +297,7 @@ const FoodPrice = styled.div`
   }
 `;
 
-const FoodCategory = styled.div`
+const FoodCategory = styled.div<{ $category?: string }>`
   display: inline-block;
   padding: 5px 10px;
   border-radius: 20px;
@@ -306,7 +306,8 @@ const FoodCategory = styled.div`
   margin-bottom: 10px;
   color: white;
   background-color: ${props => {
-    switch (props.children) {
+    const category = props.$category || props.children?.toString() || '';
+    switch (category) {
       case 'Основное': return '#FF9F0D';
       case 'Супы': return '#34a853';
       case 'Закуски': return '#fbbc05';
@@ -400,7 +401,7 @@ const DeleteButton = styled(ActionButton)`
   }
 `;
 
-const Badge = styled.div<{ isAvailable: boolean }>`
+const Badge = styled.div<{ $isAvailable: boolean }>`
   position: absolute;
   top: 10px;
   right: 10px;
@@ -408,7 +409,7 @@ const Badge = styled.div<{ isAvailable: boolean }>`
   border-radius: 20px;
   font-size: 12px;
   font-weight: 600;
-  background-color: ${(props) => (props.isAvailable ? '#4caf50' : '#f44336')};
+  background-color: ${(props) => (props.$isAvailable ? '#4caf50' : '#f44336')};
   color: white;
   z-index: 2;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
@@ -421,14 +422,14 @@ const Badge = styled.div<{ isAvailable: boolean }>`
 `;
 
 // Стили для модального окна
-const ModalOverlay = styled.div<{ isOpen: boolean }>`
+const ModalOverlay = styled.div<{ $isOpen: boolean }>`
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.7);
-  display: ${props => props.isOpen ? 'flex' : 'none'};
+  display: ${props => props.$isOpen ? 'flex' : 'none'};
   align-items: center;
   justify-content: center;
   z-index: 1000;
@@ -576,7 +577,7 @@ const RadioGroup = styled.div`
   }
 `;
 
-const RadioItem = styled.label<{ active: boolean }>`
+const RadioItem = styled.label<{ $active: boolean }>`
   display: flex;
   align-items: center;
   gap: 5px;
@@ -584,11 +585,11 @@ const RadioItem = styled.label<{ active: boolean }>`
   border-radius: 20px;
   cursor: pointer;
   font-size: 14px;
-  background-color: ${props => props.active ? '#FF9F0D' : '#333'};
+  background-color: ${props => props.$active ? '#FF9F0D' : '#333'};
   color: white;
   
   &:hover {
-    background-color: ${props => props.active ? '#f08c00' : '#444'};
+    background-color: ${props => props.$active ? '#f08c00' : '#444'};
   }
   
   /* Адаптация для Telegram WebApp */
@@ -976,7 +977,7 @@ const OwnerMenuPage: React.FC = () => {
       {/* Фильтры категорий */}
       <CategoryFilters>
         <CategoryFilter 
-          active={activeCategory === null} 
+          $active={activeCategory === null} 
           onClick={() => setActiveCategory(null)}
         >
           <CategoryIcon>🍽️</CategoryIcon> Все категории
@@ -984,7 +985,7 @@ const OwnerMenuPage: React.FC = () => {
         {MENU_CATEGORIES.map(category => (
           <CategoryFilter 
             key={category.id}
-            active={activeCategory === category.id}
+            $active={activeCategory === category.id}
             onClick={() => setActiveCategory(category.id)}
           >
             <CategoryIcon>{category.icon}</CategoryIcon> {category.name}
@@ -996,10 +997,10 @@ const OwnerMenuPage: React.FC = () => {
         <MenuGrid>
           {filteredMenuItems.map(item => (
             <MenuCard key={item.id}>
-              <Badge isAvailable={item.available ?? false}>
+              <Badge $isAvailable={item.available ?? false}>
                 {item.available ? 'Доступно' : 'Недоступно'}
               </Badge>
-              <FoodImage imageUrl={item.imageUrl} />
+              <FoodImage $imageUrl={item.imageUrl} />
               <CardContent>
                 <FoodName>{item.name}</FoodName>
                 <FoodPrice>₽{item.price.toLocaleString('ru-RU')}</FoodPrice>
@@ -1046,7 +1047,7 @@ const OwnerMenuPage: React.FC = () => {
       )}
       
       {/* Модальное окно для добавления/редактирования блюда */}
-      <ModalOverlay isOpen={isModalOpen}>
+      <ModalOverlay $isOpen={isModalOpen}>
         <ModalContent>
           <ModalHeader>
             <ModalTitle>{currentItem.id ? 'Редактировать блюдо' : 'Добавить новое блюдо'}</ModalTitle>
@@ -1099,7 +1100,7 @@ const OwnerMenuPage: React.FC = () => {
                 {MENU_CATEGORIES.map(category => (
                   <RadioItem 
                     key={category.id} 
-                    active={currentItem.category === category.id}
+                    $active={currentItem.category === category.id}
                   >
                     <RadioInput
                       type="radio"
