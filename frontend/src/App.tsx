@@ -77,8 +77,8 @@ function App() {
                 {/* Всегда перенаправляем с корневого пути на страницу выбора роли */}
                 <Route path="/" element={<Navigate to="/role-selection" replace />} />
                 
-                {/* Специальный путь для перенаправления с role-selection на city-selection */}
-                <Route path="/role-to-city" element={<RoleRedirect fromPath="/role-selection" toPath="/city-selection" />} />
+                {/* Специальный путь для перенаправления с role-selection на restaurant-selection */}
+                <Route path="/role-to-city" element={<RoleRedirect fromPath="/role-selection" toPath="/restaurant-selection" />} />
                 
                 <Route path="/home" element={<HomePage />} />
                 <Route path="/city-selection" element={<CitySelectionPage />} />
