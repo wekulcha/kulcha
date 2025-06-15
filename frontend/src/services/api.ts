@@ -1,4 +1,5 @@
 import { Order, UserAddress, getCSRFToken } from '../data/adminDatabase';
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 
 // Расширяем интерфейс Window для TypeScript
 declare global {
@@ -107,36 +108,35 @@ export function getCookie(name: string): string | null {
 // Вспомогательная функция для выполнения API запросов с CSRF защитой
 export async function fetchWithCSRF(
   url: string, 
-  options: RequestInit = {}
-): Promise<Response> {
+  options: AxiosRequestConfig = {}
+): Promise<AxiosResponse> {
   // Для POST, PUT, DELETE и PATCH запросов обязательно получаем CSRF токен
   const needsCSRF = ['POST', 'PUT', 'DELETE', 'PATCH'].includes(options.method || 'GET');
+  
+  // Настройки по умолчанию
+  const config: AxiosRequestConfig = {
+    ...options,
+    withCredentials: true,
+    headers: {
+      ...options.headers
+    }
+  };
   
   if (needsCSRF) {
     // Получаем CSRF токен перед выполнением запроса
     const csrfToken = await getCSRFToken();
     
-    // Объединяем заголовки
-    const headers = {
-      ...options.headers,
-      'X-CSRFToken': csrfToken || '',
-    };
-    
-    // Обновляем опции запроса
-    options = {
-      ...options,
-      headers,
-      credentials: 'include',
-    };
-  } else {
-    // Для GET и других запросов также используем credentials
-    options = {
-      ...options,
-      credentials: 'include',
-    };
+    if (csrfToken) {
+      // Добавляем CSRF токен в заголовки
+      config.headers = {
+        ...config.headers,
+        'X-CSRFToken': csrfToken
+      };
+    }
   }
   
-  return fetch(url, options);
+  // Выполняем запрос с помощью axios
+  return axios(url, config);
 }
 
 // Функция для формирования корректного URL API
@@ -158,20 +158,19 @@ const getApiUrl = (endpoint: string): string => {
 // Базовая функция для выполнения запросов к API
 const apiRequest = async <T>(
   url: string, 
-  options: RequestInit = {}
+  options: AxiosRequestConfig = {}
 ): Promise<T> => {
   // Настройки запроса по умолчанию
-  const defaultOptions: RequestInit = {
+  const defaultOptions: AxiosRequestConfig = {
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json'
     },
-    credentials: 'include' as RequestCredentials,
-    mode: 'cors' as RequestMode
+    withCredentials: true
   };
   
   // Объединяем настройки
-  const requestOptions: RequestInit = { 
+  const requestOptions: AxiosRequestConfig = { 
     ...defaultOptions, 
     ...options,
     headers: { ...defaultOptions.headers, ...options.headers }
@@ -183,35 +182,15 @@ const apiRequest = async <T>(
   try {
     console.log(`API Request: ${options.method || 'GET'} ${fullUrl}`);
     
-    const response = await fetch(fullUrl, requestOptions);
-    
-    // Обрабатываем ошибки HTTP
-    if (!response.ok) {
-      const errorText = await response.text();
-      let errorData;
-      
-      try {
-        errorData = JSON.parse(errorText);
-      } catch {
-        errorData = { detail: errorText };
-      }
-      
-      throw {
-        message: errorData.detail || `HTTP error ${response.status}`,
-        response: {
-          status: response.status,
-          data: errorData
-        }
-      };
-    }
+    const response = await axios(fullUrl, requestOptions);
     
     // Если ответ пустой или 204 No Content
-    if (response.status === 204 || response.headers.get('Content-Length') === '0') {
+    if (response.status === 204 || !response.data) {
       return {} as T;
     }
     
-    // Парсим JSON ответ
-    return await response.json() as T;
+    // Возвращаем данные ответа
+    return response.data as T;
   } catch (error: any) {
     throw error; // Пробрасываем ошибку для обработки в вызывающем коде
   }
@@ -241,18 +220,10 @@ export const api = {
     try {
       const response = await fetchWithCSRF(`${API_BASE_URL}/health/`);
       
-      if (response.ok) {
-        const data = await response.json();
-        return {
-          status: 'ok',
-          ...data
-        };
-      } else {
-        return {
-          status: 'error',
-          error: `HTTP ${response.status}`
-        };
-      }
+      return {
+        status: 'ok',
+        ...response.data
+      };
     } catch (error) {
       console.error('Health check error:', error);
       return {

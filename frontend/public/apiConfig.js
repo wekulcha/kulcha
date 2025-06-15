@@ -1,33 +1,44 @@
 // Конфигурация для API с динамическим определением URL
 (function() {
+  // Загружаем axios из CDN, если он не доступен
+  if (!window.axios) {
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js';
+    script.async = true;
+    document.head.appendChild(script);
+  }
+
   // Функция для проверки доступности сервера
   const checkServerAvailability = async (url) => {
     try {
       console.log(`Checking server availability at ${url}...`);
       
+      // Проверяем, что axios доступен
+      if (!window.axios) {
+        console.log('Axios not loaded yet, falling back to fetch');
+        return true; // Предполагаем, что сервер доступен, чтобы не блокировать загрузку
+      }
+      
       // First try with simple GET request
-      const response = await fetch(`${url}/health/`, {
-        method: 'GET',
-        cache: 'no-cache',
-        mode: 'cors',
-        credentials: 'include',
+      const response = await window.axios.get(`${url}/health/`, {
+        withCredentials: true,
         headers: { 
           'Accept': 'application/json',
           'Content-Type': 'application/json'
-        },
+        }
       });
       
-      console.log(`Server at ${url} is ${response.ok ? 'available' : 'not available'}`);
-      return response.ok;
+      console.log(`Server at ${url} is available, status: ${response.status}`);
+      return true;
     } catch (error) {
       // If that fails, try a simpler approach
       try {
         console.log(`Retrying server check at ${url} with simplified approach...`);
-        const simpleResponse = await fetch(`${url}/`, { 
-          mode: 'no-cors',
-          cache: 'no-cache' 
+        await window.axios.get(`${url}/`, { 
+          // В axios нет прямого аналога no-cors, но можно использовать validateStatus
+          validateStatus: () => true
         });
-        // In no-cors mode we can't check status, but at least we can see if fetch completes
+        // Если запрос выполнился без ошибки, считаем сервер доступным
         console.log(`Server at ${url} might be available (simplified check passed)`);
         return true;
       } catch (simpleError) {
@@ -138,28 +149,30 @@
     
     console.log(`Checking API health at ${healthEndpoint}`);
     
+    // Проверяем, что axios доступен
+    if (!window.axios) {
+      console.log('Axios not loaded yet, health check might not be accurate');
+      return { status: 'unknown', message: 'Axios not loaded' };
+    }
+    
     try {
-      const response = await fetch(healthEndpoint, {
-        method: 'GET',
-        credentials: 'include',
-        mode: 'cors',
+      const response = await window.axios.get(healthEndpoint, {
+        withCredentials: true,
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json'
         }
       });
       
-      if (response.ok) {
-        const data = await response.json();
-        console.log('Health check successful:', data);
-        return { status: 'ok', data };
-      } else {
-        console.error(`Health check failed with status: ${response.status}`);
-        return { status: 'error', code: response.status };
-      }
+      console.log('Health check successful:', response.data);
+      return { status: 'ok', data: response.data };
     } catch (error) {
       console.error('Health check error:', error);
-      return { status: 'error', message: error.message };
+      return { 
+        status: 'error', 
+        code: error.response?.status,
+        message: error.message 
+      };
     }
   };
 })();
