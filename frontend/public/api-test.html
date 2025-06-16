@@ -39,6 +39,7 @@
             border-radius: 5px;
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body>
     <h1>API Test Page</h1>
@@ -103,8 +104,7 @@
             result.textContent = 'Выполнение запроса...';
             
             try {
-                const response = await fetch('/api/cities/', {
-                    method: 'GET',
+                const response = await axios.get('/api/cities/', {
                     headers: {
                         'Accept': 'application/json',
                         'Content-Type': 'application/json'
@@ -113,14 +113,13 @@
                 
                 const statusInfo = `Статус: ${response.status} ${response.statusText}`;
                 
-                if (response.ok) {
-                    const data = await response.json();
-                    result.textContent = `${statusInfo}\n\nОтвет:\n${JSON.stringify(data, null, 2)}`;
-                } else {
-                    result.textContent = `${statusInfo}\n\nОшибка: Не удалось получить данные`;
-                }
+                result.textContent = `${statusInfo}\n\nОтвет:\n${JSON.stringify(response.data, null, 2)}`;
             } catch (error) {
-                result.textContent = `Ошибка: ${error.message}`;
+                const statusInfo = error.response 
+                    ? `Статус: ${error.response.status} ${error.response.statusText}` 
+                    : 'Ошибка сети';
+                    
+                result.textContent = `${statusInfo}\n\nОшибка: ${error.message}`;
             }
         });
 
@@ -131,8 +130,7 @@
             
             try {
                 const absoluteUrl = `${window.location.origin}/api/cities/`;
-                const response = await fetch(absoluteUrl, {
-                    method: 'GET',
+                const response = await axios.get(absoluteUrl, {
                     headers: {
                         'Accept': 'application/json',
                         'Content-Type': 'application/json'
@@ -140,15 +138,14 @@
                 });
                 
                 const statusInfo = `URL: ${absoluteUrl}\nСтатус: ${response.status} ${response.statusText}`;
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    result.textContent = `${statusInfo}\n\nОтвет:\n${JSON.stringify(data, null, 2)}`;
-                } else {
-                    result.textContent = `${statusInfo}\n\nОшибка: Не удалось получить данные`;
-                }
+                result.textContent = `${statusInfo}\n\nОтвет:\n${JSON.stringify(response.data, null, 2)}`;
             } catch (error) {
-                result.textContent = `Ошибка: ${error.message}`;
+                const absoluteUrl = `${window.location.origin}/api/cities/`;
+                const statusInfo = error.response 
+                    ? `URL: ${absoluteUrl}\nСтатус: ${error.response.status} ${error.response.statusText}` 
+                    : `URL: ${absoluteUrl}\nОшибка сети`;
+                    
+                result.textContent = `${statusInfo}\n\nОшибка: ${error.message}`;
             }
         });
 
@@ -171,24 +168,22 @@
                 
                 for (const url of urls) {
                     try {
-                        const response = await fetch(url, {
-                            method: 'GET',
+                        const response = await axios.get(url, {
                             headers: {
                                 'Accept': 'application/json',
                                 'Content-Type': 'application/json'
-                            },
-                            mode: 'cors'
+                            }
                         });
                         
                         statusInfo += `URL: ${url}\nСтатус: ${response.status} ${response.statusText}\n\n`;
-                        
-                        if (response.ok) {
-                            responseData = await response.json();
-                            success = true;
-                            break;
-                        }
+                        responseData = response.data;
+                        success = true;
+                        break;
                     } catch (error) {
-                        statusInfo += `URL: ${url}\nОшибка: ${error.message}\n\n`;
+                        const errorStatus = error.response ? 
+                            `${error.response.status} ${error.response.statusText}` : 
+                            'Ошибка сети';
+                        statusInfo += `URL: ${url}\nСтатус: ${errorStatus}\nОшибка: ${error.message}\n\n`;
                     }
                 }
                 
@@ -221,40 +216,35 @@
                 
                 for (const city of testCities) {
                     try {
-                        const response = await fetch(url, {
-                            method: 'POST',
+                        const response = await axios.post(url, city, {
                             headers: {
                                 'Accept': 'application/json',
                                 'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify(city)
+                            }
                         });
                         
-                        if (response.ok) {
-                            const data = await response.json();
-                            createdCities.push(data);
-                        } else {
-                            result.textContent += `\nОшибка создания города ${city.name}: ${response.status} ${response.statusText}`;
-                        }
+                        createdCities.push(response.data);
                     } catch (error) {
-                        result.textContent += `\nОшибка создания города ${city.name}: ${error.message}`;
+                        const errorStatus = error.response ? 
+                            `${error.response.status} ${error.response.statusText}` : 
+                            'Ошибка сети';
+                        result.textContent += `\nОшибка создания города ${city.name}: ${errorStatus}`;
                     }
                 }
                 
                 // Проверяем созданные города
-                const checkResponse = await fetch(url, {
-                    method: 'GET',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    }
-                });
-                
-                if (checkResponse.ok) {
-                    const allCities = await checkResponse.json();
+                try {
+                    const checkResponse = await axios.get(url, {
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
+                    const allCities = checkResponse.data;
                     result.textContent = `Создано ${createdCities.length} городов.\n\nВсе города в базе (${allCities.length}):\n${JSON.stringify(allCities, null, 2)}`;
-                } else {
-                    result.textContent = `Создано ${createdCities.length} городов, но не удалось получить полный список.`;
+                } catch (error) {
+                    result.textContent = `Создано ${createdCities.length} городов, но не удалось получить полный список: ${error.message}`;
                 }
             } catch (error) {
                 result.textContent = `Ошибка: ${error.message}`;

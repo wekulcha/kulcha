@@ -281,7 +281,17 @@ class MenuItemViewSet(viewsets.ModelViewSet):
         try:
             paginator = PageNumberPagination()
             paginated_queryset = paginator.paginate_queryset(self.get_queryset(), request)
-            serializer = self.get_serializer(paginated_queryset, many=True)
+            # Передаем request в контекст сериализатора
+            serializer = self.get_serializer(paginated_queryset, many=True, context={'request': request})
+            
+            # Логируем данные о возвращаемых изображениях
+            for item in serializer.data:
+                # Используем repr() для отображения невидимых символов и избежания их вставки в строку
+                name = item.get('name', '')
+                image = repr(item.get('image', ''))
+                image_full_url = repr(item.get('image_full_url', ''))
+                logger.debug(f"Menu item: {name}, image: {image}, image_full_url: {image_full_url}")
+            
             return paginator.get_paginated_response(serializer.data)
         except Exception as e:
             logger.error(f"Ошибка при получении элементов меню: {str(e)}")

@@ -291,7 +291,7 @@ const RestaurantSelectionPage: React.FC = () => {
                   onClick={() => handleRestaurantSelect(restaurant.id)}
                 >
                   <RestaurantImage 
-                    $bgImage={`${restaurant.coverImage || getRandomImage(index)}?t=${imageTimestamp}`} 
+                    $bgImage={`${restaurant.cover_image || getRandomImage(index)}?t=${imageTimestamp}`} 
                   />
                   <RestaurantBadge>
                     ⭐ {restaurant.rating}

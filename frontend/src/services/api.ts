@@ -152,7 +152,9 @@ const getApiUrl = (endpoint: string): string => {
     baseUrl = baseUrl.replace(/\/api\/$/, '/');
   }
   
-  return `${baseUrl}${cleanEndpoint}`;
+  const fullUrl = `${baseUrl}${cleanEndpoint}`;
+  console.log('Generated API URL:', fullUrl);
+  return fullUrl;
 };
 
 // Базовая функция для выполнения запросов к API
@@ -196,18 +198,97 @@ const apiRequest = async <T>(
   }
 };
 
+// Добавляем функцию для очистки URL от невидимых символов
+const cleanUrlString = (url: string | null | undefined): string => {
+  if (!url) return '';
+  
+  // Удаляем все невидимые символы из всей строки, а не только в конце
+  return url.replace(/[\u200B-\u200D\uFEFF\u2060,\s]+/g, '');
+};
+
 // Добавляем функцию для обработки URL изображений
 const handleImageUrlsInMenuItems = (items: any[], baseUrl: string) => {
+  console.log('Processing menu items with baseUrl:', baseUrl);
+  console.log('Original menu items data:', items);
+
   return items.map(item => {
     // Create a copy of the item
     const processedItem = { ...item };
     
-    // Handle image URLs
-    if (processedItem.image) {
-      processedItem.image = processedItem.image.startsWith('http') 
-        ? processedItem.image 
-        : `${baseUrl}${processedItem.image}`;
+    // Добавляем timestamp для предотвращения кеширования
+    const timestamp = new Date().getTime();
+    
+    console.log(`Processing item: ${processedItem.name}, original image: ${processedItem.image || 'none'}, image_full_url: ${processedItem.image_full_url || 'none'}`);
+    
+    // Приоритет 1: Используем image_full_url, если доступен (новое поле с корректным URL)
+    if (processedItem.image_full_url) {
+      // Очищаем URL от невидимых символов
+      let cleanImageUrl = cleanUrlString(processedItem.image_full_url);
+      
+      // Добавляем timestamp для предотвращения кеширования
+      processedItem.imageUrl = cleanImageUrl.includes('?') 
+        ? `${cleanImageUrl}&t=${timestamp}`
+        : `${cleanImageUrl}?t=${timestamp}`;
+      
+      console.log(`Item ${processedItem.name}: Set imageUrl from image_full_url: ${processedItem.imageUrl}`);
+      return processedItem;
     }
+    
+    // Приоритет 2: Обрабатываем поле image если оно есть
+    if (processedItem.image) {
+      // Очищаем URL от запятых и невидимых символов
+      let cleanImageUrl = cleanUrlString(processedItem.image);
+      
+      // Исправляем URL, если он использует неправильный порт
+      if (cleanImageUrl.includes('http://localhost/media/')) {
+        cleanImageUrl = cleanImageUrl.replace('http://localhost/media/', 'http://localhost:8000/media/');
+      }
+      
+      console.log(`Item ${processedItem.name}: Cleaned image URL: ${cleanImageUrl}`);
+      
+      // Добавляем timestamp для предотвращения кеширования
+      processedItem.image = cleanImageUrl.includes('?') 
+        ? `${cleanImageUrl}&t=${timestamp}` 
+        : `${cleanImageUrl}?t=${timestamp}`;
+      
+      // Устанавливаем imageUrl для компонента из поля image
+      processedItem.imageUrl = processedItem.image;
+      
+      console.log(`Item ${processedItem.name}: Set imageUrl from image: ${processedItem.imageUrl}`);
+    }
+    
+    // Приоритет 3: Если есть image_url, но нет imageUrl из image, используем image_url
+    if (processedItem.image_url && !processedItem.imageUrl) {
+      // Очищаем URL от запятых и невидимых символов
+      let cleanImageUrl = cleanUrlString(processedItem.image_url);
+      
+      // Исправляем URL, если он использует неправильный порт
+      if (cleanImageUrl.includes('http://localhost/media/')) {
+        cleanImageUrl = cleanImageUrl.replace('http://localhost/media/', 'http://localhost:8000/media/');
+      }
+      
+      processedItem.imageUrl = cleanImageUrl;
+      console.log(`Item ${processedItem.name}: Set imageUrl from image_url: ${processedItem.imageUrl}`);
+    }
+    
+    // Приоритет 4: Если всё ещё нет imageUrl, создаём обратную совместимость с разными именами полей
+    if (!processedItem.imageUrl && (processedItem.img || processedItem.coverImage)) {
+      let imgUrl = processedItem.img || processedItem.coverImage;
+      // Очищаем URL от запятых и невидимых символов
+      if (imgUrl) {
+        imgUrl = cleanUrlString(imgUrl);
+        
+        // Исправляем URL, если он использует неправильный порт
+        if (imgUrl.includes('http://localhost/media/')) {
+          imgUrl = imgUrl.replace('http://localhost/media/', 'http://localhost:8000/media/');
+        }
+      }
+      processedItem.imageUrl = imgUrl;
+      console.log(`Item ${processedItem.name}: Set imageUrl from img/coverImage: ${processedItem.imageUrl}`);
+    }
+    
+    // Проверяем, что у нас есть хотя бы один тип URL для изображения
+    console.log(`Final menu item: ${processedItem.name}, imageUrl: ${processedItem.imageUrl || 'none'}`);
     
     return processedItem;
   });
@@ -330,7 +411,7 @@ export const api = {
     try {
       return await apiRequest<any>('orders/', {
         method: 'POST',
-        body: JSON.stringify(orderData)
+        data: orderData
       });
     } catch (error) {
       return handleApiError(error, 'Error placing order');
@@ -361,7 +442,7 @@ export const api = {
       
       const response = await apiRequest<any>('orders/', {
         method: 'POST',
-        body: JSON.stringify(formattedOrder)
+        data: formattedOrder
       });
       
       return response;
@@ -385,7 +466,7 @@ export const api = {
     try {
       return await apiRequest<any>(`orders/${orderId}/update_status/`, {
         method: 'POST',
-        body: JSON.stringify({ status })
+        data: { status }
       });
     } catch (error) {
       return handleApiError(error, `Error updating order ${orderId} status`);
@@ -397,7 +478,7 @@ export const api = {
     try {
       return await apiRequest<any>('addresses/', {
         method: 'POST',
-        body: JSON.stringify(addressData)
+        data: addressData
       });
     } catch (error) {
       return handleApiError(error, 'Error adding user address');

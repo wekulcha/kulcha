@@ -1,0 +1,1580 @@
+INFO 2025-06-16 17:52:08,207 autoreload 7232 17836 Watching for file changes with StatReloader
+INFO 2025-06-16 17:52:08,780 middleware 7232 25400 CORS Middleware initialized with allowed origins: ['http://localhost', 'http://localhost:3000', 'http://localhost:80', 'http://127.0.0.1', 'http://127.0.0.1:3000', 'http://127.0.0.1:80', 'http://frontend', 'http://localhost:3001', 'http://127.0.0.1:3001', 'http://localhost:8000', 'http://127.0.0.1:8000', 'https://ec4db675c64c9f.lhr.life']
+INFO 2025-06-16 17:52:08,781 middleware 7232 25400 Custom CSRF Middleware initialized with exempt paths: ['/api/auth/login/', '/api/auth/csrf/']
+INFO 2025-06-16 17:52:24,126 autoreload 22336 21112 Watching for file changes with StatReloader
+INFO 2025-06-16 17:52:24,520 middleware 22336 23044 CORS Middleware initialized with allowed origins: ['http://localhost', 'http://localhost:3000', 'http://localhost:80', 'http://127.0.0.1', 'http://127.0.0.1:3000', 'http://127.0.0.1:80', 'http://frontend', 'http://localhost:3001', 'http://127.0.0.1:3001', 'http://localhost:8000', 'http://127.0.0.1:8000', 'https://ec4db675c64c9f.lhr.life']
+INFO 2025-06-16 17:52:24,521 middleware 22336 23044 Custom CSRF Middleware initialized with exempt paths: ['/api/auth/login/', '/api/auth/csrf/']
+DEBUG 2025-06-16 17:52:56,302 middleware 22336 6108 Request from origin: http://localhost:3000
+INFO 2025-06-16 17:52:56,307 views 22336 6108 Health check ������ �� 127.0.0.1: ok
+INFO 2025-06-16 17:52:56,308 basehttp 22336 6108 "GET /api/health/ HTTP/1.1" 200 251
+DEBUG 2025-06-16 17:52:56,310 middleware 22336 17312 Request from origin: http://localhost:3000
+INFO 2025-06-16 17:52:56,313 views 22336 17312 Health check ������ �� 127.0.0.1: ok
+DEBUG 2025-06-16 17:52:56,314 middleware 22336 6108 Request from origin: http://localhost:3000
+INFO 2025-06-16 17:52:56,315 basehttp 22336 17312 "GET /api/health/ HTTP/1.1" 200 249
+INFO 2025-06-16 17:52:56,317 basehttp 22336 6108 "GET /api/cities/ HTTP/1.1" 200 52
+DEBUG 2025-06-16 17:52:56,326 middleware 22336 6108 Request from origin: http://localhost:3000
+INFO 2025-06-16 17:52:56,328 basehttp 22336 6108 "GET /api/cities/ HTTP/1.1" 200 52
+DEBUG 2025-06-16 17:52:56,339 middleware 22336 6108 Request from origin: http://localhost:3000
+DEBUG 2025-06-16 17:52:56,344 middleware 22336 17312 Request from origin: http://localhost:3000
+INFO 2025-06-16 17:52:56,346 basehttp 22336 6108 "GET /api/cafes/?city=1&t=1750067576337 HTTP/1.1" 200 52
+INFO 2025-06-16 17:52:56,347 basehttp 22336 17312 "GET /api/cafes/?city=1&t=1750067576340 HTTP/1.1" 200 52
+DEBUG 2025-06-16 17:52:56,349 middleware 22336 17312 Request from origin: http://localhost:3000
+INFO 2025-06-16 17:52:56,352 basehttp 22336 17312 "GET /api/menu-items/?cafe=1 HTTP/1.1" 200 52
+DEBUG 2025-06-16 17:52:56,353 middleware 22336 6108 Request from origin: http://localhost:3000
+INFO 2025-06-16 17:52:56,356 basehttp 22336 6108 "GET /api/menu-items/?cafe=1 HTTP/1.1" 200 52
+DEBUG 2025-06-16 18:04:21,654 middleware 22336 23468 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:04:21,657 views 22336 23468 Health check ������ �� 127.0.0.1: ok
+INFO 2025-06-16 18:04:21,658 basehttp 22336 23468 "GET /api/health/ HTTP/1.1" 200 251
+DEBUG 2025-06-16 18:04:21,660 middleware 22336 13104 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:04:21,662 views 22336 13104 Health check ������ �� 127.0.0.1: ok
+INFO 2025-06-16 18:04:21,663 basehttp 22336 13104 "GET /api/health/ HTTP/1.1" 200 250
+DEBUG 2025-06-16 18:04:21,664 middleware 22336 13104 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:04:21,667 basehttp 22336 13104 "GET /api/cities/ HTTP/1.1" 200 52
+DEBUG 2025-06-16 18:04:21,668 middleware 22336 13104 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:04:21,671 basehttp 22336 13104 "GET /api/cities/ HTTP/1.1" 200 52
+DEBUG 2025-06-16 18:04:21,679 middleware 22336 13104 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:04:21,682 basehttp 22336 13104 "GET /api/cafes/?city=1&t=1750068261677 HTTP/1.1" 200 52
+DEBUG 2025-06-16 18:04:21,693 middleware 22336 13104 Request from origin: http://localhost:3000
+DEBUG 2025-06-16 18:04:21,697 middleware 22336 23468 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:04:21,698 basehttp 22336 13104 "GET /api/cafes/?city=1&t=1750068261691 HTTP/1.1" 200 52
+INFO 2025-06-16 18:04:21,700 basehttp 22336 23468 "GET /api/menu-items/?cafe=1 HTTP/1.1" 200 52
+DEBUG 2025-06-16 18:04:21,704 middleware 22336 13104 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:04:21,707 basehttp 22336 13104 "GET /api/menu-items/?cafe=1 HTTP/1.1" 200 52
+DEBUG 2025-06-16 18:14:14,017 middleware 22336 24008 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:14:14,019 views 22336 24008 Health check ������ �� 127.0.0.1: ok
+INFO 2025-06-16 18:14:14,020 basehttp 22336 24008 "GET /api/health/ HTTP/1.1" 200 251
+DEBUG 2025-06-16 18:14:14,023 middleware 22336 20960 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:14:14,026 views 22336 20960 Health check ������ �� 127.0.0.1: ok
+INFO 2025-06-16 18:14:14,026 basehttp 22336 20960 "GET /api/health/ HTTP/1.1" 200 251
+DEBUG 2025-06-16 18:14:14,033 middleware 22336 20960 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:14:14,036 basehttp 22336 20960 "GET /api/cities/ HTTP/1.1" 200 52
+DEBUG 2025-06-16 18:14:14,036 middleware 22336 24008 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:14:14,040 basehttp 22336 24008 "GET /api/cities/ HTTP/1.1" 200 52
+DEBUG 2025-06-16 18:14:14,047 middleware 22336 24008 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:14:14,049 basehttp 22336 24008 "GET /api/cafes/?city=1&t=1750068854044 HTTP/1.1" 200 52
+DEBUG 2025-06-16 18:14:14,061 middleware 22336 24008 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:14:14,064 basehttp 22336 24008 "GET /api/cafes/?city=1&t=1750068854058 HTTP/1.1" 200 52
+DEBUG 2025-06-16 18:14:14,066 middleware 22336 24008 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:14:14,070 basehttp 22336 24008 "GET /api/menu-items/?cafe=1 HTTP/1.1" 200 52
+DEBUG 2025-06-16 18:14:14,072 middleware 22336 24008 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:14:14,075 basehttp 22336 24008 "GET /api/menu-items/?cafe=1 HTTP/1.1" 200 52
+DEBUG 2025-06-16 18:14:15,178 middleware 22336 24008 Request from origin: http://localhost:3000
+DEBUG 2025-06-16 18:14:15,180 middleware 22336 20960 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:14:15,183 basehttp 22336 24008 "GET /api/cafes/?city=1&t=1750068855176 HTTP/1.1" 200 52
+INFO 2025-06-16 18:14:15,183 basehttp 22336 20960 "GET /api/cafes/?city=1&t=1750068855177 HTTP/1.1" 200 52
+DEBUG 2025-06-16 18:14:19,217 middleware 22336 20960 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:14:19,220 basehttp 22336 20960 "GET /api/cafes/?city=1&t=1750068859211 HTTP/1.1" 200 52
+DEBUG 2025-06-16 18:14:19,221 middleware 22336 24008 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:14:19,224 basehttp 22336 24008 "GET /api/cafes/?city=1&t=1750068859211 HTTP/1.1" 200 52
+DEBUG 2025-06-16 18:14:21,031 middleware 22336 3564 Request from origin: 
+INFO 2025-06-16 18:14:21,045 basehttp 22336 3564 "GET /admin/ HTTP/1.1" 302 0
+DEBUG 2025-06-16 18:14:21,048 middleware 22336 3564 Request from origin: 
+INFO 2025-06-16 18:14:21,071 basehttp 22336 3564 "GET /admin/login/?next=/admin/ HTTP/1.1" 200 4359
+INFO 2025-06-16 18:14:21,141 basehttp 22336 3564 "GET /static/admin/css/base.css HTTP/1.1" 200 21544
+INFO 2025-06-16 18:14:21,148 basehttp 22336 2340 "GET /static/admin/css/dark_mode.css HTTP/1.1" 200 2682
+INFO 2025-06-16 18:14:21,149 basehttp 22336 16380 "GET /static/admin/css/nav_sidebar.css HTTP/1.1" 200 2810
+INFO 2025-06-16 18:14:21,162 basehttp 22336 16380 "GET /static/admin/css/login.css HTTP/1.1" 200 958
+INFO 2025-06-16 18:14:21,173 basehttp 22336 16380 "GET /static/admin/css/responsive.css HTTP/1.1" 200 17905
+INFO 2025-06-16 18:14:21,174 basehttp 22336 2340 "GET /static/admin/js/theme.js HTTP/1.1" 200 1943
+INFO 2025-06-16 18:14:21,174 basehttp 22336 3564 "GET /static/admin/js/nav_sidebar.js HTTP/1.1" 200 3063
+DEBUG 2025-06-16 18:14:21,833 middleware 22336 3564 Request from origin: 
+WARNING 2025-06-16 18:14:21,845 log 22336 3564 Not Found: /favicon.ico
+WARNING 2025-06-16 18:14:21,846 basehttp 22336 3564 "GET /favicon.ico HTTP/1.1" 404 2340
+DEBUG 2025-06-16 18:14:33,919 middleware 22336 3564 Request from origin: http://127.0.0.1:8000
+INFO 2025-06-16 18:14:34,172 basehttp 22336 3564 "POST /admin/login/?next=/admin/ HTTP/1.1" 200 4628
+INFO 2025-06-16 18:15:16,727 autoreload 22016 24584 Watching for file changes with StatReloader
+INFO 2025-06-16 18:15:17,129 middleware 22016 22020 CORS Middleware initialized with allowed origins: ['http://localhost', 'http://localhost:3000', 'http://localhost:80', 'http://127.0.0.1', 'http://127.0.0.1:3000', 'http://127.0.0.1:80', 'http://frontend', 'http://localhost:3001', 'http://127.0.0.1:3001', 'http://localhost:8000', 'http://127.0.0.1:8000', 'https://ec4db675c64c9f.lhr.life']
+INFO 2025-06-16 18:15:17,130 middleware 22016 22020 Custom CSRF Middleware initialized with exempt paths: ['/api/auth/login/', '/api/auth/csrf/']
+DEBUG 2025-06-16 18:15:18,429 middleware 22016 23788 Request from origin: http://127.0.0.1:8000
+INFO 2025-06-16 18:15:18,700 basehttp 22016 23788 "POST /admin/login/?next=/admin/ HTTP/1.1" 302 0
+DEBUG 2025-06-16 18:15:18,703 middleware 22016 23788 Request from origin: 
+INFO 2025-06-16 18:15:18,733 basehttp 22016 23788 "GET /admin/ HTTP/1.1" 200 8861
+INFO 2025-06-16 18:15:18,776 basehttp 22016 23788 "GET /static/admin/css/dashboard.css HTTP/1.1" 200 441
+INFO 2025-06-16 18:15:18,781 basehttp 22016 23788 "GET /static/admin/img/icon-addlink.svg HTTP/1.1" 200 331
+INFO 2025-06-16 18:15:18,781 basehttp 22016 23684 "GET /static/admin/img/icon-changelink.svg HTTP/1.1" 200 380
+DEBUG 2025-06-16 18:15:21,210 middleware 22016 23788 Request from origin: 
+INFO 2025-06-16 18:15:21,226 basehttp 22016 23788 "GET /admin/cafes/city/ HTTP/1.1" 200 9789
+DEBUG 2025-06-16 18:15:21,245 middleware 22016 23684 Request from origin: 
+INFO 2025-06-16 18:15:21,249 basehttp 22016 23788 "GET /static/admin/css/changelists.css HTTP/1.1" 200 6811
+INFO 2025-06-16 18:15:21,252 basehttp 22016 9120 "GET /static/admin/js/jquery.init.js HTTP/1.1" 200 347
+INFO 2025-06-16 18:15:21,253 basehttp 22016 25852 "GET /static/admin/js/core.js HTTP/1.1" 200 6208
+INFO 2025-06-16 18:15:21,254 basehttp 22016 23788 "GET /static/admin/js/actions.js HTTP/1.1" 200 8067
+INFO 2025-06-16 18:15:21,254 basehttp 22016 16540 "GET /static/admin/js/admin/RelatedObjectLookups.js HTTP/1.1" 200 9042
+INFO 2025-06-16 18:15:21,257 basehttp 22016 9120 "GET /static/admin/js/urlify.js HTTP/1.1" 200 7887
+INFO 2025-06-16 18:15:21,258 basehttp 22016 23684 "GET /admin/jsi18n/ HTTP/1.1" 200 17546
+INFO 2025-06-16 18:15:21,258 basehttp 22016 25852 "GET /static/admin/js/prepopulate.js HTTP/1.1" 200 1531
+INFO 2025-06-16 18:15:21,259 basehttp 22016 16540 "GET /static/admin/img/search.svg HTTP/1.1" 200 458
+INFO 2025-06-16 18:15:21,320 basehttp 22016 25568 "GET /static/admin/js/vendor/jquery/jquery.js HTTP/1.1" 200 285314
+INFO 2025-06-16 18:15:21,321 basehttp 22016 23788 "GET /static/admin/js/vendor/xregexp/xregexp.js HTTP/1.1" 200 325171
+INFO 2025-06-16 18:15:21,326 basehttp 22016 23788 "GET /static/admin/js/filters.js HTTP/1.1" 200 978
+INFO 2025-06-16 18:15:21,339 basehttp 22016 23788 "GET /static/admin/img/tooltag-add.svg HTTP/1.1" 200 331
+DEBUG 2025-06-16 18:15:22,780 middleware 22016 23788 Request from origin: 
+INFO 2025-06-16 18:15:22,796 basehttp 22016 23788 "GET /admin/cafes/city/add/ HTTP/1.1" 200 10297
+DEBUG 2025-06-16 18:15:22,813 middleware 22016 16540 Request from origin: 
+INFO 2025-06-16 18:15:22,815 basehttp 22016 23788 "GET /static/admin/css/forms.css HTTP/1.1" 200 9090
+INFO 2025-06-16 18:15:22,815 basehttp 22016 25852 "GET /static/admin/js/prepopulate_init.js HTTP/1.1" 200 586
+INFO 2025-06-16 18:15:22,818 basehttp 22016 16540 "GET /admin/jsi18n/ HTTP/1.1" 200 17546
+INFO 2025-06-16 18:15:22,825 basehttp 22016 16540 "GET /static/admin/css/widgets.css HTTP/1.1" 200 11800
+INFO 2025-06-16 18:15:22,825 basehttp 22016 25852 "GET /static/admin/js/change_form.js HTTP/1.1" 200 606
+DEBUG 2025-06-16 18:15:29,767 middleware 22016 25852 Request from origin: http://127.0.0.1:8000
+INFO 2025-06-16 18:15:29,777 basehttp 22016 25852 "POST /admin/cafes/city/add/ HTTP/1.1" 302 0
+DEBUG 2025-06-16 18:15:29,780 middleware 22016 25852 Request from origin: 
+INFO 2025-06-16 18:15:29,791 basehttp 22016 25852 "GET /admin/cafes/city/ HTTP/1.1" 200 11815
+DEBUG 2025-06-16 18:15:29,808 middleware 22016 25852 Request from origin: 
+INFO 2025-06-16 18:15:29,811 basehttp 22016 25852 "GET /admin/jsi18n/ HTTP/1.1" 200 17546
+INFO 2025-06-16 18:15:29,828 basehttp 22016 25852 "GET /static/admin/img/icon-yes.svg HTTP/1.1" 200 436
+INFO 2025-06-16 18:15:29,828 basehttp 22016 16540 "GET /static/admin/img/sorting-icons.svg HTTP/1.1" 200 1097
+DEBUG 2025-06-16 18:15:31,408 middleware 22016 16540 Request from origin: 
+INFO 2025-06-16 18:15:31,417 basehttp 22016 16540 "GET /admin/cafes/cafe/ HTTP/1.1" 200 9787
+DEBUG 2025-06-16 18:15:31,432 middleware 22016 16540 Request from origin: 
+INFO 2025-06-16 18:15:31,436 basehttp 22016 16540 "GET /admin/jsi18n/ HTTP/1.1" 200 17546
+DEBUG 2025-06-16 18:15:32,467 middleware 22016 16540 Request from origin: 
+INFO 2025-06-16 18:15:32,484 basehttp 22016 16540 "GET /admin/cafes/cafe/add/ HTTP/1.1" 200 16531
+DEBUG 2025-06-16 18:15:32,499 middleware 22016 16540 Request from origin: 
+INFO 2025-06-16 18:15:32,501 basehttp 22016 25852 "GET /static/admin/img/icon-viewlink.svg HTTP/1.1" 200 581
+INFO 2025-06-16 18:15:32,503 basehttp 22016 16540 "GET /admin/jsi18n/ HTTP/1.1" 200 17546
+DEBUG 2025-06-16 18:16:01,292 middleware 22016 16540 Request from origin: http://127.0.0.1:8000
+INFO 2025-06-16 18:16:01,365 basehttp 22016 16540 "POST /admin/cafes/cafe/add/ HTTP/1.1" 302 0
+DEBUG 2025-06-16 18:16:01,367 middleware 22016 16540 Request from origin: 
+INFO 2025-06-16 18:16:01,382 basehttp 22016 16540 "GET /admin/cafes/cafe/ HTTP/1.1" 200 12563
+DEBUG 2025-06-16 18:16:01,398 middleware 22016 16540 Request from origin: 
+INFO 2025-06-16 18:16:01,402 basehttp 22016 16540 "GET /admin/jsi18n/ HTTP/1.1" 200 17546
+DEBUG 2025-06-16 18:16:03,808 middleware 22016 944 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:16:03,812 views 22016 944 Health check ������ �� 127.0.0.1: ok
+INFO 2025-06-16 18:16:03,813 basehttp 22016 944 "GET /api/health/ HTTP/1.1" 200 251
+DEBUG 2025-06-16 18:16:03,814 middleware 22016 6912 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:16:03,816 views 22016 6912 Health check ������ �� 127.0.0.1: ok
+INFO 2025-06-16 18:16:03,817 basehttp 22016 6912 "GET /api/health/ HTTP/1.1" 200 251
+DEBUG 2025-06-16 18:16:03,820 middleware 22016 6912 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:16:03,822 basehttp 22016 6912 "GET /api/cities/ HTTP/1.1" 200 168
+DEBUG 2025-06-16 18:16:03,825 middleware 22016 6912 Request from origin: http://localhost:3000
+DEBUG 2025-06-16 18:16:03,826 middleware 22016 944 Request from origin: http://localhost:3000
+DEBUG 2025-06-16 18:16:03,828 middleware 22016 24080 Request from origin: http://localhost:3000
+DEBUG 2025-06-16 18:16:03,831 middleware 22016 3284 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:16:03,836 basehttp 22016 944 "GET /api/cafes/?city=1&t=1750068963824 HTTP/1.1" 200 491
+INFO 2025-06-16 18:16:03,837 basehttp 22016 24080 "GET /api/cities/ HTTP/1.1" 200 168
+INFO 2025-06-16 18:16:03,840 basehttp 22016 6912 "GET /api/cafes/?city=1&t=1750068963823 HTTP/1.1" 200 491
+DEBUG 2025-06-16 18:16:03,846 middleware 22016 6912 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:16:03,850 basehttp 22016 3284 "GET /api/cafes/?city=1&t=1750068963828 HTTP/1.1" 200 491
+INFO 2025-06-16 18:16:03,852 basehttp 22016 6912 "GET /api/cafes/?city=1&t=1750068963844 HTTP/1.1" 200 491
+DEBUG 2025-06-16 18:16:03,874 middleware 22016 6912 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:16:03,877 basehttp 22016 6912 "GET /api/menu-items/?cafe=1 HTTP/1.1" 200 52
+DEBUG 2025-06-16 18:16:03,878 middleware 22016 3284 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:16:03,881 basehttp 22016 3284 "GET /api/menu-items/?cafe=1 HTTP/1.1" 200 52
+DEBUG 2025-06-16 18:16:06,536 middleware 22016 3284 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:16:06,538 views 22016 3284 Health check ������ �� 127.0.0.1: ok
+INFO 2025-06-16 18:16:06,539 basehttp 22016 3284 "GET /api/health/ HTTP/1.1" 200 250
+DEBUG 2025-06-16 18:16:06,539 middleware 22016 6912 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:16:06,542 views 22016 6912 Health check ������ �� 127.0.0.1: ok
+INFO 2025-06-16 18:16:06,543 basehttp 22016 6912 "GET /api/health/ HTTP/1.1" 200 251
+DEBUG 2025-06-16 18:16:06,545 middleware 22016 6912 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:16:06,548 basehttp 22016 6912 "GET /api/cities/ HTTP/1.1" 200 168
+DEBUG 2025-06-16 18:16:06,550 middleware 22016 6912 Request from origin: http://localhost:3000
+DEBUG 2025-06-16 18:16:06,554 middleware 22016 3284 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:16:06,554 basehttp 22016 6912 "GET /api/cafes/?city=1&t=1750068966548 HTTP/1.1" 200 491
+DEBUG 2025-06-16 18:16:06,556 middleware 22016 24080 Request from origin: http://localhost:3000
+DEBUG 2025-06-16 18:16:06,558 middleware 22016 6912 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:16:06,564 basehttp 22016 6912 "GET /api/cafes/?city=1&t=1750068966554 HTTP/1.1" 200 491
+INFO 2025-06-16 18:16:06,564 basehttp 22016 24080 "GET /api/cafes/?city=1&t=1750068966548 HTTP/1.1" 200 491
+DEBUG 2025-06-16 18:16:06,573 middleware 22016 24080 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:16:06,575 basehttp 22016 3284 "GET /api/cities/ HTTP/1.1" 200 168
+INFO 2025-06-16 18:16:06,576 basehttp 22016 24080 "GET /api/menu-items/?cafe=1 HTTP/1.1" 200 52
+DEBUG 2025-06-16 18:16:06,579 middleware 22016 24080 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:16:06,584 basehttp 22016 24080 "GET /api/cafes/?city=1&t=1750068966576 HTTP/1.1" 200 491
+DEBUG 2025-06-16 18:16:10,131 middleware 22016 16540 Request from origin: 
+INFO 2025-06-16 18:16:10,144 basehttp 22016 16540 "GET /admin/cafes/cafe/1/change/ HTTP/1.1" 200 17120
+DEBUG 2025-06-16 18:16:10,158 middleware 22016 16540 Request from origin: 
+INFO 2025-06-16 18:16:10,162 basehttp 22016 16540 "GET /admin/jsi18n/ HTTP/1.1" 200 17546
+DEBUG 2025-06-16 18:16:19,500 middleware 22016 16540 Request from origin: http://127.0.0.1:8000
+INFO 2025-06-16 18:16:19,515 basehttp 22016 16540 "POST /admin/cafes/cafe/1/change/ HTTP/1.1" 302 0
+DEBUG 2025-06-16 18:16:19,518 middleware 22016 16540 Request from origin: 
+INFO 2025-06-16 18:16:19,526 basehttp 22016 16540 "GET /admin/cafes/cafe/ HTTP/1.1" 200 12565
+DEBUG 2025-06-16 18:16:19,542 middleware 22016 16540 Request from origin: 
+INFO 2025-06-16 18:16:19,546 basehttp 22016 16540 "GET /admin/jsi18n/ HTTP/1.1" 200 17546
+DEBUG 2025-06-16 18:16:55,378 middleware 22016 16540 Request from origin: 
+INFO 2025-06-16 18:16:55,389 basehttp 22016 16540 "GET /admin/cafes/cafe/1/change/ HTTP/1.1" 200 17162
+DEBUG 2025-06-16 18:16:55,404 middleware 22016 16540 Request from origin: 
+INFO 2025-06-16 18:16:55,408 basehttp 22016 16540 "GET /admin/jsi18n/ HTTP/1.1" 200 17546
+DEBUG 2025-06-16 18:16:57,755 middleware 22016 16540 Request from origin: 
+INFO 2025-06-16 18:16:57,757 basehttp 22016 16540 "GET /media/cafe_covers/shashlyk-iz-govjadiny-na-grile.jpg HTTP/1.1" 200 126933
+DEBUG 2025-06-16 18:16:59,776 middleware 22016 24080 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:16:59,779 views 22016 24080 Health check ������ �� 127.0.0.1: ok
+INFO 2025-06-16 18:16:59,779 basehttp 22016 24080 "GET /api/health/ HTTP/1.1" 200 250
+DEBUG 2025-06-16 18:16:59,780 middleware 22016 3284 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:16:59,782 views 22016 3284 Health check ������ �� 127.0.0.1: ok
+INFO 2025-06-16 18:16:59,782 basehttp 22016 3284 "GET /api/health/ HTTP/1.1" 200 251
+DEBUG 2025-06-16 18:16:59,789 middleware 22016 3284 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:16:59,791 basehttp 22016 3284 "GET /api/cities/ HTTP/1.1" 200 168
+DEBUG 2025-06-16 18:16:59,792 middleware 22016 24080 Request from origin: http://localhost:3000
+DEBUG 2025-06-16 18:16:59,795 middleware 22016 3284 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:16:59,797 basehttp 22016 24080 "GET /api/cities/ HTTP/1.1" 200 168
+INFO 2025-06-16 18:16:59,800 basehttp 22016 3284 "GET /api/cafes/?city=1&t=1750069019792 HTTP/1.1" 200 512
+DEBUG 2025-06-16 18:16:59,801 middleware 22016 24080 Request from origin: http://localhost:3000
+DEBUG 2025-06-16 18:16:59,805 middleware 22016 3284 Request from origin: http://localhost:3000
+DEBUG 2025-06-16 18:16:59,805 middleware 22016 6912 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:16:59,809 basehttp 22016 24080 "GET /api/cafes/?city=1&t=1750069019792 HTTP/1.1" 200 512
+INFO 2025-06-16 18:16:59,812 basehttp 22016 3284 "GET /api/cafes/?city=1&t=1750069019798 HTTP/1.1" 200 512
+INFO 2025-06-16 18:16:59,816 basehttp 22016 6912 "GET /api/cafes/?city=1&t=1750069019799 HTTP/1.1" 200 512
+DEBUG 2025-06-16 18:16:59,819 middleware 22016 6912 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:16:59,821 basehttp 22016 6912 "GET /api/menu-items/?cafe=1 HTTP/1.1" 200 52
+DEBUG 2025-06-16 18:16:59,822 middleware 22016 3284 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:16:59,826 basehttp 22016 3284 "GET /api/menu-items/?cafe=1 HTTP/1.1" 200 52
+DEBUG 2025-06-16 18:17:05,720 middleware 22016 3284 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:17:05,722 views 22016 3284 Health check ������ �� 127.0.0.1: ok
+INFO 2025-06-16 18:17:05,722 basehttp 22016 3284 "GET /api/health/ HTTP/1.1" 200 251
+DEBUG 2025-06-16 18:17:05,726 middleware 22016 3284 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:17:05,729 views 22016 3284 Health check ������ �� 127.0.0.1: ok
+INFO 2025-06-16 18:17:05,729 basehttp 22016 3284 "GET /api/health/ HTTP/1.1" 200 250
+DEBUG 2025-06-16 18:17:05,735 middleware 22016 3284 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:17:05,737 basehttp 22016 3284 "GET /api/cities/ HTTP/1.1" 200 168
+DEBUG 2025-06-16 18:17:05,738 middleware 22016 6912 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:17:05,741 basehttp 22016 6912 "GET /api/cities/ HTTP/1.1" 200 168
+DEBUG 2025-06-16 18:17:05,748 middleware 22016 6912 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:17:05,752 basehttp 22016 6912 "GET /api/cafes/?city=1&t=1750069025746 HTTP/1.1" 200 512
+DEBUG 2025-06-16 18:17:05,761 middleware 22016 6912 Request from origin: http://localhost:3000
+DEBUG 2025-06-16 18:17:05,765 middleware 22016 3284 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:17:05,767 basehttp 22016 6912 "GET /api/cafes/?city=1&t=1750069025759 HTTP/1.1" 200 512
+INFO 2025-06-16 18:17:05,769 basehttp 22016 3284 "GET /api/menu-items/?cafe=1 HTTP/1.1" 200 52
+DEBUG 2025-06-16 18:17:05,773 middleware 22016 3284 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:17:05,775 basehttp 22016 3284 "GET /api/menu-items/?cafe=1 HTTP/1.1" 200 52
+DEBUG 2025-06-16 18:17:07,046 middleware 22016 3284 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:17:07,049 basehttp 22016 3284 "GET /api/cafes/?city=1&t=1750069027044 HTTP/1.1" 200 512
+DEBUG 2025-06-16 18:17:07,050 middleware 22016 6912 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:17:07,054 basehttp 22016 6912 "GET /api/cafes/?city=1&t=1750069027044 HTTP/1.1" 200 512
+DEBUG 2025-06-16 18:17:10,821 middleware 22016 16540 Request from origin: 
+INFO 2025-06-16 18:17:10,832 basehttp 22016 16540 "GET /admin/cafes/cafe/1/change/ HTTP/1.1" 200 17162
+DEBUG 2025-06-16 18:17:11,833 middleware 22016 16540 Request from origin: 
+INFO 2025-06-16 18:17:11,845 basehttp 22016 16540 "GET /admin/cafes/cafe/1/change/ HTTP/1.1" 200 17162
+DEBUG 2025-06-16 18:17:11,859 middleware 22016 16540 Request from origin: 
+INFO 2025-06-16 18:17:11,863 basehttp 22016 16540 "GET /admin/jsi18n/ HTTP/1.1" 200 17546
+DEBUG 2025-06-16 18:17:12,192 middleware 22016 16540 Request from origin: 
+INFO 2025-06-16 18:17:12,202 basehttp 22016 16540 "GET /admin/cafes/cafe/1/change/ HTTP/1.1" 200 17162
+DEBUG 2025-06-16 18:17:12,215 middleware 22016 16540 Request from origin: 
+INFO 2025-06-16 18:17:12,219 basehttp 22016 16540 "GET /admin/jsi18n/ HTTP/1.1" 200 17546
+DEBUG 2025-06-16 18:17:12,412 middleware 22016 16540 Request from origin: 
+INFO 2025-06-16 18:17:12,423 basehttp 22016 16540 "GET /admin/cafes/cafe/1/change/ HTTP/1.1" 200 17162
+DEBUG 2025-06-16 18:17:12,437 middleware 22016 16540 Request from origin: 
+INFO 2025-06-16 18:17:12,442 basehttp 22016 16540 "GET /admin/jsi18n/ HTTP/1.1" 200 17546
+DEBUG 2025-06-16 18:17:12,619 middleware 22016 16540 Request from origin: 
+INFO 2025-06-16 18:17:12,629 basehttp 22016 16540 "GET /admin/cafes/cafe/1/change/ HTTP/1.1" 200 17162
+DEBUG 2025-06-16 18:17:12,643 middleware 22016 16540 Request from origin: 
+INFO 2025-06-16 18:17:12,647 basehttp 22016 16540 "GET /admin/jsi18n/ HTTP/1.1" 200 17546
+DEBUG 2025-06-16 18:17:12,807 middleware 22016 16540 Request from origin: 
+INFO 2025-06-16 18:17:12,817 basehttp 22016 16540 "GET /admin/cafes/cafe/1/change/ HTTP/1.1" 200 17162
+DEBUG 2025-06-16 18:17:12,831 middleware 22016 16540 Request from origin: 
+INFO 2025-06-16 18:17:12,837 basehttp 22016 16540 "GET /admin/jsi18n/ HTTP/1.1" 200 17546
+DEBUG 2025-06-16 18:17:15,052 middleware 22016 16540 Request from origin: 
+INFO 2025-06-16 18:17:15,053 basehttp 22016 16540 "GET /media/cafe_covers/shashlyk-iz-govjadiny-na-grile.jpg HTTP/1.1" 304 0
+DEBUG 2025-06-16 18:17:16,121 middleware 22016 16540 Request from origin: 
+INFO 2025-06-16 18:17:16,132 basehttp 22016 16540 "GET /admin/cafes/cafe/1/change/ HTTP/1.1" 200 17162
+DEBUG 2025-06-16 18:17:19,321 middleware 22016 6912 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:17:19,324 views 22016 6912 Health check ������ �� 127.0.0.1: ok
+INFO 2025-06-16 18:17:19,324 basehttp 22016 6912 "GET /api/health/ HTTP/1.1" 200 250
+DEBUG 2025-06-16 18:17:19,325 middleware 22016 3284 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:17:19,327 views 22016 3284 Health check ������ �� 127.0.0.1: ok
+INFO 2025-06-16 18:17:19,328 basehttp 22016 3284 "GET /api/health/ HTTP/1.1" 200 248
+DEBUG 2025-06-16 18:17:19,334 middleware 22016 3284 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:17:19,336 basehttp 22016 3284 "GET /api/cities/ HTTP/1.1" 200 168
+DEBUG 2025-06-16 18:17:19,337 middleware 22016 6912 Request from origin: http://localhost:3000
+DEBUG 2025-06-16 18:17:19,338 middleware 22016 3284 Request from origin: http://localhost:3000
+DEBUG 2025-06-16 18:17:19,339 middleware 22016 24080 Request from origin: http://localhost:3000
+DEBUG 2025-06-16 18:17:19,345 middleware 22016 944 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:17:19,349 basehttp 22016 24080 "GET /api/cafes/?city=1&t=1750069039337 HTTP/1.1" 200 512
+INFO 2025-06-16 18:17:19,349 basehttp 22016 3284 "GET /api/cafes/?city=1&t=1750069039336 HTTP/1.1" 200 512
+INFO 2025-06-16 18:17:19,353 basehttp 22016 944 "GET /api/cafes/?city=1&t=1750069039342 HTTP/1.1" 200 512
+INFO 2025-06-16 18:17:19,359 basehttp 22016 6912 "GET /api/cities/ HTTP/1.1" 200 168
+DEBUG 2025-06-16 18:17:19,366 middleware 22016 6912 Request from origin: http://localhost:3000
+DEBUG 2025-06-16 18:17:19,367 middleware 22016 944 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:17:19,373 basehttp 22016 6912 "GET /api/menu-items/?cafe=1 HTTP/1.1" 200 52
+INFO 2025-06-16 18:17:19,374 basehttp 22016 944 "GET /api/cafes/?city=1&t=1750069039365 HTTP/1.1" 200 512
+DEBUG 2025-06-16 18:17:21,716 middleware 22016 944 Request from origin: http://localhost:3000
+DEBUG 2025-06-16 18:17:21,718 middleware 22016 6912 Request from origin: http://localhost:3000
+DEBUG 2025-06-16 18:17:21,719 middleware 22016 3284 Request from origin: http://localhost:3000
+DEBUG 2025-06-16 18:17:21,721 middleware 22016 24080 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:17:21,726 views 22016 3284 Health check ������ �� 127.0.0.1: ok
+INFO 2025-06-16 18:17:21,728 basehttp 22016 6912 "GET /api/cafes/?city=1&t=1750069041711 HTTP/1.1" 200 512
+INFO 2025-06-16 18:17:21,728 basehttp 22016 944 "GET /api/cafes/?city=1&t=1750069041709 HTTP/1.1" 200 512
+INFO 2025-06-16 18:17:21,729 basehttp 22016 3284 "GET /api/health/ HTTP/1.1" 200 250
+INFO 2025-06-16 18:17:21,731 basehttp 22016 24080 "GET /api/cafes/?city=1&t=1750069041712 HTTP/1.1" 200 512
+DEBUG 2025-06-16 18:17:21,740 middleware 22016 24080 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:17:21,744 basehttp 22016 24080 "GET /api/cafes/?city=1&t=1750069041738 HTTP/1.1" 200 512
+DEBUG 2025-06-16 18:17:22,743 middleware 22016 22876 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:17:22,749 basehttp 22016 22876 "GET /api/menu-items/?cafe=1 HTTP/1.1" 200 52
+DEBUG 2025-06-16 18:17:22,751 middleware 22016 22876 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:17:22,754 basehttp 22016 22876 "GET /api/menu-items/?cafe=1 HTTP/1.1" 200 52
+DEBUG 2025-06-16 18:17:24,307 middleware 22016 24080 Request from origin: http://localhost:3000
+DEBUG 2025-06-16 18:17:24,308 middleware 22016 3284 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:17:24,314 basehttp 22016 24080 "GET /api/cafes/?city=1&t=1750069044300 HTTP/1.1" 200 512
+INFO 2025-06-16 18:17:24,319 basehttp 22016 3284 "GET /api/cafes/?city=1&t=1750069044301 HTTP/1.1" 200 512
+DEBUG 2025-06-16 18:17:31,742 middleware 22016 16540 Request from origin: http://127.0.0.1:8000
+INFO 2025-06-16 18:17:31,754 basehttp 22016 16540 "POST /admin/cafes/cafe/1/change/ HTTP/1.1" 302 0
+DEBUG 2025-06-16 18:17:31,756 middleware 22016 16540 Request from origin: 
+INFO 2025-06-16 18:17:31,765 basehttp 22016 16540 "GET /admin/cafes/cafe/ HTTP/1.1" 200 12565
+DEBUG 2025-06-16 18:17:31,782 middleware 22016 16540 Request from origin: 
+INFO 2025-06-16 18:17:31,786 basehttp 22016 16540 "GET /admin/jsi18n/ HTTP/1.1" 200 17546
+DEBUG 2025-06-16 18:17:33,573 middleware 22016 3284 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:17:33,575 views 22016 3284 Health check ������ �� 127.0.0.1: ok
+INFO 2025-06-16 18:17:33,576 basehttp 22016 3284 "GET /api/health/ HTTP/1.1" 200 250
+DEBUG 2025-06-16 18:17:33,577 middleware 22016 24080 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:17:33,578 views 22016 24080 Health check ������ �� 127.0.0.1: ok
+INFO 2025-06-16 18:17:33,579 basehttp 22016 24080 "GET /api/health/ HTTP/1.1" 200 251
+DEBUG 2025-06-16 18:17:33,584 middleware 22016 24080 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:17:33,586 basehttp 22016 24080 "GET /api/cities/ HTTP/1.1" 200 168
+DEBUG 2025-06-16 18:17:33,587 middleware 22016 3284 Request from origin: http://localhost:3000
+DEBUG 2025-06-16 18:17:33,588 middleware 22016 24080 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:17:33,592 basehttp 22016 3284 "GET /api/cities/ HTTP/1.1" 200 168
+INFO 2025-06-16 18:17:33,595 basehttp 22016 24080 "GET /api/cafes/?city=1&t=1750069053586 HTTP/1.1" 200 499
+DEBUG 2025-06-16 18:17:33,596 middleware 22016 3284 Request from origin: http://localhost:3000
+DEBUG 2025-06-16 18:17:33,598 middleware 22016 24080 Request from origin: http://localhost:3000
+DEBUG 2025-06-16 18:17:33,600 middleware 22016 944 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:17:33,604 basehttp 22016 3284 "GET /api/cafes/?city=1&t=1750069053586 HTTP/1.1" 200 499
+INFO 2025-06-16 18:17:33,609 basehttp 22016 24080 "GET /api/cafes/?city=1&t=1750069053592 HTTP/1.1" 200 499
+DEBUG 2025-06-16 18:17:33,614 middleware 22016 24080 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:17:33,617 basehttp 22016 24080 "GET /api/menu-items/?cafe=1 HTTP/1.1" 200 52
+INFO 2025-06-16 18:17:33,619 basehttp 22016 944 "GET /api/cafes/?city=1&t=1750069053595 HTTP/1.1" 200 499
+DEBUG 2025-06-16 18:17:35,827 middleware 22016 944 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:17:35,830 views 22016 944 Health check ������ �� 127.0.0.1: ok
+INFO 2025-06-16 18:17:35,831 basehttp 22016 944 "GET /api/health/ HTTP/1.1" 200 250
+DEBUG 2025-06-16 18:17:35,836 middleware 22016 944 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:17:35,838 views 22016 944 Health check ������ �� 127.0.0.1: ok
+INFO 2025-06-16 18:17:35,838 basehttp 22016 944 "GET /api/health/ HTTP/1.1" 200 250
+DEBUG 2025-06-16 18:17:35,846 middleware 22016 944 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:17:35,850 basehttp 22016 944 "GET /api/cities/ HTTP/1.1" 200 168
+DEBUG 2025-06-16 18:17:35,854 middleware 22016 944 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:17:35,858 basehttp 22016 944 "GET /api/cities/ HTTP/1.1" 200 168
+DEBUG 2025-06-16 18:17:35,863 middleware 22016 944 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:17:35,869 basehttp 22016 944 "GET /api/cafes/?city=1&t=1750069055860 HTTP/1.1" 200 499
+DEBUG 2025-06-16 18:17:35,874 middleware 22016 944 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:17:35,879 basehttp 22016 944 "GET /api/cafes/?city=1&t=1750069055871 HTTP/1.1" 200 499
+DEBUG 2025-06-16 18:17:35,882 middleware 22016 944 Request from origin: http://localhost:3000
+DEBUG 2025-06-16 18:17:35,885 middleware 22016 24080 Request from origin: http://localhost:3000
+DEBUG 2025-06-16 18:17:35,885 middleware 22016 3284 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:17:35,892 basehttp 22016 3284 "GET /api/menu-items/?cafe=1 HTTP/1.1" 200 52
+INFO 2025-06-16 18:17:35,894 basehttp 22016 944 "GET /api/cafes/?city=1&t=1750069055878 HTTP/1.1" 200 499
+DEBUG 2025-06-16 18:17:35,896 middleware 22016 944 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:17:35,900 basehttp 22016 944 "GET /api/menu-items/?cafe=1 HTTP/1.1" 200 52
+INFO 2025-06-16 18:17:35,908 basehttp 22016 24080 "GET /api/cafes/?city=1&t=1750069055880 HTTP/1.1" 200 499
+DEBUG 2025-06-16 18:17:43,183 middleware 22016 24080 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:17:43,186 views 22016 24080 Health check ������ �� 127.0.0.1: ok
+INFO 2025-06-16 18:17:43,186 basehttp 22016 24080 "GET /api/health/ HTTP/1.1" 200 251
+DEBUG 2025-06-16 18:17:43,188 middleware 22016 944 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:17:43,190 views 22016 944 Health check ������ �� 127.0.0.1: ok
+INFO 2025-06-16 18:17:43,191 basehttp 22016 944 "GET /api/health/ HTTP/1.1" 200 251
+DEBUG 2025-06-16 18:17:43,201 middleware 22016 944 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:17:43,204 basehttp 22016 944 "GET /api/cities/ HTTP/1.1" 200 168
+DEBUG 2025-06-16 18:17:43,205 middleware 22016 24080 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:17:43,209 basehttp 22016 24080 "GET /api/cities/ HTTP/1.1" 200 168
+DEBUG 2025-06-16 18:17:43,212 middleware 22016 24080 Request from origin: http://localhost:3000
+DEBUG 2025-06-16 18:17:43,214 middleware 22016 944 Request from origin: http://localhost:3000
+DEBUG 2025-06-16 18:17:43,218 middleware 22016 3284 Request from origin: http://localhost:3000
+DEBUG 2025-06-16 18:17:43,219 middleware 22016 6912 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:17:43,225 basehttp 22016 24080 "GET /api/cafes/?city=1&t=1750069063209 HTTP/1.1" 200 499
+INFO 2025-06-16 18:17:43,225 basehttp 22016 944 "GET /api/cafes/?city=1&t=1750069063210 HTTP/1.1" 200 499
+INFO 2025-06-16 18:17:43,233 basehttp 22016 3284 "GET /api/cafes/?city=1&t=1750069063215 HTTP/1.1" 200 499
+INFO 2025-06-16 18:17:43,233 basehttp 22016 6912 "GET /api/cafes/?city=1&t=1750069063217 HTTP/1.1" 200 499
+DEBUG 2025-06-16 18:17:43,248 middleware 22016 6912 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:17:43,251 basehttp 22016 6912 "GET /api/menu-items/?cafe=1 HTTP/1.1" 200 52
+DEBUG 2025-06-16 18:17:43,252 middleware 22016 3284 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:17:43,256 basehttp 22016 3284 "GET /api/menu-items/?cafe=1 HTTP/1.1" 200 52
+DEBUG 2025-06-16 18:17:47,306 middleware 22016 16540 Request from origin: 
+INFO 2025-06-16 18:17:47,315 basehttp 22016 16540 "GET /admin/cafes/cafe/ HTTP/1.1" 200 12363
+DEBUG 2025-06-16 18:17:47,329 middleware 22016 16540 Request from origin: 
+INFO 2025-06-16 18:17:47,333 basehttp 22016 16540 "GET /admin/jsi18n/ HTTP/1.1" 200 17546
+DEBUG 2025-06-16 18:17:47,737 middleware 22016 16540 Request from origin: 
+INFO 2025-06-16 18:17:47,745 basehttp 22016 16540 "GET /admin/cafes/cafe/ HTTP/1.1" 200 12363
+DEBUG 2025-06-16 18:17:47,759 middleware 22016 16540 Request from origin: 
+INFO 2025-06-16 18:17:47,763 basehttp 22016 16540 "GET /admin/jsi18n/ HTTP/1.1" 200 17546
+DEBUG 2025-06-16 18:17:47,994 middleware 22016 16540 Request from origin: 
+INFO 2025-06-16 18:17:48,002 basehttp 22016 16540 "GET /admin/cafes/cafe/ HTTP/1.1" 200 12363
+DEBUG 2025-06-16 18:17:48,016 middleware 22016 16540 Request from origin: 
+INFO 2025-06-16 18:17:48,019 basehttp 22016 16540 "GET /admin/jsi18n/ HTTP/1.1" 200 17546
+DEBUG 2025-06-16 18:17:48,239 middleware 22016 16540 Request from origin: 
+INFO 2025-06-16 18:17:48,249 basehttp 22016 16540 "GET /admin/cafes/cafe/ HTTP/1.1" 200 12363
+DEBUG 2025-06-16 18:17:48,263 middleware 22016 16540 Request from origin: 
+INFO 2025-06-16 18:17:48,267 basehttp 22016 16540 "GET /admin/jsi18n/ HTTP/1.1" 200 17546
+INFO 2025-06-16 18:17:53,170 autoreload 3444 3468 Watching for file changes with StatReloader
+INFO 2025-06-16 18:17:53,585 middleware 3444 16132 CORS Middleware initialized with allowed origins: ['http://localhost', 'http://localhost:3000', 'http://localhost:80', 'http://127.0.0.1', 'http://127.0.0.1:3000', 'http://127.0.0.1:80', 'http://frontend', 'http://localhost:3001', 'http://127.0.0.1:3001', 'http://localhost:8000', 'http://127.0.0.1:8000', 'https://ec4db675c64c9f.lhr.life']
+INFO 2025-06-16 18:17:53,585 middleware 3444 16132 Custom CSRF Middleware initialized with exempt paths: ['/api/auth/login/', '/api/auth/csrf/']
+DEBUG 2025-06-16 18:17:54,716 middleware 3444 24808 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:17:54,720 views 3444 24808 Health check ������ �� 127.0.0.1: ok
+INFO 2025-06-16 18:17:54,721 basehttp 3444 24808 "GET /api/health/ HTTP/1.1" 200 250
+DEBUG 2025-06-16 18:17:54,723 middleware 3444 23004 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:17:54,726 views 3444 23004 Health check ������ �� 127.0.0.1: ok
+INFO 2025-06-16 18:17:54,727 basehttp 3444 23004 "GET /api/health/ HTTP/1.1" 200 251
+DEBUG 2025-06-16 18:17:54,732 middleware 3444 23004 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:17:54,737 basehttp 3444 23004 "GET /api/cities/ HTTP/1.1" 200 168
+DEBUG 2025-06-16 18:17:54,741 middleware 3444 23004 Request from origin: http://localhost:3000
+DEBUG 2025-06-16 18:17:54,742 middleware 3444 24808 Request from origin: http://localhost:3000
+DEBUG 2025-06-16 18:17:54,746 middleware 3444 23484 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:17:54,749 basehttp 3444 23004 "GET /api/cities/ HTTP/1.1" 200 168
+DEBUG 2025-06-16 18:17:54,754 middleware 3444 23004 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:17:54,755 basehttp 3444 24808 "GET /api/cafes/?city=1&t=1750069074740 HTTP/1.1" 200 499
+DEBUG 2025-06-16 18:17:54,756 middleware 3444 5924 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:17:54,761 basehttp 3444 23484 "GET /api/cafes/?city=1&t=1750069074742 HTTP/1.1" 200 499
+INFO 2025-06-16 18:17:54,766 basehttp 3444 5924 "GET /api/cafes/?city=1&t=1750069074752 HTTP/1.1" 200 499
+INFO 2025-06-16 18:17:54,775 basehttp 3444 23004 "GET /api/cafes/?city=1&t=1750069074750 HTTP/1.1" 200 499
+DEBUG 2025-06-16 18:17:54,778 middleware 3444 23004 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:17:54,782 basehttp 3444 23004 "GET /api/menu-items/?cafe=1 HTTP/1.1" 200 52
+DEBUG 2025-06-16 18:17:54,785 middleware 3444 23004 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:17:54,789 basehttp 3444 23004 "GET /api/menu-items/?cafe=1 HTTP/1.1" 200 52
+DEBUG 2025-06-16 18:18:23,517 middleware 3444 15848 Request from origin: 
+INFO 2025-06-16 18:18:23,557 basehttp 3444 15848 "GET /admin/cafes/cafe/1/change/ HTTP/1.1" 200 17136
+DEBUG 2025-06-16 18:18:23,573 middleware 3444 15848 Request from origin: 
+INFO 2025-06-16 18:18:23,578 basehttp 3444 15848 "GET /admin/jsi18n/ HTTP/1.1" 200 17546
+DEBUG 2025-06-16 18:19:36,031 middleware 3444 23112 Request from origin: 
+DEBUG 2025-06-16 18:19:36,031 middleware 3444 23112 CSRF Processing path: admin/auth/user/, Method: GET
+DEBUG 2025-06-16 18:19:36,032 middleware 3444 23112 CSRF token in cookie: True
+DEBUG 2025-06-16 18:19:36,032 middleware 3444 23112 CSRF token in header: False
+DEBUG 2025-06-16 18:19:36,032 middleware 3444 23112 CSRF cookie token (first 6): BGIg2h...
+INFO 2025-06-16 18:19:36,050 basehttp 3444 23112 "GET /admin/auth/user/ HTTP/1.1" 200 14192
+DEBUG 2025-06-16 18:19:36,064 middleware 3444 23112 Request from origin: 
+INFO 2025-06-16 18:19:36,068 basehttp 3444 23112 "GET /admin/jsi18n/ HTTP/1.1" 200 17546
+DEBUG 2025-06-16 18:19:37,482 middleware 3444 23112 Request from origin: 
+DEBUG 2025-06-16 18:19:37,483 middleware 3444 23112 CSRF Processing path: admin/auth/user/add/, Method: GET
+DEBUG 2025-06-16 18:19:37,483 middleware 3444 23112 CSRF token in cookie: True
+DEBUG 2025-06-16 18:19:37,483 middleware 3444 23112 CSRF token in header: False
+DEBUG 2025-06-16 18:19:37,483 middleware 3444 23112 CSRF cookie token (first 6): BGIg2h...
+INFO 2025-06-16 18:19:37,500 basehttp 3444 23112 "GET /admin/auth/user/add/ HTTP/1.1" 200 13314
+DEBUG 2025-06-16 18:19:37,515 middleware 3444 23112 Request from origin: 
+INFO 2025-06-16 18:19:37,518 basehttp 3444 23112 "GET /admin/jsi18n/ HTTP/1.1" 200 17546
+DEBUG 2025-06-16 18:19:47,947 middleware 3444 23112 Request from origin: http://127.0.0.1:8000
+DEBUG 2025-06-16 18:19:47,947 middleware 3444 23112 CSRF Processing path: admin/auth/user/add/, Method: POST
+DEBUG 2025-06-16 18:19:47,948 middleware 3444 23112 CSRF token in cookie: True
+DEBUG 2025-06-16 18:19:47,948 middleware 3444 23112 CSRF token in header: False
+DEBUG 2025-06-16 18:19:47,948 middleware 3444 23112 CSRF cookie token (first 6): BGIg2h...
+INFO 2025-06-16 18:19:48,207 basehttp 3444 23112 "POST /admin/auth/user/add/ HTTP/1.1" 302 0
+DEBUG 2025-06-16 18:19:48,210 middleware 3444 23112 Request from origin: 
+DEBUG 2025-06-16 18:19:48,210 middleware 3444 23112 CSRF Processing path: admin/auth/user/2/change/, Method: GET
+DEBUG 2025-06-16 18:19:48,210 middleware 3444 23112 CSRF token in cookie: True
+DEBUG 2025-06-16 18:19:48,210 middleware 3444 23112 CSRF token in header: False
+DEBUG 2025-06-16 18:19:48,210 middleware 3444 23112 CSRF cookie token (first 6): BGIg2h...
+INFO 2025-06-16 18:19:48,232 basehttp 3444 23112 "GET /admin/auth/user/2/change/ HTTP/1.1" 200 26952
+DEBUG 2025-06-16 18:19:48,248 middleware 3444 23112 Request from origin: 
+INFO 2025-06-16 18:19:48,254 basehttp 3444 23112 "GET /admin/jsi18n/ HTTP/1.1" 200 17546
+INFO 2025-06-16 18:19:48,315 basehttp 3444 23104 "GET /static/admin/js/calendar.js HTTP/1.1" 200 9141
+INFO 2025-06-16 18:19:48,318 basehttp 3444 7208 "GET /static/admin/js/admin/DateTimeShortcuts.js HTTP/1.1" 200 19319
+INFO 2025-06-16 18:19:48,321 basehttp 3444 5280 "GET /static/admin/js/SelectBox.js HTTP/1.1" 200 4530
+INFO 2025-06-16 18:19:48,321 basehttp 3444 25756 "GET /static/admin/js/SelectFilter2.js HTTP/1.1" 200 15492
+INFO 2025-06-16 18:19:48,343 basehttp 3444 5280 "GET /static/admin/img/selector-icons.svg HTTP/1.1" 200 3291
+INFO 2025-06-16 18:19:48,343 basehttp 3444 7208 "GET /static/admin/img/icon-unknown-alt.svg HTTP/1.1" 200 655
+INFO 2025-06-16 18:19:48,343 basehttp 3444 25756 "GET /static/admin/img/icon-unknown.svg HTTP/1.1" 200 655
+INFO 2025-06-16 18:19:48,343 basehttp 3444 23112 "GET /static/admin/img/icon-clock.svg HTTP/1.1" 200 677
+INFO 2025-06-16 18:19:48,344 basehttp 3444 23104 "GET /static/admin/img/icon-calendar.svg HTTP/1.1" 200 1086
+DEBUG 2025-06-16 18:19:49,834 middleware 3444 23104 Request from origin: 
+INFO 2025-06-16 18:19:49,845 basehttp 3444 23104 "GET /admin/cafes/cafecontact/ HTTP/1.1" 200 10925
+DEBUG 2025-06-16 18:19:49,859 middleware 3444 23104 Request from origin: 
+INFO 2025-06-16 18:19:49,865 basehttp 3444 23104 "GET /admin/jsi18n/ HTTP/1.1" 200 17546
+WARNING 2025-06-16 18:19:49,868 basehttp 3444 23112 "GET /static/js/cafe_contact_admin.js HTTP/1.1" 404 1831
+DEBUG 2025-06-16 18:19:51,466 middleware 3444 23104 Request from origin: 
+INFO 2025-06-16 18:19:51,479 basehttp 3444 23104 "GET /admin/cafes/cafecontact/add/ HTTP/1.1" 200 20681
+DEBUG 2025-06-16 18:19:51,496 middleware 3444 23104 Request from origin: 
+WARNING 2025-06-16 18:19:51,502 basehttp 3444 7208 "GET /static/js/cafe_contact_admin.js HTTP/1.1" 404 1831
+INFO 2025-06-16 18:19:51,503 basehttp 3444 23104 "GET /admin/jsi18n/ HTTP/1.1" 200 17546
+INFO 2025-06-16 18:19:51,511 basehttp 3444 23104 "GET /static/admin/img/icon-deletelink.svg HTTP/1.1" 200 392
+DEBUG 2025-06-16 18:19:53,563 middleware 3444 23104 Request from origin: 
+INFO 2025-06-16 18:19:53,574 basehttp 3444 23104 "GET /admin/cafes/cafe/?_to_field=id&_popup=1 HTTP/1.1" 200 5886
+DEBUG 2025-06-16 18:19:59,298 middleware 3444 11232 Request from origin: http://localhost:3000
+DEBUG 2025-06-16 18:19:59,300 middleware 3444 3212 Request from origin: 
+INFO 2025-06-16 18:19:59,313 basehttp 3444 11232 "GET /api/cafes/?city=1&t=1750069199294 HTTP/1.1" 200 499
+INFO 2025-06-16 18:19:59,314 basehttp 3444 3212 "GET /media/cafe_covers/XXXL_1_1_1mEPMP1.webp?t=1750069199285 HTTP/1.1" 200 100380
+DEBUG 2025-06-16 18:20:20,596 middleware 3444 23104 Request from origin: http://127.0.0.1:8000
+INFO 2025-06-16 18:20:20,861 basehttp 3444 23104 "POST /admin/cafes/cafecontact/add/ HTTP/1.1" 302 0
+DEBUG 2025-06-16 18:20:20,863 middleware 3444 23104 Request from origin: 
+INFO 2025-06-16 18:20:20,874 basehttp 3444 23104 "GET /admin/cafes/cafecontact/ HTTP/1.1" 200 14047
+DEBUG 2025-06-16 18:20:20,890 middleware 3444 23104 Request from origin: 
+INFO 2025-06-16 18:20:20,895 basehttp 3444 5280 "GET /static/admin/img/icon-no.svg HTTP/1.1" 200 560
+WARNING 2025-06-16 18:20:20,895 basehttp 3444 25756 "GET /static/js/cafe_contact_admin.js HTTP/1.1" 404 1831
+INFO 2025-06-16 18:20:20,897 basehttp 3444 23104 "GET /admin/jsi18n/ HTTP/1.1" 200 17546
+DEBUG 2025-06-16 18:20:22,423 middleware 3444 23104 Request from origin: 
+INFO 2025-06-16 18:20:22,437 basehttp 3444 23104 "GET /admin/cafes/cafecontact/1/change/ HTTP/1.1" 200 21074
+DEBUG 2025-06-16 18:20:22,453 middleware 3444 23104 Request from origin: 
+WARNING 2025-06-16 18:20:22,459 basehttp 3444 5280 "GET /static/js/cafe_contact_admin.js HTTP/1.1" 404 1831
+INFO 2025-06-16 18:20:22,460 basehttp 3444 23104 "GET /admin/jsi18n/ HTTP/1.1" 200 17546
+DEBUG 2025-06-16 18:20:24,799 middleware 3444 23104 Request from origin: http://127.0.0.1:8000
+INFO 2025-06-16 18:20:24,812 basehttp 3444 23104 "POST /admin/cafes/cafecontact/1/change/ HTTP/1.1" 302 0
+DEBUG 2025-06-16 18:20:24,815 middleware 3444 23104 Request from origin: 
+INFO 2025-06-16 18:20:24,824 basehttp 3444 23104 "GET /admin/cafes/cafecontact/ HTTP/1.1" 200 13921
+DEBUG 2025-06-16 18:20:24,840 middleware 3444 23104 Request from origin: 
+WARNING 2025-06-16 18:20:24,845 basehttp 3444 21464 "GET /static/js/cafe_contact_admin.js HTTP/1.1" 404 1831
+INFO 2025-06-16 18:20:24,846 basehttp 3444 23104 "GET /admin/jsi18n/ HTTP/1.1" 200 17546
+DEBUG 2025-06-16 18:20:57,716 middleware 3444 3212 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:20:57,719 views 3444 3212 Health check ������ �� 127.0.0.1: ok
+INFO 2025-06-16 18:20:57,719 basehttp 3444 3212 "GET /api/health/ HTTP/1.1" 200 251
+DEBUG 2025-06-16 18:20:57,721 middleware 3444 11232 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:20:57,723 views 3444 11232 Health check ������ �� 127.0.0.1: ok
+INFO 2025-06-16 18:20:57,724 basehttp 3444 11232 "GET /api/health/ HTTP/1.1" 200 251
+DEBUG 2025-06-16 18:20:57,734 middleware 3444 11232 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:20:57,737 basehttp 3444 11232 "GET /api/cities/ HTTP/1.1" 200 168
+DEBUG 2025-06-16 18:20:57,738 middleware 3444 3212 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:20:57,741 basehttp 3444 3212 "GET /api/cities/ HTTP/1.1" 200 168
+DEBUG 2025-06-16 18:20:57,750 middleware 3444 3212 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:20:57,757 basehttp 3444 3212 "GET /api/cafes/?city=1&t=1750069257747 HTTP/1.1" 200 499
+DEBUG 2025-06-16 18:20:57,759 middleware 3444 11232 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:20:57,765 basehttp 3444 11232 "GET /api/cafes/?city=1&t=1750069257750 HTTP/1.1" 200 499
+DEBUG 2025-06-16 18:20:57,771 middleware 3444 11232 Request from origin: http://localhost:3000
+DEBUG 2025-06-16 18:20:57,771 middleware 3444 3212 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:20:57,781 basehttp 3444 11232 "GET /api/cafes/?city=1&t=1750069257763 HTTP/1.1" 200 499
+DEBUG 2025-06-16 18:20:57,782 middleware 3444 26504 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:20:57,784 basehttp 3444 3212 "GET /api/cafes/?city=1&t=1750069257765 HTTP/1.1" 200 499
+INFO 2025-06-16 18:20:57,785 basehttp 3444 26504 "GET /api/menu-items/?cafe=1 HTTP/1.1" 200 52
+DEBUG 2025-06-16 18:20:57,787 middleware 3444 3212 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:20:57,789 basehttp 3444 3212 "GET /api/menu-items/?cafe=1 HTTP/1.1" 200 52
+DEBUG 2025-06-16 18:20:57,807 middleware 3444 3212 Request from origin: 
+INFO 2025-06-16 18:20:57,808 basehttp 3444 3212 "GET /media/cafe_covers/XXXL_1_1_1mEPMP1.webp?t=1750069257752 HTTP/1.1" 200 100380
+DEBUG 2025-06-16 18:20:59,733 middleware 3444 23104 Request from origin: 
+INFO 2025-06-16 18:20:59,746 basehttp 3444 23104 "GET /admin/cafes/cafecontact/1/change/ HTTP/1.1" 200 21082
+DEBUG 2025-06-16 18:20:59,762 middleware 3444 23104 Request from origin: 
+WARNING 2025-06-16 18:20:59,768 basehttp 3444 6880 "GET /static/js/cafe_contact_admin.js HTTP/1.1" 404 1831
+INFO 2025-06-16 18:20:59,768 basehttp 3444 23104 "GET /admin/jsi18n/ HTTP/1.1" 200 17546
+DEBUG 2025-06-16 18:21:02,339 middleware 3444 23104 Request from origin: 
+INFO 2025-06-16 18:21:02,348 basehttp 3444 23104 "GET /admin/cafes/cafe/ HTTP/1.1" 200 12363
+DEBUG 2025-06-16 18:21:02,362 middleware 3444 23104 Request from origin: 
+INFO 2025-06-16 18:21:02,367 basehttp 3444 23104 "GET /admin/jsi18n/ HTTP/1.1" 200 17546
+DEBUG 2025-06-16 18:21:03,502 middleware 3444 23104 Request from origin: 
+INFO 2025-06-16 18:21:03,513 basehttp 3444 23104 "GET /admin/cafes/cafe/1/change/ HTTP/1.1" 200 17136
+DEBUG 2025-06-16 18:21:03,527 middleware 3444 23104 Request from origin: 
+INFO 2025-06-16 18:21:03,531 basehttp 3444 23104 "GET /admin/jsi18n/ HTTP/1.1" 200 17546
+DEBUG 2025-06-16 18:21:06,780 middleware 3444 23104 Request from origin: http://127.0.0.1:8000
+INFO 2025-06-16 18:21:06,822 basehttp 3444 23104 "POST /admin/cafes/cafe/1/change/ HTTP/1.1" 302 0
+DEBUG 2025-06-16 18:21:06,825 middleware 3444 23104 Request from origin: 
+INFO 2025-06-16 18:21:06,834 basehttp 3444 23104 "GET /admin/cafes/cafe/ HTTP/1.1" 200 12565
+DEBUG 2025-06-16 18:21:06,850 middleware 3444 23104 Request from origin: 
+INFO 2025-06-16 18:21:06,853 basehttp 3444 23104 "GET /admin/jsi18n/ HTTP/1.1" 200 17546
+DEBUG 2025-06-16 18:21:07,869 middleware 3444 3212 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:21:07,872 views 3444 3212 Health check ������ �� 127.0.0.1: ok
+INFO 2025-06-16 18:21:07,872 basehttp 3444 3212 "GET /api/health/ HTTP/1.1" 200 251
+DEBUG 2025-06-16 18:21:07,876 middleware 3444 3212 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:21:07,878 views 3444 3212 Health check ������ �� 127.0.0.1: ok
+INFO 2025-06-16 18:21:07,879 basehttp 3444 3212 "GET /api/health/ HTTP/1.1" 200 250
+DEBUG 2025-06-16 18:21:07,887 middleware 3444 3212 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:21:07,890 basehttp 3444 3212 "GET /api/cities/ HTTP/1.1" 200 168
+DEBUG 2025-06-16 18:21:07,891 middleware 3444 26504 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:21:07,895 basehttp 3444 26504 "GET /api/cities/ HTTP/1.1" 200 168
+DEBUG 2025-06-16 18:21:07,903 middleware 3444 26504 Request from origin: http://localhost:3000
+DEBUG 2025-06-16 18:21:07,908 middleware 3444 3212 Request from origin: http://localhost:3000
+DEBUG 2025-06-16 18:21:07,909 middleware 3444 11232 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:21:07,911 basehttp 3444 26504 "GET /api/cafes/?city=1&t=1750069267899 HTTP/1.1" 200 520
+DEBUG 2025-06-16 18:21:07,912 middleware 3444 24552 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:21:07,920 basehttp 3444 3212 "GET /api/cafes/?city=1&t=1750069267904 HTTP/1.1" 200 520
+INFO 2025-06-16 18:21:07,924 basehttp 3444 11232 "GET /api/cafes/?city=1&t=1750069267906 HTTP/1.1" 200 520
+DEBUG 2025-06-16 18:21:07,925 middleware 3444 3212 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:21:07,927 basehttp 3444 24552 "GET /api/cafes/?city=1&t=1750069267907 HTTP/1.1" 200 520
+INFO 2025-06-16 18:21:07,929 basehttp 3444 3212 "GET /api/menu-items/?cafe=1 HTTP/1.1" 200 52
+DEBUG 2025-06-16 18:21:07,946 middleware 3444 3212 Request from origin: http://localhost:3000
+DEBUG 2025-06-16 18:21:07,948 middleware 3444 24552 Request from origin: 
+INFO 2025-06-16 18:21:07,950 basehttp 3444 3212 "GET /api/menu-items/?cafe=1 HTTP/1.1" 200 52
+INFO 2025-06-16 18:21:07,951 basehttp 3444 24552 "GET /media/cafe_covers/shashlyk-iz-govjadiny-na-grile_mEyyDmU.jpg?t=1750069267901 HTTP/1.1" 200 126933
+DEBUG 2025-06-16 18:21:09,646 middleware 3444 23104 Request from origin: 
+INFO 2025-06-16 18:21:09,657 basehttp 3444 23104 "GET /admin/cafes/cafe/1/change/ HTTP/1.1" 200 17178
+DEBUG 2025-06-16 18:21:09,670 middleware 3444 23104 Request from origin: 
+INFO 2025-06-16 18:21:09,673 basehttp 3444 23104 "GET /admin/jsi18n/ HTTP/1.1" 200 17546
+DEBUG 2025-06-16 18:21:13,209 middleware 3444 23104 Request from origin: http://127.0.0.1:8000
+INFO 2025-06-16 18:21:13,223 basehttp 3444 23104 "POST /admin/cafes/cafe/1/change/ HTTP/1.1" 302 0
+DEBUG 2025-06-16 18:21:13,226 middleware 3444 23104 Request from origin: 
+INFO 2025-06-16 18:21:13,235 basehttp 3444 23104 "GET /admin/cafes/cafe/ HTTP/1.1" 200 12565
+DEBUG 2025-06-16 18:21:13,251 middleware 3444 23104 Request from origin: 
+INFO 2025-06-16 18:21:13,255 basehttp 3444 23104 "GET /admin/jsi18n/ HTTP/1.1" 200 17546
+DEBUG 2025-06-16 18:21:14,963 middleware 3444 24552 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:21:14,965 views 3444 24552 Health check ������ �� 127.0.0.1: ok
+INFO 2025-06-16 18:21:14,965 basehttp 3444 24552 "GET /api/health/ HTTP/1.1" 200 250
+DEBUG 2025-06-16 18:21:14,967 middleware 3444 3212 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:21:14,969 views 3444 3212 Health check ������ �� 127.0.0.1: ok
+INFO 2025-06-16 18:21:14,969 basehttp 3444 3212 "GET /api/health/ HTTP/1.1" 200 251
+DEBUG 2025-06-16 18:21:14,980 middleware 3444 3212 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:21:14,982 basehttp 3444 3212 "GET /api/cities/ HTTP/1.1" 200 168
+DEBUG 2025-06-16 18:21:14,983 middleware 3444 24552 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:21:14,986 basehttp 3444 24552 "GET /api/cities/ HTTP/1.1" 200 168
+DEBUG 2025-06-16 18:21:14,990 middleware 3444 24552 Request from origin: http://localhost:3000
+DEBUG 2025-06-16 18:21:14,992 middleware 3444 3212 Request from origin: http://localhost:3000
+DEBUG 2025-06-16 18:21:14,993 middleware 3444 11232 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:21:15,000 basehttp 3444 3212 "GET /api/cafes/?city=1&t=1750069274989 HTTP/1.1" 200 499
+DEBUG 2025-06-16 18:21:15,002 middleware 3444 26504 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:21:15,005 basehttp 3444 11232 "GET /api/cafes/?city=1&t=1750069274990 HTTP/1.1" 200 499
+INFO 2025-06-16 18:21:15,005 basehttp 3444 24552 "GET /api/cafes/?city=1&t=1750069274987 HTTP/1.1" 200 499
+INFO 2025-06-16 18:21:15,009 basehttp 3444 26504 "GET /api/cafes/?city=1&t=1750069274999 HTTP/1.1" 200 499
+DEBUG 2025-06-16 18:21:15,022 middleware 3444 26504 Request from origin: 
+INFO 2025-06-16 18:21:15,023 basehttp 3444 26504 "GET /media/cafe_covers/XXXL_1_1_ENDyb7O.webp?t=1750069274968 HTTP/1.1" 200 100380
+DEBUG 2025-06-16 18:21:15,025 middleware 3444 26504 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:21:15,028 basehttp 3444 26504 "GET /api/menu-items/?cafe=1 HTTP/1.1" 200 52
+DEBUG 2025-06-16 18:21:15,029 middleware 3444 24552 Request from origin: http://localhost:3000
+INFO 2025-06-16 18:21:15,034 basehttp 3444 24552 "GET /api/menu-items/?cafe=1 HTTP/1.1" 200 52
+INFO 2025-06-16 12:25:21,386 autoreload 9 140307439872896 Watching for file changes with StatReloader
+INFO 2025-06-16 12:25:21,579 middleware 9 140307407517376 CORS Middleware initialized with allowed origins: ['http://localhost', 'http://frontend', 'http://localhost:80', 'http://127.0.0.1', 'http://127.0.0.1:80', 'http://0.0.0.0', 'http://0.0.0.0:80', 'http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://localhost:8000', 'http://127.0.0.1:8000', 'https://ec4db675c64c9f.lhr.life']
+INFO 2025-06-16 12:25:21,581 middleware 9 140307407517376 Custom CSRF Middleware initialized with exempt paths: ['/api/auth/login/', '/api/auth/csrf/']
+DEBUG 2025-06-16 12:25:41,969 middleware 9 140307316340416 Request from origin: 
+INFO 2025-06-16 12:25:41,976 views 9 140307316340416 Health check запрос от 172.18.0.3: ok
+INFO 2025-06-16 12:25:41,977 basehttp 9 140307316340416 "GET /api/health/ HTTP/1.0" 200 243
+DEBUG 2025-06-16 12:25:41,989 middleware 9 140307316340416 Request from origin: 
+INFO 2025-06-16 12:25:41,998 basehttp 9 140307316340416 "GET /api/cities/ HTTP/1.0" 200 168
+DEBUG 2025-06-16 12:25:42,002 middleware 9 140307316340416 Request from origin: 
+INFO 2025-06-16 12:25:42,014 basehttp 9 140307316340416 "GET /api/cafes/?city=1&t=1750076741637 HTTP/1.0" 200 494
+DEBUG 2025-06-16 12:25:42,019 middleware 9 140307316340416 Request from origin: 
+INFO 2025-06-16 12:25:42,026 basehttp 9 140307316340416 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 52
+DEBUG 2025-06-16 12:25:49,187 middleware 9 140307316340416 Request from origin: 
+INFO 2025-06-16 12:25:49,198 basehttp 9 140307316340416 "GET /api/cafes/?city=1&t=1750076749088 HTTP/1.0" 200 494
+DEBUG 2025-06-16 12:25:49,206 middleware 9 140307316340416 Request from origin: 
+INFO 2025-06-16 12:25:49,216 basehttp 9 140307316340416 "GET /media/cafe_covers/XXXL_1_1_ENDyb7O.webp?t=1750076749086 HTTP/1.0" 200 100380
+DEBUG 2025-06-16 12:25:51,302 middleware 9 140307316340416 Request from origin: 
+INFO 2025-06-16 12:25:51,309 basehttp 9 140307316340416 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 52
+DEBUG 2025-06-16 12:25:55,533 middleware 9 140307316340416 Request from origin: 
+WARNING 2025-06-16 12:25:55,539 base 9 140307316340416 Session data corrupted
+INFO 2025-06-16 12:25:55,565 basehttp 9 140307316340416 "GET /admin/ HTTP/1.1" 302 0
+DEBUG 2025-06-16 12:25:55,569 middleware 9 140307316340416 Request from origin: 
+WARNING 2025-06-16 12:25:55,575 base 9 140307316340416 Session data corrupted
+INFO 2025-06-16 12:25:55,594 basehttp 9 140307316340416 "GET /admin/login/?next=/admin/ HTTP/1.1" 200 4267
+DEBUG 2025-06-16 12:25:56,453 middleware 9 140307316340416 Request from origin: 
+WARNING 2025-06-16 12:25:56,465 log 9 140307316340416 Not Found: /favicon.ico
+WARNING 2025-06-16 12:25:56,465 basehttp 9 140307316340416 "GET /favicon.ico HTTP/1.1" 404 2340
+DEBUG 2025-06-16 12:26:03,543 middleware 9 140307316340416 Request from origin: http://127.0.0.1:8000
+WARNING 2025-06-16 12:26:03,548 base 9 140307316340416 Session data corrupted
+INFO 2025-06-16 12:26:03,910 basehttp 9 140307316340416 "POST /admin/login/?next=/admin/ HTTP/1.1" 302 0
+DEBUG 2025-06-16 12:26:03,914 middleware 9 140307316340416 Request from origin: 
+INFO 2025-06-16 12:26:03,936 basehttp 9 140307316340416 "GET /admin/ HTTP/1.1" 200 11423
+DEBUG 2025-06-16 12:26:06,129 middleware 9 140307316340416 Request from origin: 
+INFO 2025-06-16 12:26:06,157 basehttp 9 140307316340416 "GET /admin/cafes/menuitem/ HTTP/1.1" 200 10282
+DEBUG 2025-06-16 12:26:06,178 middleware 9 140307316340416 Request from origin: 
+INFO 2025-06-16 12:26:06,189 basehttp 9 140307316340416 "GET /admin/jsi18n/ HTTP/1.1" 200 16066
+DEBUG 2025-06-16 12:26:07,178 middleware 9 140307316340416 Request from origin: 
+INFO 2025-06-16 12:26:07,208 basehttp 9 140307316340416 "GET /admin/cafes/menuitem/add/ HTTP/1.1" 200 15585
+DEBUG 2025-06-16 12:26:07,224 middleware 9 140307316340416 Request from origin: 
+INFO 2025-06-16 12:26:07,233 basehttp 9 140307316340416 "GET /admin/jsi18n/ HTTP/1.1" 200 16066
+DEBUG 2025-06-16 12:26:34,460 middleware 9 140307316340416 Request from origin: http://127.0.0.1:8000
+INFO 2025-06-16 12:26:34,522 basehttp 9 140307316340416 "POST /admin/cafes/menuitem/add/ HTTP/1.1" 302 0
+DEBUG 2025-06-16 12:26:34,576 middleware 9 140307316340416 Request from origin: 
+INFO 2025-06-16 12:26:34,600 basehttp 9 140307316340416 "GET /admin/cafes/menuitem/ HTTP/1.1" 200 13376
+DEBUG 2025-06-16 12:26:34,616 middleware 9 140307316340416 Request from origin: 
+INFO 2025-06-16 12:26:34,626 basehttp 9 140307316340416 "GET /admin/jsi18n/ HTTP/1.1" 200 16066
+DEBUG 2025-06-16 12:26:37,113 middleware 9 140307297740480 Request from origin: 
+INFO 2025-06-16 12:26:37,119 views 9 140307297740480 Health check запрос от 172.18.0.3: ok
+INFO 2025-06-16 12:26:37,120 basehttp 9 140307297740480 "GET /api/health/ HTTP/1.0" 200 244
+DEBUG 2025-06-16 12:26:37,122 middleware 9 140307297740480 Request from origin: 
+DEBUG 2025-06-16 12:26:37,128 middleware 9 140307289347776 Request from origin: 
+INFO 2025-06-16 12:26:37,133 basehttp 9 140307297740480 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 358
+INFO 2025-06-16 12:26:37,138 basehttp 9 140307289347776 "GET /api/cities/ HTTP/1.0" 200 168
+DEBUG 2025-06-16 12:26:37,144 middleware 9 140307289347776 Request from origin: 
+INFO 2025-06-16 12:26:37,156 basehttp 9 140307289347776 "GET /api/cafes/?city=1&t=1750076796820 HTTP/1.0" 200 494
+DEBUG 2025-06-16 12:26:37,168 middleware 9 140307289347776 Request from origin: 
+INFO 2025-06-16 12:26:37,176 basehttp 9 140307289347776 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 358
+DEBUG 2025-06-16 12:26:51,746 middleware 9 140307316340416 Request from origin: 
+INFO 2025-06-16 12:26:51,775 basehttp 9 140307316340416 "GET /admin/cafes/menuitem/1/change/ HTTP/1.1" 200 16252
+DEBUG 2025-06-16 12:26:51,793 middleware 9 140307316340416 Request from origin: 
+INFO 2025-06-16 12:26:51,804 basehttp 9 140307316340416 "GET /admin/jsi18n/ HTTP/1.1" 200 16066
+DEBUG 2025-06-16 12:26:52,893 middleware 9 140307316340416 Request from origin: 
+INFO 2025-06-16 12:26:52,921 basehttp 9 140307316340416 "GET /media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg HTTP/1.1" 200 393205
+DEBUG 2025-06-16 12:26:54,030 middleware 9 140307316340416 Request from origin: 
+INFO 2025-06-16 12:26:54,057 basehttp 9 140307316340416 "GET /admin/cafes/menuitem/1/change/ HTTP/1.1" 200 16252
+DEBUG 2025-06-16 12:27:00,942 middleware 9 140307289347776 Request from origin: 
+INFO 2025-06-16 12:27:00,948 views 9 140307289347776 Health check запрос от 172.18.0.3: ok
+INFO 2025-06-16 12:27:00,949 basehttp 9 140307289347776 "GET /api/health/ HTTP/1.0" 200 245
+DEBUG 2025-06-16 12:27:00,951 middleware 9 140307289347776 Request from origin: 
+DEBUG 2025-06-16 12:27:00,957 middleware 9 140307297740480 Request from origin: 
+INFO 2025-06-16 12:27:00,963 basehttp 9 140307289347776 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 358
+INFO 2025-06-16 12:27:00,968 basehttp 9 140307297740480 "GET /api/cities/ HTTP/1.0" 200 168
+DEBUG 2025-06-16 12:27:00,975 middleware 9 140307297740480 Request from origin: 
+INFO 2025-06-16 12:27:00,987 basehttp 9 140307297740480 "GET /api/cafes/?city=1&t=1750076820217 HTTP/1.0" 200 494
+DEBUG 2025-06-16 12:27:01,002 middleware 9 140307297740480 Request from origin: 
+INFO 2025-06-16 12:27:01,011 basehttp 9 140307297740480 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 358
+INFO 2025-06-16 20:28:03,038 autoreload 30192 30208 Watching for file changes with StatReloader
+INFO 2025-06-16 20:28:03,653 middleware 30192 26136 CORS Middleware initialized with allowed origins: ['http://localhost', 'http://localhost:3000', 'http://localhost:80', 'http://127.0.0.1', 'http://127.0.0.1:3000', 'http://127.0.0.1:80', 'http://frontend', 'http://localhost:3001', 'http://127.0.0.1:3001', 'http://localhost:8000', 'http://127.0.0.1:8000', 'https://ec4db675c64c9f.lhr.life']
+INFO 2025-06-16 20:28:03,655 middleware 30192 26136 Custom CSRF Middleware initialized with exempt paths: ['/api/auth/login/', '/api/auth/csrf/']
+DEBUG 2025-06-16 20:28:03,933 middleware 30192 14440 Request from origin: http://localhost:3000
+INFO 2025-06-16 20:28:03,946 basehttp 30192 14440 "GET /api/menu-items/?cafe=1 HTTP/1.1" 200 363
+DEBUG 2025-06-16 20:28:03,947 middleware 30192 4208 Request from origin: http://localhost:3000
+INFO 2025-06-16 20:28:03,952 basehttp 30192 4208 "GET /api/menu-items/?cafe=1 HTTP/1.1" 200 363
+DEBUG 2025-06-16 20:28:06,109 middleware 30192 4208 Request from origin: http://localhost:3000
+INFO 2025-06-16 20:28:06,113 views 30192 4208 Health check ������ �� 127.0.0.1: ok
+INFO 2025-06-16 20:28:06,114 basehttp 30192 4208 "GET /api/health/ HTTP/1.1" 200 251
+DEBUG 2025-06-16 20:28:06,115 middleware 30192 14440 Request from origin: http://localhost:3000
+INFO 2025-06-16 20:28:06,118 views 30192 14440 Health check ������ �� 127.0.0.1: ok
+INFO 2025-06-16 20:28:06,119 basehttp 30192 14440 "GET /api/health/ HTTP/1.1" 200 250
+DEBUG 2025-06-16 20:28:06,120 middleware 30192 14440 Request from origin: http://localhost:3000
+INFO 2025-06-16 20:28:06,125 basehttp 30192 14440 "GET /api/cities/ HTTP/1.1" 200 168
+DEBUG 2025-06-16 20:28:06,126 middleware 30192 4208 Request from origin: http://localhost:3000
+INFO 2025-06-16 20:28:06,130 basehttp 30192 4208 "GET /api/cities/ HTTP/1.1" 200 168
+DEBUG 2025-06-16 20:28:06,134 middleware 30192 4208 Request from origin: http://localhost:3000
+INFO 2025-06-16 20:28:06,140 basehttp 30192 4208 "GET /api/cafes/?city=1&t=1750076886127 HTTP/1.1" 200 499
+DEBUG 2025-06-16 20:28:06,144 middleware 30192 4208 Request from origin: http://localhost:3000
+DEBUG 2025-06-16 20:28:06,145 middleware 30192 14440 Request from origin: http://localhost:3000
+INFO 2025-06-16 20:28:06,152 basehttp 30192 14440 "GET /api/menu-items/?cafe=1 HTTP/1.1" 200 363
+INFO 2025-06-16 20:28:06,152 basehttp 30192 4208 "GET /api/cafes/?city=1&t=1750076886142 HTTP/1.1" 200 499
+DEBUG 2025-06-16 20:28:06,878 middleware 30192 4208 Request from origin: http://localhost:3000
+DEBUG 2025-06-16 20:28:06,879 middleware 30192 14440 Request from origin: http://localhost:3000
+INFO 2025-06-16 20:28:06,896 basehttp 30192 4208 "GET /api/cafes/?city=1&t=1750076886876 HTTP/1.1" 200 499
+INFO 2025-06-16 20:28:06,896 basehttp 30192 14440 "GET /api/cafes/?city=1&t=1750076886877 HTTP/1.1" 200 499
+DEBUG 2025-06-16 20:28:06,916 middleware 30192 14440 Request from origin: 
+INFO 2025-06-16 20:28:06,961 basehttp 30192 14440 "GET /media/cafe_covers/XXXL_1_1_ENDyb7O.webp?t=1750076886861 HTTP/1.1" 200 100380
+DEBUG 2025-06-16 20:28:08,323 middleware 30192 21672 Request from origin: http://localhost:3000
+INFO 2025-06-16 20:28:08,326 basehttp 30192 21672 "GET /api/menu-items/?cafe=1 HTTP/1.1" 200 363
+DEBUG 2025-06-16 20:28:08,327 middleware 30192 21672 Request from origin: http://localhost:3000
+INFO 2025-06-16 20:28:08,331 basehttp 30192 21672 "GET /api/menu-items/?cafe=1 HTTP/1.1" 200 363
+DEBUG 2025-06-16 20:28:08,848 middleware 30192 21672 Request from origin: 
+INFO 2025-06-16 20:28:08,852 basehttp 30192 21672 "GET /media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg HTTP/1.1" 200 393205
+INFO 2025-06-16 12:28:24,732 autoreload 8 139679559347072 Watching for file changes with StatReloader
+INFO 2025-06-16 12:28:24,916 middleware 8 139679526991552 CORS Middleware initialized with allowed origins: ['http://localhost', 'http://frontend', 'http://localhost:80', 'http://127.0.0.1', 'http://127.0.0.1:80', 'http://0.0.0.0', 'http://0.0.0.0:80', 'http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://localhost:8000', 'http://127.0.0.1:8000', 'https://ec4db675c64c9f.lhr.life']
+INFO 2025-06-16 12:28:24,917 middleware 8 139679526991552 Custom CSRF Middleware initialized with exempt paths: ['/api/auth/login/', '/api/auth/csrf/']
+DEBUG 2025-06-16 12:28:34,812 middleware 8 139679439779520 Request from origin: 
+INFO 2025-06-16 12:28:34,820 views 8 139679439779520 Health check запрос от 172.18.0.3: ok
+INFO 2025-06-16 12:28:34,822 basehttp 8 139679439779520 "GET /api/health/ HTTP/1.0" 200 244
+DEBUG 2025-06-16 12:28:34,838 middleware 8 139679439779520 Request from origin: 
+INFO 2025-06-16 12:28:34,849 basehttp 8 139679439779520 "GET /api/cities/ HTTP/1.0" 200 168
+DEBUG 2025-06-16 12:28:34,855 middleware 8 139679439779520 Request from origin: 
+INFO 2025-06-16 12:28:34,869 basehttp 8 139679439779520 "GET /api/cafes/?city=1&t=1750076914278 HTTP/1.0" 200 494
+DEBUG 2025-06-16 12:28:34,883 middleware 8 139679439779520 Request from origin: 
+INFO 2025-06-16 12:28:34,893 basehttp 8 139679439779520 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 358
+DEBUG 2025-06-16 12:28:36,412 middleware 8 139679439779520 Request from origin: 
+INFO 2025-06-16 12:28:36,425 basehttp 8 139679439779520 "GET /api/cafes/?city=1&t=1750076915836 HTTP/1.0" 200 494
+DEBUG 2025-06-16 12:28:36,433 middleware 8 139679439779520 Request from origin: 
+INFO 2025-06-16 12:28:36,445 basehttp 8 139679439779520 "GET /media/cafe_covers/XXXL_1_1_ENDyb7O.webp?t=1750076915834 HTTP/1.0" 200 100380
+DEBUG 2025-06-16 12:28:37,291 middleware 8 139679439779520 Request from origin: 
+INFO 2025-06-16 12:28:37,301 basehttp 8 139679439779520 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 358
+INFO 2025-06-16 12:36:29,270 autoreload 8 140197413690240 Watching for file changes with StatReloader
+INFO 2025-06-16 12:36:29,468 middleware 8 140197381334720 CORS Middleware initialized with allowed origins: ['http://localhost', 'http://frontend', 'http://localhost:80', 'http://127.0.0.1', 'http://127.0.0.1:80', 'http://0.0.0.0', 'http://0.0.0.0:80', 'http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://localhost:8000', 'http://127.0.0.1:8000', 'https://ec4db675c64c9f.lhr.life']
+INFO 2025-06-16 12:36:29,469 middleware 8 140197381334720 Custom CSRF Middleware initialized with exempt paths: ['/api/auth/login/', '/api/auth/csrf/']
+DEBUG 2025-06-16 12:36:32,802 middleware 8 140197361350336 Request from origin: 
+DEBUG 2025-06-16 12:36:32,810 middleware 8 140197352695488 Request from origin: 
+INFO 2025-06-16 12:36:32,811 views 8 140197361350336 Health check запрос от 172.18.0.3: ok
+INFO 2025-06-16 12:36:32,814 basehttp 8 140197361350336 "GET /api/health/ HTTP/1.0" 200 244
+DEBUG 2025-06-16 12:36:32,822 middleware 8 140197361350336 Request from origin: 
+INFO 2025-06-16 12:36:32,827 basehttp 8 140197352695488 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 358
+INFO 2025-06-16 12:36:32,835 basehttp 8 140197361350336 "GET /api/cities/ HTTP/1.0" 200 168
+DEBUG 2025-06-16 12:36:32,844 middleware 8 140197361350336 Request from origin: 
+INFO 2025-06-16 12:36:32,860 basehttp 8 140197361350336 "GET /api/cafes/?city=1&t=1750077392780 HTTP/1.0" 200 494
+DEBUG 2025-06-16 12:36:32,872 middleware 8 140197361350336 Request from origin: 
+INFO 2025-06-16 12:36:32,882 basehttp 8 140197361350336 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 358
+DEBUG 2025-06-16 12:36:38,208 middleware 8 140197361350336 Request from origin: 
+INFO 2025-06-16 12:36:38,214 views 8 140197361350336 Health check запрос от 172.18.0.3: ok
+INFO 2025-06-16 12:36:38,215 basehttp 8 140197361350336 "GET /api/health/ HTTP/1.0" 200 244
+DEBUG 2025-06-16 12:36:38,231 middleware 8 140197361350336 Request from origin: 
+INFO 2025-06-16 12:36:38,240 basehttp 8 140197361350336 "GET /api/cities/ HTTP/1.0" 200 168
+DEBUG 2025-06-16 12:36:38,266 middleware 8 140197361350336 Request from origin: 
+INFO 2025-06-16 12:36:38,276 basehttp 8 140197361350336 "GET /api/cafes/?city=1&t=1750077398432 HTTP/1.0" 200 494
+DEBUG 2025-06-16 12:36:38,281 middleware 8 140197361350336 Request from origin: 
+INFO 2025-06-16 12:36:38,289 basehttp 8 140197361350336 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 358
+DEBUG 2025-06-16 12:36:39,416 middleware 8 140197361350336 Request from origin: 
+INFO 2025-06-16 12:36:39,428 basehttp 8 140197361350336 "GET /api/cafes/?city=1&t=1750077399631 HTTP/1.0" 200 494
+DEBUG 2025-06-16 12:36:39,435 middleware 8 140197361350336 Request from origin: 
+INFO 2025-06-16 12:36:39,443 basehttp 8 140197361350336 "GET /media/cafe_covers/XXXL_1_1_ENDyb7O.webp?t=1750077399629 HTTP/1.0" 200 100380
+DEBUG 2025-06-16 12:36:40,455 middleware 8 140197361350336 Request from origin: 
+INFO 2025-06-16 12:36:40,464 basehttp 8 140197361350336 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 358
+DEBUG 2025-06-16 12:36:43,310 middleware 8 140197361350336 Request from origin: 
+INFO 2025-06-16 12:36:43,377 basehttp 8 140197361350336 "GET /admin/ HTTP/1.1" 200 11723
+DEBUG 2025-06-16 12:36:46,793 middleware 8 140197361350336 Request from origin: 
+INFO 2025-06-16 12:36:46,813 basehttp 8 140197361350336 "GET /admin HTTP/1.1" 301 0
+DEBUG 2025-06-16 12:36:46,817 middleware 8 140197352695488 Request from origin: 
+INFO 2025-06-16 12:36:46,842 basehttp 8 140197352695488 "GET /admin/ HTTP/1.1" 200 11723
+DEBUG 2025-06-16 12:37:08,246 middleware 8 140197361350336 Request from origin: 
+DEBUG 2025-06-16 12:37:08,255 middleware 8 140197342205632 Request from origin: 
+INFO 2025-06-16 12:37:08,255 views 8 140197361350336 Health check запрос от 172.18.0.3: ok
+INFO 2025-06-16 12:37:08,259 basehttp 8 140197361350336 "GET /api/health/ HTTP/1.0" 200 244
+INFO 2025-06-16 12:37:08,268 basehttp 8 140197342205632 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 358
+DEBUG 2025-06-16 12:37:08,275 middleware 8 140197342205632 Request from origin: 
+INFO 2025-06-16 12:37:08,285 basehttp 8 140197342205632 "GET /api/cities/ HTTP/1.0" 200 168
+DEBUG 2025-06-16 12:37:08,303 middleware 8 140197342205632 Request from origin: 
+INFO 2025-06-16 12:37:08,315 basehttp 8 140197342205632 "GET /api/cafes/?city=1&t=1750077428228 HTTP/1.0" 200 494
+DEBUG 2025-06-16 12:37:08,320 middleware 8 140197342205632 Request from origin: 
+INFO 2025-06-16 12:37:08,328 basehttp 8 140197342205632 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 358
+INFO 2025-06-16 12:42:17,755 autoreload 8 139810371541888 Watching for file changes with StatReloader
+INFO 2025-06-16 12:42:17,940 middleware 8 139810339186368 CORS Middleware initialized with allowed origins: ['http://localhost', 'http://frontend', 'http://localhost:80', 'http://127.0.0.1', 'http://127.0.0.1:80', 'http://0.0.0.0', 'http://0.0.0.0:80', 'http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://localhost:8000', 'http://127.0.0.1:8000', 'https://ec4db675c64c9f.lhr.life']
+INFO 2025-06-16 12:42:17,941 middleware 8 139810339186368 Custom CSRF Middleware initialized with exempt paths: ['/api/auth/login/', '/api/auth/csrf/']
+INFO 2025-06-16 12:43:46,219 autoreload 8 139951022455680 Watching for file changes with StatReloader
+INFO 2025-06-16 12:43:46,408 middleware 8 139950990100160 CORS Middleware initialized with allowed origins: ['http://localhost', 'http://frontend', 'http://localhost:80', 'http://127.0.0.1', 'http://127.0.0.1:80', 'http://0.0.0.0', 'http://0.0.0.0:80', 'http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://localhost:8000', 'http://127.0.0.1:8000', 'https://ec4db675c64c9f.lhr.life']
+INFO 2025-06-16 12:43:46,410 middleware 8 139950990100160 Custom CSRF Middleware initialized with exempt paths: ['/api/auth/login/', '/api/auth/csrf/']
+INFO 2025-06-16 12:44:59,944 autoreload 8 139951022455680 /app/cafes/views.py changed, reloading.
+INFO 2025-06-16 12:45:00,365 autoreload 10 140715120466816 Watching for file changes with StatReloader
+INFO 2025-06-16 12:45:00,555 middleware 10 140715088111296 CORS Middleware initialized with allowed origins: ['http://localhost', 'http://frontend', 'http://localhost:80', 'http://127.0.0.1', 'http://127.0.0.1:80', 'http://0.0.0.0', 'http://0.0.0.0:80', 'http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://localhost:8000', 'http://127.0.0.1:8000', 'https://ec4db675c64c9f.lhr.life']
+INFO 2025-06-16 12:45:00,556 middleware 10 140715088111296 Custom CSRF Middleware initialized with exempt paths: ['/api/auth/login/', '/api/auth/csrf/']
+INFO 2025-06-16 12:45:37,924 autoreload 10 140715120466816 /app/cafes/views.py changed, reloading.
+INFO 2025-06-16 12:45:39,686 autoreload 12 140671219927936 Watching for file changes with StatReloader
+INFO 2025-06-16 12:45:39,881 middleware 12 140671187572416 CORS Middleware initialized with allowed origins: ['http://localhost', 'http://frontend', 'http://localhost:80', 'http://127.0.0.1', 'http://127.0.0.1:80', 'http://0.0.0.0', 'http://0.0.0.0:80', 'http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://localhost:8000', 'http://127.0.0.1:8000', 'https://ec4db675c64c9f.lhr.life']
+INFO 2025-06-16 12:45:39,883 middleware 12 140671187572416 Custom CSRF Middleware initialized with exempt paths: ['/api/auth/login/', '/api/auth/csrf/']
+INFO 2025-06-16 12:45:41,042 autoreload 12 140671219927936 /app/cafes/views.py changed, reloading.
+INFO 2025-06-16 12:45:41,503 autoreload 14 140348746509184 Watching for file changes with StatReloader
+INFO 2025-06-16 12:45:41,720 middleware 14 140348714153664 CORS Middleware initialized with allowed origins: ['http://localhost', 'http://frontend', 'http://localhost:80', 'http://127.0.0.1', 'http://127.0.0.1:80', 'http://0.0.0.0', 'http://0.0.0.0:80', 'http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://localhost:8000', 'http://127.0.0.1:8000', 'https://ec4db675c64c9f.lhr.life']
+INFO 2025-06-16 12:45:41,721 middleware 14 140348714153664 Custom CSRF Middleware initialized with exempt paths: ['/api/auth/login/', '/api/auth/csrf/']
+INFO 2025-06-16 12:46:32,030 autoreload 8 140007499017088 Watching for file changes with StatReloader
+INFO 2025-06-16 12:46:32,229 middleware 8 140007466661568 CORS Middleware initialized with allowed origins: ['http://localhost', 'http://frontend', 'http://localhost:80', 'http://127.0.0.1', 'http://127.0.0.1:80', 'http://0.0.0.0', 'http://0.0.0.0:80', 'http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://localhost:8000', 'http://127.0.0.1:8000', 'https://ec4db675c64c9f.lhr.life']
+INFO 2025-06-16 12:46:32,230 middleware 8 140007466661568 Custom CSRF Middleware initialized with exempt paths: ['/api/auth/login/', '/api/auth/csrf/']
+INFO 2025-06-16 12:48:33,816 autoreload 8 139982744845184 Watching for file changes with StatReloader
+INFO 2025-06-16 12:48:34,022 middleware 8 139982712489664 CORS Middleware initialized with allowed origins: ['http://localhost', 'http://frontend', 'http://localhost:80', 'http://127.0.0.1', 'http://127.0.0.1:80', 'http://0.0.0.0', 'http://0.0.0.0:80', 'http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://localhost:8000', 'http://127.0.0.1:8000', 'https://ec4db675c64c9f.lhr.life']
+INFO 2025-06-16 12:48:34,024 middleware 8 139982712489664 Custom CSRF Middleware initialized with exempt paths: ['/api/auth/login/', '/api/auth/csrf/']
+DEBUG 2025-06-16 12:48:37,199 middleware 8 139982692677312 Request from origin: 
+INFO 2025-06-16 12:48:37,206 views 8 139982692677312 Health check запрос от 172.18.0.3: ok
+INFO 2025-06-16 12:48:37,207 basehttp 8 139982692677312 "GET /api/health/ HTTP/1.0" 200 244
+DEBUG 2025-06-16 12:48:37,213 middleware 8 139982692677312 Request from origin: 
+DEBUG 2025-06-16 12:48:37,218 middleware 8 139982684022464 Request from origin: 
+DEBUG 2025-06-16 12:48:37,228 views 8 139982692677312 Menu item: Шурпа, image: http://localhost/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg, image_url: None
+INFO 2025-06-16 12:48:37,233 basehttp 8 139982684022464 "GET /api/cities/ HTTP/1.0" 200 168
+INFO 2025-06-16 12:48:37,235 basehttp 8 139982692677312 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 358
+DEBUG 2025-06-16 12:48:37,256 middleware 8 139982692677312 Request from origin: 
+INFO 2025-06-16 12:48:37,269 basehttp 8 139982692677312 "GET /api/cafes/?city=1&t=1750078117358 HTTP/1.0" 200 494
+DEBUG 2025-06-16 12:48:37,274 middleware 8 139982692677312 Request from origin: 
+DEBUG 2025-06-16 12:48:37,284 views 8 139982692677312 Menu item: Шурпа, image: http://localhost/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg, image_url: None
+INFO 2025-06-16 12:48:37,285 basehttp 8 139982692677312 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 358
+DEBUG 2025-06-16 12:48:48,300 middleware 8 139982692677312 Request from origin: 
+INFO 2025-06-16 12:48:48,306 views 8 139982692677312 Health check запрос от 172.18.0.3: ok
+INFO 2025-06-16 12:48:48,308 basehttp 8 139982692677312 "GET /api/health/ HTTP/1.0" 200 245
+DEBUG 2025-06-16 12:48:48,324 middleware 8 139982692677312 Request from origin: 
+INFO 2025-06-16 12:48:48,333 basehttp 8 139982692677312 "GET /api/cities/ HTTP/1.0" 200 168
+DEBUG 2025-06-16 12:48:48,360 middleware 8 139982692677312 Request from origin: 
+INFO 2025-06-16 12:48:48,371 basehttp 8 139982692677312 "GET /api/cafes/?city=1&t=1750078127523 HTTP/1.0" 200 494
+DEBUG 2025-06-16 12:48:48,375 middleware 8 139982692677312 Request from origin: 
+DEBUG 2025-06-16 12:48:48,383 views 8 139982692677312 Menu item: Шурпа, image: http://localhost/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg, image_url: None
+INFO 2025-06-16 12:48:48,384 basehttp 8 139982692677312 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 358
+DEBUG 2025-06-16 12:48:49,397 middleware 8 139982692677312 Request from origin: 
+INFO 2025-06-16 12:48:49,409 basehttp 8 139982692677312 "GET /api/cafes/?city=1&t=1750078128606 HTTP/1.0" 200 494
+DEBUG 2025-06-16 12:48:49,417 middleware 8 139982692677312 Request from origin: 
+INFO 2025-06-16 12:48:49,425 basehttp 8 139982692677312 "GET /media/cafe_covers/XXXL_1_1_ENDyb7O.webp?t=1750078128604 HTTP/1.0" 200 100380
+DEBUG 2025-06-16 12:48:50,173 middleware 8 139982692677312 Request from origin: 
+DEBUG 2025-06-16 12:48:50,181 views 8 139982692677312 Menu item: Шурпа, image: http://localhost/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg, image_url: None
+INFO 2025-06-16 12:48:50,182 basehttp 8 139982692677312 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 358
+DEBUG 2025-06-16 12:48:57,505 middleware 8 139982692677312 Request from origin: 
+WARNING 2025-06-16 12:48:57,530 log 8 139982692677312 Not Found: /media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg,
+WARNING 2025-06-16 12:48:57,530 basehttp 8 139982692677312 "GET /media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg, HTTP/1.0" 404 2736
+DEBUG 2025-06-16 12:49:00,450 middleware 8 139982692677312 Request from origin: 
+WARNING 2025-06-16 12:49:00,461 log 8 139982692677312 Not Found: /media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg,
+WARNING 2025-06-16 12:49:00,462 basehttp 8 139982692677312 "GET /media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg, HTTP/1.0" 404 2736
+INFO 2025-06-16 12:50:11,467 autoreload 8 139982744845184 /app/cafes/views.py changed, reloading.
+INFO 2025-06-16 12:50:11,955 autoreload 24 140498427452288 Watching for file changes with StatReloader
+INFO 2025-06-16 12:50:12,149 middleware 24 140498395096768 CORS Middleware initialized with allowed origins: ['http://localhost', 'http://frontend', 'http://localhost:80', 'http://127.0.0.1', 'http://127.0.0.1:80', 'http://0.0.0.0', 'http://0.0.0.0:80', 'http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://localhost:8000', 'http://127.0.0.1:8000', 'https://ec4db675c64c9f.lhr.life']
+INFO 2025-06-16 12:50:12,161 middleware 24 140498395096768 Custom CSRF Middleware initialized with exempt paths: ['/api/auth/login/', '/api/auth/csrf/']
+INFO 2025-06-16 12:50:13,296 autoreload 24 140498427452288 /app/cafes/views.py changed, reloading.
+INFO 2025-06-16 12:50:13,746 autoreload 26 139831646116736 Watching for file changes with StatReloader
+INFO 2025-06-16 12:50:13,943 middleware 26 139831613761216 CORS Middleware initialized with allowed origins: ['http://localhost', 'http://frontend', 'http://localhost:80', 'http://127.0.0.1', 'http://127.0.0.1:80', 'http://0.0.0.0', 'http://0.0.0.0:80', 'http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://localhost:8000', 'http://127.0.0.1:8000', 'https://ec4db675c64c9f.lhr.life']
+INFO 2025-06-16 12:50:13,944 middleware 26 139831613761216 Custom CSRF Middleware initialized with exempt paths: ['/api/auth/login/', '/api/auth/csrf/']
+INFO 2025-06-16 12:52:43,837 autoreload 8 139794046589824 Watching for file changes with StatReloader
+INFO 2025-06-16 12:52:44,044 middleware 8 139794014234304 CORS Middleware initialized with allowed origins: ['http://localhost', 'http://frontend', 'http://localhost:80', 'http://127.0.0.1', 'http://127.0.0.1:80', 'http://0.0.0.0', 'http://0.0.0.0:80', 'http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://localhost:8000', 'http://127.0.0.1:8000', 'https://ec4db675c64c9f.lhr.life']
+INFO 2025-06-16 12:52:44,045 middleware 8 139794014234304 Custom CSRF Middleware initialized with exempt paths: ['/api/auth/login/', '/api/auth/csrf/']
+DEBUG 2025-06-16 12:52:52,984 middleware 8 139793926977216 Request from origin: 
+INFO 2025-06-16 12:52:52,990 views 8 139793926977216 Health check запрос от 172.18.0.3: ok
+INFO 2025-06-16 12:52:52,991 basehttp 8 139793926977216 "GET /api/health/ HTTP/1.0" 200 244
+DEBUG 2025-06-16 12:52:52,998 middleware 8 139793926977216 Request from origin: 
+DEBUG 2025-06-16 12:52:53,001 middleware 8 139793918322368 Request from origin: 
+DEBUG 2025-06-16 12:52:53,014 views 8 139793926977216 Menu item: Шурпа, image: http://localhost/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg image_url: None
+INFO 2025-06-16 12:52:53,016 basehttp 8 139793918322368 "GET /api/cities/ HTTP/1.0" 200 168
+INFO 2025-06-16 12:52:53,017 basehttp 8 139793926977216 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 358
+DEBUG 2025-06-16 12:52:53,049 middleware 8 139793926977216 Request from origin: 
+INFO 2025-06-16 12:52:53,062 basehttp 8 139793926977216 "GET /api/cafes/?city=1&t=1750078373375 HTTP/1.0" 200 494
+DEBUG 2025-06-16 12:52:53,067 middleware 8 139793926977216 Request from origin: 
+DEBUG 2025-06-16 12:52:53,076 views 8 139793926977216 Menu item: Шурпа, image: http://localhost/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg image_url: None
+INFO 2025-06-16 12:52:53,077 basehttp 8 139793926977216 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 358
+INFO 2025-06-16 12:55:41,932 autoreload 8 139794046589824 /app/cafes/views.py changed, reloading.
+INFO 2025-06-16 12:55:42,396 autoreload 15 139708314561408 Watching for file changes with StatReloader
+INFO 2025-06-16 12:55:42,598 middleware 15 139708282205888 CORS Middleware initialized with allowed origins: ['http://localhost', 'http://frontend', 'http://localhost:80', 'http://127.0.0.1', 'http://127.0.0.1:80', 'http://0.0.0.0', 'http://0.0.0.0:80', 'http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://localhost:8000', 'http://127.0.0.1:8000', 'https://ec4db675c64c9f.lhr.life']
+INFO 2025-06-16 12:55:42,599 middleware 15 139708282205888 Custom CSRF Middleware initialized with exempt paths: ['/api/auth/login/', '/api/auth/csrf/']
+INFO 2025-06-16 12:55:43,755 autoreload 15 139708314561408 /app/cafes/views.py changed, reloading.
+INFO 2025-06-16 12:55:44,195 autoreload 17 140331355917184 Watching for file changes with StatReloader
+INFO 2025-06-16 12:55:44,402 middleware 17 140331323561664 CORS Middleware initialized with allowed origins: ['http://localhost', 'http://frontend', 'http://localhost:80', 'http://127.0.0.1', 'http://127.0.0.1:80', 'http://0.0.0.0', 'http://0.0.0.0:80', 'http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://localhost:8000', 'http://127.0.0.1:8000', 'https://ec4db675c64c9f.lhr.life']
+INFO 2025-06-16 12:55:44,403 middleware 17 140331323561664 Custom CSRF Middleware initialized with exempt paths: ['/api/auth/login/', '/api/auth/csrf/']
+INFO 2025-06-16 12:59:00,998 autoreload 8 140280625601408 Watching for file changes with StatReloader
+INFO 2025-06-16 12:59:01,205 middleware 8 140280593245888 CORS Middleware initialized with allowed origins: ['http://localhost', 'http://frontend', 'http://localhost:80', 'http://127.0.0.1', 'http://127.0.0.1:80', 'http://0.0.0.0', 'http://0.0.0.0:80', 'http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://localhost:8000', 'http://127.0.0.1:8000', 'https://ec4db675c64c9f.lhr.life']
+INFO 2025-06-16 12:59:01,207 middleware 8 140280593245888 Custom CSRF Middleware initialized with exempt paths: ['/api/auth/login/', '/api/auth/csrf/']
+DEBUG 2025-06-16 12:59:07,458 middleware 8 140280573195968 Request from origin: 
+INFO 2025-06-16 12:59:07,466 views 8 140280573195968 Health check запрос от 172.18.0.3: ok
+INFO 2025-06-16 12:59:07,467 basehttp 8 140280573195968 "GET /api/health/ HTTP/1.0" 200 244
+DEBUG 2025-06-16 12:59:07,479 middleware 8 140280573195968 Request from origin: 
+INFO 2025-06-16 12:59:07,490 basehttp 8 140280573195968 "GET /api/cities/ HTTP/1.0" 200 168
+DEBUG 2025-06-16 12:59:07,497 middleware 8 140280573195968 Request from origin: 
+INFO 2025-06-16 12:59:07,514 basehttp 8 140280573195968 "GET /api/cafes/?city=1&t=1750078747897 HTTP/1.0" 200 494
+DEBUG 2025-06-16 12:59:07,523 middleware 8 140280573195968 Request from origin: 
+DEBUG 2025-06-16 12:59:07,532 views 8 140280573195968 Menu item: Шурпа, image: http://localhost/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg, image_url: None
+INFO 2025-06-16 12:59:07,533 basehttp 8 140280573195968 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 358
+DEBUG 2025-06-16 12:59:08,495 middleware 8 140280573195968 Request from origin: 
+INFO 2025-06-16 12:59:08,506 basehttp 8 140280573195968 "GET /api/cafes/?city=1&t=1750078748940 HTTP/1.0" 200 494
+DEBUG 2025-06-16 12:59:08,514 middleware 8 140280573195968 Request from origin: 
+INFO 2025-06-16 12:59:08,524 basehttp 8 140280573195968 "GET /media/cafe_covers/XXXL_1_1_ENDyb7O.webp?t=1750078748938 HTTP/1.0" 200 100380
+DEBUG 2025-06-16 12:59:09,814 middleware 8 140280573195968 Request from origin: 
+DEBUG 2025-06-16 12:59:09,822 views 8 140280573195968 Menu item: Шурпа, image: http://localhost/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg, image_url: None
+INFO 2025-06-16 12:59:09,823 basehttp 8 140280573195968 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 358
+DEBUG 2025-06-16 12:59:39,769 middleware 8 140280573195968 Request from origin: 
+WARNING 2025-06-16 12:59:39,786 log 8 140280573195968 Not Found: /media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg,
+WARNING 2025-06-16 12:59:39,786 basehttp 8 140280573195968 "GET /media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg, HTTP/1.0" 404 2736
+INFO 2025-06-16 13:01:05,674 autoreload 8 140171155467136 Watching for file changes with StatReloader
+INFO 2025-06-16 13:01:05,845 middleware 8 140171123111616 CORS Middleware initialized with allowed origins: ['http://localhost', 'http://frontend', 'http://localhost:80', 'http://127.0.0.1', 'http://127.0.0.1:80', 'http://0.0.0.0', 'http://0.0.0.0:80', 'http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://localhost:8000', 'http://127.0.0.1:8000', 'https://ec4db675c64c9f.lhr.life']
+INFO 2025-06-16 13:01:05,846 middleware 8 140171123111616 Custom CSRF Middleware initialized with exempt paths: ['/api/auth/login/', '/api/auth/csrf/']
+DEBUG 2025-06-16 13:01:13,080 middleware 8 140171103172288 Request from origin: 
+INFO 2025-06-16 13:01:13,088 views 8 140171103172288 Health check запрос от 172.18.0.3: ok
+INFO 2025-06-16 13:01:13,089 basehttp 8 140171103172288 "GET /api/health/ HTTP/1.0" 200 245
+DEBUG 2025-06-16 13:01:13,120 middleware 8 140171103172288 Request from origin: 
+INFO 2025-06-16 13:01:13,128 basehttp 8 140171103172288 "GET /api/cities/ HTTP/1.0" 200 168
+DEBUG 2025-06-16 13:01:13,133 middleware 8 140171103172288 Request from origin: 
+INFO 2025-06-16 13:01:13,150 basehttp 8 140171103172288 "GET /api/cafes/?city=1&t=1750078873422 HTTP/1.0" 200 494
+DEBUG 2025-06-16 13:01:13,154 middleware 8 140171103172288 Request from origin: 
+DEBUG 2025-06-16 13:01:13,163 views 8 140171103172288 Menu item: Шурпа, image: http://localhost/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg, image_url: None
+INFO 2025-06-16 13:01:13,164 basehttp 8 140171103172288 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 358
+DEBUG 2025-06-16 13:01:22,018 middleware 8 140171103172288 Request from origin: 
+INFO 2025-06-16 13:01:22,025 views 8 140171103172288 Health check запрос от 172.18.0.3: ok
+INFO 2025-06-16 13:01:22,026 basehttp 8 140171103172288 "GET /api/health/ HTTP/1.0" 200 244
+DEBUG 2025-06-16 13:01:22,038 middleware 8 140171103172288 Request from origin: 
+INFO 2025-06-16 13:01:22,047 basehttp 8 140171103172288 "GET /api/cities/ HTTP/1.0" 200 168
+DEBUG 2025-06-16 13:01:22,072 middleware 8 140171103172288 Request from origin: 
+INFO 2025-06-16 13:01:22,083 basehttp 8 140171103172288 "GET /api/cafes/?city=1&t=1750078881250 HTTP/1.0" 200 494
+DEBUG 2025-06-16 13:01:22,088 middleware 8 140171103172288 Request from origin: 
+DEBUG 2025-06-16 13:01:22,095 views 8 140171103172288 Menu item: Шурпа, image: http://localhost/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg, image_url: None
+INFO 2025-06-16 13:01:22,096 basehttp 8 140171103172288 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 358
+DEBUG 2025-06-16 13:01:25,751 middleware 8 140171103172288 Request from origin: 
+INFO 2025-06-16 13:01:25,761 basehttp 8 140171103172288 "GET /api/cafes/?city=1&t=1750078885095 HTTP/1.0" 200 494
+DEBUG 2025-06-16 13:01:25,769 middleware 8 140171103172288 Request from origin: 
+INFO 2025-06-16 13:01:25,778 basehttp 8 140171103172288 "GET /media/cafe_covers/XXXL_1_1_ENDyb7O.webp?t=1750078885093 HTTP/1.0" 200 100380
+DEBUG 2025-06-16 13:02:23,405 middleware 8 140171103172288 Request from origin: 
+WARNING 2025-06-16 13:02:23,420 log 8 140171103172288 Not Found: /media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg,
+WARNING 2025-06-16 13:02:23,420 basehttp 8 140171103172288 "GET /media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg, HTTP/1.0" 404 2736
+DEBUG 2025-06-16 13:03:03,021 middleware 8 140171103172288 Request from origin: 
+WARNING 2025-06-16 13:03:03,032 log 8 140171103172288 Not Found: /media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg,
+WARNING 2025-06-16 13:03:03,032 basehttp 8 140171103172288 "GET /media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg, HTTP/1.1" 404 2741
+DEBUG 2025-06-16 13:03:03,079 middleware 8 140171103172288 Request from origin: 
+WARNING 2025-06-16 13:03:03,086 log 8 140171103172288 Not Found: /favicon.ico
+WARNING 2025-06-16 13:03:03,087 basehttp 8 140171103172288 "GET /favicon.ico HTTP/1.1" 404 2340
+DEBUG 2025-06-16 13:03:05,998 middleware 8 140171103172288 Request from origin: 
+WARNING 2025-06-16 13:03:06,005 log 8 140171103172288 Not Found: /media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg,
+WARNING 2025-06-16 13:03:06,006 basehttp 8 140171103172288 "GET /media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg, HTTP/1.1" 404 2741
+DEBUG 2025-06-16 13:03:09,306 middleware 8 140171103172288 Request from origin: 
+INFO 2025-06-16 13:03:09,328 basehttp 8 140171103172288 "GET /admin/ HTTP/1.1" 302 0
+DEBUG 2025-06-16 13:03:09,331 middleware 8 140171103172288 Request from origin: 
+INFO 2025-06-16 13:03:09,353 basehttp 8 140171103172288 "GET /admin/login/?next=/admin/ HTTP/1.1" 200 4267
+INFO 2025-06-16 13:03:09,371 basehttp 8 140171022431936 "GET /static/admin/css/dark_mode.css HTTP/1.1" 200 2929
+INFO 2025-06-16 13:03:09,372 basehttp 8 140171103172288 "GET /static/admin/css/base.css HTTP/1.1" 200 21310
+INFO 2025-06-16 13:03:09,380 basehttp 8 140171014039232 "GET /static/admin/css/nav_sidebar.css HTTP/1.1" 200 2694
+INFO 2025-06-16 13:03:09,380 basehttp 8 140171005646528 "GET /static/admin/css/login.css HTTP/1.1" 200 958
+INFO 2025-06-16 13:03:09,380 basehttp 8 140171022431936 "GET /static/admin/js/theme.js HTTP/1.1" 200 1943
+INFO 2025-06-16 13:03:09,381 basehttp 8 140170988861120 "GET /static/admin/js/nav_sidebar.js HTTP/1.1" 200 3063
+INFO 2025-06-16 13:03:09,383 basehttp 8 140170997253824 "GET /static/admin/css/responsive.css HTTP/1.1" 200 18559
+DEBUG 2025-06-16 13:03:10,643 middleware 8 140170988861120 Request from origin: http://localhost:8000
+INFO 2025-06-16 13:03:10,824 basehttp 8 140170988861120 "POST /admin/login/?next=/admin/ HTTP/1.1" 302 0
+DEBUG 2025-06-16 13:03:10,828 middleware 8 140170988861120 Request from origin: 
+INFO 2025-06-16 13:03:10,851 basehttp 8 140170988861120 "GET /admin/ HTTP/1.1" 200 11723
+INFO 2025-06-16 13:03:10,870 basehttp 8 140170988861120 "GET /static/admin/css/dashboard.css HTTP/1.1" 200 441
+INFO 2025-06-16 13:03:10,897 basehttp 8 140171103172288 "GET /static/admin/img/icon-addlink.svg HTTP/1.1" 200 331
+INFO 2025-06-16 13:03:10,897 basehttp 8 140170997253824 "GET /static/admin/img/icon-changelink.svg HTTP/1.1" 200 380
+DEBUG 2025-06-16 13:03:12,292 middleware 8 140170988861120 Request from origin: 
+INFO 2025-06-16 13:03:12,329 basehttp 8 140170988861120 "GET /admin/cafes/menuitem/ HTTP/1.1" 200 13154
+INFO 2025-06-16 13:03:12,350 basehttp 8 140170988861120 "GET /static/admin/css/changelists.css HTTP/1.1" 200 6566
+DEBUG 2025-06-16 13:03:12,352 middleware 8 140170997253824 Request from origin: 
+INFO 2025-06-16 13:03:12,360 basehttp 8 140170988861120 "GET /static/admin/js/actions.js HTTP/1.1" 200 7872
+INFO 2025-06-16 13:03:12,360 basehttp 8 140171022431936 "GET /static/admin/js/jquery.init.js HTTP/1.1" 200 347
+INFO 2025-06-16 13:03:12,361 basehttp 8 140171014039232 "GET /static/admin/js/admin/RelatedObjectLookups.js HTTP/1.1" 200 8943
+INFO 2025-06-16 13:03:12,364 basehttp 8 140171005646528 "GET /static/admin/js/core.js HTTP/1.1" 200 5682
+INFO 2025-06-16 13:03:12,366 basehttp 8 140171022431936 "GET /static/admin/js/urlify.js HTTP/1.1" 200 7887
+INFO 2025-06-16 13:03:12,367 basehttp 8 140170988861120 "GET /static/admin/js/prepopulate.js HTTP/1.1" 200 1531
+INFO 2025-06-16 13:03:12,372 basehttp 8 140171005646528 "GET /static/admin/img/search.svg HTTP/1.1" 200 458
+INFO 2025-06-16 13:03:12,372 basehttp 8 140171022431936 "GET /static/admin/img/icon-yes.svg HTTP/1.1" 200 436
+INFO 2025-06-16 13:03:12,379 basehttp 8 140170997253824 "GET /admin/jsi18n/ HTTP/1.1" 200 16066
+INFO 2025-06-16 13:03:12,382 basehttp 8 140171014039232 "GET /static/admin/js/vendor/xregexp/xregexp.js HTTP/1.1" 200 232381
+INFO 2025-06-16 13:03:12,382 basehttp 8 140171103172288 "GET /static/admin/js/vendor/jquery/jquery.js HTTP/1.1" 200 292458
+INFO 2025-06-16 13:03:12,395 basehttp 8 140171103172288 "GET /static/admin/js/filters.js HTTP/1.1" 200 978
+INFO 2025-06-16 13:03:12,396 basehttp 8 140170997253824 "GET /static/admin/img/sorting-icons.svg HTTP/1.1" 200 1097
+INFO 2025-06-16 13:03:12,397 basehttp 8 140171014039232 "GET /static/admin/img/tooltag-add.svg HTTP/1.1" 200 331
+DEBUG 2025-06-16 13:03:14,417 middleware 8 140171103172288 Request from origin: 
+INFO 2025-06-16 13:03:14,466 basehttp 8 140171103172288 "GET /admin/cafes/menuitem/1/change/ HTTP/1.1" 200 16252
+INFO 2025-06-16 13:03:14,481 basehttp 8 140171103172288 "GET /static/admin/css/forms.css HTTP/1.1" 200 9090
+DEBUG 2025-06-16 13:03:14,483 middleware 8 140171014039232 Request from origin: 
+INFO 2025-06-16 13:03:14,488 basehttp 8 140170997253824 "GET /static/admin/img/icon-viewlink.svg HTTP/1.1" 200 581
+INFO 2025-06-16 13:03:14,488 basehttp 8 140171022431936 "GET /static/admin/js/prepopulate_init.js HTTP/1.1" 200 586
+INFO 2025-06-16 13:03:14,496 basehttp 8 140171014039232 "GET /admin/jsi18n/ HTTP/1.1" 200 16066
+INFO 2025-06-16 13:03:14,502 basehttp 8 140171014039232 "GET /static/admin/js/change_form.js HTTP/1.1" 200 606
+INFO 2025-06-16 13:03:14,533 basehttp 8 140171103172288 "GET /static/admin/css/widgets.css HTTP/1.1" 200 11921
+DEBUG 2025-06-16 13:03:15,576 middleware 8 140171014039232 Request from origin: 
+INFO 2025-06-16 13:03:15,579 basehttp 8 140171014039232 "GET /media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg HTTP/1.1" 304 0
+INFO 2025-06-16 13:04:20,109 autoreload 8 140171155467136 /app/cafes/serializers.py changed, reloading.
+INFO 2025-06-16 13:04:20,524 autoreload 27 140360079330176 Watching for file changes with StatReloader
+INFO 2025-06-16 13:04:20,693 middleware 27 140360046974656 CORS Middleware initialized with allowed origins: ['http://localhost', 'http://frontend', 'http://localhost:80', 'http://127.0.0.1', 'http://127.0.0.1:80', 'http://0.0.0.0', 'http://0.0.0.0:80', 'http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://localhost:8000', 'http://127.0.0.1:8000', 'https://ec4db675c64c9f.lhr.life']
+INFO 2025-06-16 13:04:20,694 middleware 27 140360046974656 Custom CSRF Middleware initialized with exempt paths: ['/api/auth/login/', '/api/auth/csrf/']
+INFO 2025-06-16 13:04:21,854 autoreload 27 140360079330176 /app/cafes/serializers.py changed, reloading.
+INFO 2025-06-16 13:04:22,199 autoreload 29 140041639152512 Watching for file changes with StatReloader
+INFO 2025-06-16 13:04:22,364 middleware 29 140041606796992 CORS Middleware initialized with allowed origins: ['http://localhost', 'http://frontend', 'http://localhost:80', 'http://127.0.0.1', 'http://127.0.0.1:80', 'http://0.0.0.0', 'http://0.0.0.0:80', 'http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://localhost:8000', 'http://127.0.0.1:8000', 'https://ec4db675c64c9f.lhr.life']
+INFO 2025-06-16 13:04:22,365 middleware 29 140041606796992 Custom CSRF Middleware initialized with exempt paths: ['/api/auth/login/', '/api/auth/csrf/']
+INFO 2025-06-16 13:04:42,334 autoreload 29 140041639152512 /app/cafes/views.py changed, reloading.
+INFO 2025-06-16 13:04:42,703 autoreload 31 140716309035904 Watching for file changes with StatReloader
+INFO 2025-06-16 13:04:42,870 middleware 31 140716276680384 CORS Middleware initialized with allowed origins: ['http://localhost', 'http://frontend', 'http://localhost:80', 'http://127.0.0.1', 'http://127.0.0.1:80', 'http://0.0.0.0', 'http://0.0.0.0:80', 'http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://localhost:8000', 'http://127.0.0.1:8000', 'https://ec4db675c64c9f.lhr.life']
+INFO 2025-06-16 13:04:42,871 middleware 31 140716276680384 Custom CSRF Middleware initialized with exempt paths: ['/api/auth/login/', '/api/auth/csrf/']
+INFO 2025-06-16 13:04:44,014 autoreload 31 140716309035904 /app/cafes/views.py changed, reloading.
+INFO 2025-06-16 13:04:44,344 autoreload 33 140329748061056 Watching for file changes with StatReloader
+INFO 2025-06-16 13:04:44,513 middleware 33 140329715705536 CORS Middleware initialized with allowed origins: ['http://localhost', 'http://frontend', 'http://localhost:80', 'http://127.0.0.1', 'http://127.0.0.1:80', 'http://0.0.0.0', 'http://0.0.0.0:80', 'http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://localhost:8000', 'http://127.0.0.1:8000', 'https://ec4db675c64c9f.lhr.life']
+INFO 2025-06-16 13:04:44,514 middleware 33 140329715705536 Custom CSRF Middleware initialized with exempt paths: ['/api/auth/login/', '/api/auth/csrf/']
+INFO 2025-06-16 13:04:52,804 autoreload 33 140329748061056 /app/cafes/views.py changed, reloading.
+INFO 2025-06-16 13:04:53,193 autoreload 35 140599598717824 Watching for file changes with StatReloader
+INFO 2025-06-16 13:04:53,365 middleware 35 140599566362304 CORS Middleware initialized with allowed origins: ['http://localhost', 'http://frontend', 'http://localhost:80', 'http://127.0.0.1', 'http://127.0.0.1:80', 'http://0.0.0.0', 'http://0.0.0.0:80', 'http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://localhost:8000', 'http://127.0.0.1:8000', 'https://ec4db675c64c9f.lhr.life']
+INFO 2025-06-16 13:04:53,367 middleware 35 140599566362304 Custom CSRF Middleware initialized with exempt paths: ['/api/auth/login/', '/api/auth/csrf/']
+INFO 2025-06-16 13:07:21,230 autoreload 8 140128248499072 Watching for file changes with StatReloader
+INFO 2025-06-16 13:07:21,417 middleware 8 140128216143552 CORS Middleware initialized with allowed origins: ['http://localhost', 'http://frontend', 'http://localhost:80', 'http://127.0.0.1', 'http://127.0.0.1:80', 'http://0.0.0.0', 'http://0.0.0.0:80', 'http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://localhost:8000', 'http://127.0.0.1:8000', 'https://ec4db675c64c9f.lhr.life']
+INFO 2025-06-16 13:07:21,418 middleware 8 140128216143552 Custom CSRF Middleware initialized with exempt paths: ['/api/auth/login/', '/api/auth/csrf/']
+DEBUG 2025-06-16 13:07:33,545 middleware 8 140128128857792 Request from origin: 
+INFO 2025-06-16 13:07:33,554 views 8 140128128857792 Health check запрос от 172.18.0.3: ok
+INFO 2025-06-16 13:07:33,555 basehttp 8 140128128857792 "GET /api/health/ HTTP/1.0" 200 245
+DEBUG 2025-06-16 13:07:33,571 middleware 8 140128128857792 Request from origin: 
+INFO 2025-06-16 13:07:33,580 basehttp 8 140128128857792 "GET /api/cities/ HTTP/1.0" 200 168
+DEBUG 2025-06-16 13:07:33,585 middleware 8 140128128857792 Request from origin: 
+INFO 2025-06-16 13:07:33,597 basehttp 8 140128128857792 "GET /api/cafes/?city=1&t=1750079254055 HTTP/1.0" 200 494
+DEBUG 2025-06-16 13:07:33,602 middleware 8 140128128857792 Request from origin: 
+DEBUG 2025-06-16 13:07:33,612 views 8 140128128857792 Menu item: Шурпа, image: http://localhost/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg, image_full_url: http://localhost/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg
+INFO 2025-06-16 13:07:33,613 basehttp 8 140128128857792 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 461
+DEBUG 2025-06-16 13:07:34,727 middleware 8 140128128857792 Request from origin: 
+INFO 2025-06-16 13:07:34,741 basehttp 8 140128128857792 "GET /api/cafes/?city=1&t=1750079255248 HTTP/1.0" 200 494
+DEBUG 2025-06-16 13:07:34,749 middleware 8 140128128857792 Request from origin: 
+INFO 2025-06-16 13:07:34,758 basehttp 8 140128128857792 "GET /media/cafe_covers/XXXL_1_1_ENDyb7O.webp?t=1750079255246 HTTP/1.0" 200 100380
+DEBUG 2025-06-16 13:07:35,709 middleware 8 140128128857792 Request from origin: 
+DEBUG 2025-06-16 13:07:35,719 views 8 140128128857792 Menu item: Шурпа, image: http://localhost/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg, image_full_url: http://localhost/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg
+INFO 2025-06-16 13:07:35,720 basehttp 8 140128128857792 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 461
+DEBUG 2025-06-16 13:07:52,654 middleware 8 140128128857792 Request from origin: 
+INFO 2025-06-16 13:07:52,658 basehttp 8 140128128857792 "GET /media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg HTTP/1.1" 304 0
+INFO 2025-06-16 13:11:02,294 autoreload 8 140596855413632 Watching for file changes with StatReloader
+INFO 2025-06-16 13:11:02,495 middleware 8 140596823058112 CORS Middleware initialized with allowed origins: ['http://localhost', 'http://frontend', 'http://localhost:80', 'http://127.0.0.1', 'http://127.0.0.1:80', 'http://0.0.0.0', 'http://0.0.0.0:80', 'http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://localhost:8000', 'http://127.0.0.1:8000', 'https://ec4db675c64c9f.lhr.life']
+INFO 2025-06-16 13:11:02,496 middleware 8 140596823058112 Custom CSRF Middleware initialized with exempt paths: ['/api/auth/login/', '/api/auth/csrf/']
+DEBUG 2025-06-16 13:11:03,995 middleware 8 140596803008192 Request from origin: 
+DEBUG 2025-06-16 13:11:04,002 middleware 8 140596794353344 Request from origin: 
+INFO 2025-06-16 13:11:04,010 views 8 140596803008192 Health check запрос от 172.18.0.3: ok
+INFO 2025-06-16 13:11:04,014 basehttp 8 140596803008192 "GET /api/health/ HTTP/1.0" 200 245
+DEBUG 2025-06-16 13:11:04,019 middleware 8 140596803008192 Request from origin: 
+DEBUG 2025-06-16 13:11:04,027 views 8 140596794353344 Menu item: Шурпа, image: http://localhost/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg, image_full_url: http://localhost:8000/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg
+INFO 2025-06-16 13:11:04,029 basehttp 8 140596794353344 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 466
+INFO 2025-06-16 13:11:04,035 basehttp 8 140596803008192 "GET /api/cities/ HTTP/1.0" 200 168
+DEBUG 2025-06-16 13:11:04,048 middleware 8 140596803008192 Request from origin: 
+INFO 2025-06-16 13:11:04,062 basehttp 8 140596803008192 "GET /api/cafes/?city=1&t=1750079463997 HTTP/1.0" 200 494
+DEBUG 2025-06-16 13:11:04,066 middleware 8 140596803008192 Request from origin: 
+DEBUG 2025-06-16 13:11:04,078 views 8 140596803008192 Menu item: Шурпа, image: http://localhost/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg, image_full_url: http://localhost:8000/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg
+INFO 2025-06-16 13:11:04,079 basehttp 8 140596803008192 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 466
+DEBUG 2025-06-16 13:11:10,903 middleware 8 140596785174208 Request from origin: 
+WARNING 2025-06-16 13:11:10,924 log 8 140596785174208 Not Found: /media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg,
+WARNING 2025-06-16 13:11:10,925 basehttp 8 140596785174208 "GET /media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg, HTTP/1.0" 404 2736
+INFO 2025-06-16 13:11:56,018 autoreload 8 140596855413632 /app/cafes/views.py changed, reloading.
+INFO 2025-06-16 13:11:56,435 autoreload 18 140196604230528 Watching for file changes with StatReloader
+INFO 2025-06-16 13:11:56,631 middleware 18 140196571875008 CORS Middleware initialized with allowed origins: ['http://localhost', 'http://frontend', 'http://localhost:80', 'http://127.0.0.1', 'http://127.0.0.1:80', 'http://0.0.0.0', 'http://0.0.0.0:80', 'http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://localhost:8000', 'http://127.0.0.1:8000', 'https://ec4db675c64c9f.lhr.life']
+INFO 2025-06-16 13:11:56,633 middleware 18 140196571875008 Custom CSRF Middleware initialized with exempt paths: ['/api/auth/login/', '/api/auth/csrf/']
+INFO 2025-06-16 13:11:58,832 autoreload 18 140196604230528 /app/cafes/views.py changed, reloading.
+INFO 2025-06-16 13:11:59,222 autoreload 20 139897124158336 Watching for file changes with StatReloader
+INFO 2025-06-16 13:11:59,397 middleware 20 139897091802816 CORS Middleware initialized with allowed origins: ['http://localhost', 'http://frontend', 'http://localhost:80', 'http://127.0.0.1', 'http://127.0.0.1:80', 'http://0.0.0.0', 'http://0.0.0.0:80', 'http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://localhost:8000', 'http://127.0.0.1:8000', 'https://ec4db675c64c9f.lhr.life']
+INFO 2025-06-16 13:11:59,399 middleware 20 139897091802816 Custom CSRF Middleware initialized with exempt paths: ['/api/auth/login/', '/api/auth/csrf/']
+INFO 2025-06-16 13:12:14,927 autoreload 20 139897124158336 /app/cafes/serializers.py changed, reloading.
+INFO 2025-06-16 13:12:15,419 autoreload 22 140560665275264 Watching for file changes with StatReloader
+INFO 2025-06-16 13:12:15,617 middleware 22 140560632919744 CORS Middleware initialized with allowed origins: ['http://localhost', 'http://frontend', 'http://localhost:80', 'http://127.0.0.1', 'http://127.0.0.1:80', 'http://0.0.0.0', 'http://0.0.0.0:80', 'http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://localhost:8000', 'http://127.0.0.1:8000', 'https://ec4db675c64c9f.lhr.life']
+INFO 2025-06-16 13:12:15,618 middleware 22 140560632919744 Custom CSRF Middleware initialized with exempt paths: ['/api/auth/login/', '/api/auth/csrf/']
+INFO 2025-06-16 13:12:16,773 autoreload 22 140560665275264 /app/cafes/serializers.py changed, reloading.
+INFO 2025-06-16 13:12:17,200 autoreload 24 140434005400448 Watching for file changes with StatReloader
+INFO 2025-06-16 13:12:17,391 middleware 24 140433973044928 CORS Middleware initialized with allowed origins: ['http://localhost', 'http://frontend', 'http://localhost:80', 'http://127.0.0.1', 'http://127.0.0.1:80', 'http://0.0.0.0', 'http://0.0.0.0:80', 'http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://localhost:8000', 'http://127.0.0.1:8000', 'https://ec4db675c64c9f.lhr.life']
+INFO 2025-06-16 13:12:17,392 middleware 24 140433973044928 Custom CSRF Middleware initialized with exempt paths: ['/api/auth/login/', '/api/auth/csrf/']
+INFO 2025-06-16 13:15:17,127 autoreload 8 140114844134272 Watching for file changes with StatReloader
+INFO 2025-06-16 13:15:17,305 middleware 8 140114811778752 CORS Middleware initialized with allowed origins: ['http://localhost', 'http://frontend', 'http://localhost:80', 'http://127.0.0.1', 'http://127.0.0.1:80', 'http://0.0.0.0', 'http://0.0.0.0:80', 'http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://localhost:8000', 'http://127.0.0.1:8000', 'https://ec4db675c64c9f.lhr.life']
+INFO 2025-06-16 13:15:17,306 middleware 8 140114811778752 Custom CSRF Middleware initialized with exempt paths: ['/api/auth/login/', '/api/auth/csrf/']
+INFO 2025-06-16 13:16:38,049 autoreload 8 139873153870720 Watching for file changes with StatReloader
+INFO 2025-06-16 13:16:38,302 middleware 8 139873121515200 CORS Middleware initialized with allowed origins: ['http://localhost', 'http://frontend', 'http://localhost:80', 'http://127.0.0.1', 'http://127.0.0.1:80', 'http://0.0.0.0', 'http://0.0.0.0:80', 'http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://localhost:8000', 'http://127.0.0.1:8000', 'https://ec4db675c64c9f.lhr.life']
+INFO 2025-06-16 13:16:38,304 middleware 8 139873121515200 Custom CSRF Middleware initialized with exempt paths: ['/api/auth/login/', '/api/auth/csrf/']
+DEBUG 2025-06-16 13:16:42,875 middleware 8 139873101543104 Request from origin: 
+DEBUG 2025-06-16 13:16:42,884 middleware 8 139873092888256 Request from origin: 
+INFO 2025-06-16 13:16:42,889 views 8 139873101543104 Health check запрос от 172.18.0.3: ok
+INFO 2025-06-16 13:16:42,890 basehttp 8 139873101543104 "GET /api/health/ HTTP/1.0" 200 245
+DEBUG 2025-06-16 13:16:42,899 middleware 8 139873101543104 Request from origin: 
+DEBUG 2025-06-16 13:16:42,903 views 8 139873092888256 Menu item: Шурпа, image: '/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg', image_full_url: 'http://localhost:8000/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg'
+INFO 2025-06-16 13:16:42,905 basehttp 8 139873092888256 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 450
+INFO 2025-06-16 13:16:42,915 basehttp 8 139873101543104 "GET /api/cities/ HTTP/1.0" 200 168
+DEBUG 2025-06-16 13:16:42,938 middleware 8 139873101543104 Request from origin: 
+INFO 2025-06-16 13:16:42,952 basehttp 8 139873101543104 "GET /api/cafes/?city=1&t=1750079802525 HTTP/1.0" 200 494
+DEBUG 2025-06-16 13:16:42,957 middleware 8 139873101543104 Request from origin: 
+DEBUG 2025-06-16 13:16:42,969 views 8 139873101543104 Menu item: Шурпа, image: '/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg', image_full_url: 'http://localhost:8000/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg'
+INFO 2025-06-16 13:16:42,970 basehttp 8 139873101543104 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 450
+INFO 2025-06-16 13:17:45,108 autoreload 8 139873153870720 /app/cafes/serializers.py changed, reloading.
+INFO 2025-06-16 13:17:45,503 autoreload 15 139913879681920 Watching for file changes with StatReloader
+INFO 2025-06-16 13:17:45,684 middleware 15 139913847326400 CORS Middleware initialized with allowed origins: ['http://localhost', 'http://frontend', 'http://localhost:80', 'http://127.0.0.1', 'http://127.0.0.1:80', 'http://0.0.0.0', 'http://0.0.0.0:80', 'http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://localhost:8000', 'http://127.0.0.1:8000', 'https://ec4db675c64c9f.lhr.life']
+INFO 2025-06-16 13:17:45,685 middleware 15 139913847326400 Custom CSRF Middleware initialized with exempt paths: ['/api/auth/login/', '/api/auth/csrf/']
+INFO 2025-06-16 13:18:05,282 autoreload 15 139913879681920 /app/cafes/serializers.py changed, reloading.
+INFO 2025-06-16 13:18:05,703 autoreload 17 140141688834944 Watching for file changes with StatReloader
+INFO 2025-06-16 13:18:05,879 middleware 17 140141656479424 CORS Middleware initialized with allowed origins: ['http://localhost', 'http://frontend', 'http://localhost:80', 'http://127.0.0.1', 'http://127.0.0.1:80', 'http://0.0.0.0', 'http://0.0.0.0:80', 'http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://localhost:8000', 'http://127.0.0.1:8000', 'https://ec4db675c64c9f.lhr.life']
+INFO 2025-06-16 13:18:05,880 middleware 17 140141656479424 Custom CSRF Middleware initialized with exempt paths: ['/api/auth/login/', '/api/auth/csrf/']
+INFO 2025-06-16 13:18:08,522 autoreload 17 140141688834944 /app/cafes/serializers.py changed, reloading.
+INFO 2025-06-16 13:18:08,904 autoreload 19 139917735730048 Watching for file changes with StatReloader
+INFO 2025-06-16 13:18:09,083 middleware 19 139917703374528 CORS Middleware initialized with allowed origins: ['http://localhost', 'http://frontend', 'http://localhost:80', 'http://127.0.0.1', 'http://127.0.0.1:80', 'http://0.0.0.0', 'http://0.0.0.0:80', 'http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://localhost:8000', 'http://127.0.0.1:8000', 'https://ec4db675c64c9f.lhr.life']
+INFO 2025-06-16 13:18:09,085 middleware 19 139917703374528 Custom CSRF Middleware initialized with exempt paths: ['/api/auth/login/', '/api/auth/csrf/']
+INFO 2025-06-16 13:18:23,174 autoreload 8 139646475840384 Watching for file changes with StatReloader
+INFO 2025-06-16 13:18:23,365 middleware 8 139646443484864 CORS Middleware initialized with allowed origins: ['http://localhost', 'http://frontend', 'http://localhost:80', 'http://127.0.0.1', 'http://127.0.0.1:80', 'http://0.0.0.0', 'http://0.0.0.0:80', 'http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://localhost:8000', 'http://127.0.0.1:8000', 'https://ec4db675c64c9f.lhr.life']
+INFO 2025-06-16 13:18:23,366 middleware 8 139646443484864 Custom CSRF Middleware initialized with exempt paths: ['/api/auth/login/', '/api/auth/csrf/']
+INFO 2025-06-16 13:18:57,760 autoreload 9 140267511135104 Watching for file changes with StatReloader
+INFO 2025-06-16 13:18:57,993 middleware 9 140267478517440 CORS Middleware initialized with allowed origins: ['http://localhost', 'http://frontend', 'http://localhost:80', 'http://127.0.0.1', 'http://127.0.0.1:80', 'http://0.0.0.0', 'http://0.0.0.0:80', 'http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://localhost:8000', 'http://127.0.0.1:8000', 'https://ec4db675c64c9f.lhr.life']
+INFO 2025-06-16 13:18:57,995 middleware 9 140267478517440 Custom CSRF Middleware initialized with exempt paths: ['/api/auth/login/', '/api/auth/csrf/']
+DEBUG 2025-06-16 13:18:58,883 middleware 9 140267390760640 Request from origin: 
+DEBUG 2025-06-16 13:18:58,893 middleware 9 140267382367936 Request from origin: 
+INFO 2025-06-16 13:18:58,899 views 9 140267390760640 Health check запрос от 172.18.0.3: ok
+INFO 2025-06-16 13:18:58,901 basehttp 9 140267390760640 "GET /api/health/ HTTP/1.0" 200 244
+DEBUG 2025-06-16 13:18:58,915 middleware 9 140267390760640 Request from origin: 
+DEBUG 2025-06-16 13:18:58,916 views 9 140267382367936 Menu item: Шурпа, image: 'http://localhost:8000/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg', image_full_url: 'http://localhost:8000/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg'
+INFO 2025-06-16 13:18:58,919 basehttp 9 140267382367936 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 471
+INFO 2025-06-16 13:18:58,930 basehttp 9 140267390760640 "GET /api/cities/ HTTP/1.0" 200 168
+DEBUG 2025-06-16 13:18:58,943 middleware 9 140267390760640 Request from origin: 
+INFO 2025-06-16 13:18:58,958 basehttp 9 140267390760640 "GET /api/cafes/?city=1&t=1750079939034 HTTP/1.0" 200 494
+DEBUG 2025-06-16 13:18:58,963 middleware 9 140267390760640 Request from origin: 
+DEBUG 2025-06-16 13:18:58,975 views 9 140267390760640 Menu item: Шурпа, image: 'http://localhost:8000/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg', image_full_url: 'http://localhost:8000/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg'
+INFO 2025-06-16 13:18:58,976 basehttp 9 140267390760640 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 471
+DEBUG 2025-06-16 13:18:59,662 middleware 9 140267390760640 Request from origin: 
+INFO 2025-06-16 13:18:59,666 basehttp 9 140267390760640 "GET /media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg HTTP/1.1" 304 0
+DEBUG 2025-06-16 13:19:12,785 middleware 9 140267382367936 Request from origin: 
+INFO 2025-06-16 13:19:12,799 views 9 140267382367936 Health check запрос от 172.18.0.3: ok
+INFO 2025-06-16 13:19:12,800 basehttp 9 140267382367936 "GET /api/health/ HTTP/1.0" 200 243
+DEBUG 2025-06-16 13:19:12,837 middleware 9 140267382367936 Request from origin: 
+INFO 2025-06-16 13:19:12,848 basehttp 9 140267382367936 "GET /api/cities/ HTTP/1.0" 200 168
+DEBUG 2025-06-16 13:19:12,853 middleware 9 140267382367936 Request from origin: 
+INFO 2025-06-16 13:19:12,867 basehttp 9 140267382367936 "GET /api/cafes/?city=1&t=1750079952072 HTTP/1.0" 200 494
+DEBUG 2025-06-16 13:19:12,872 middleware 9 140267382367936 Request from origin: 
+DEBUG 2025-06-16 13:19:12,883 views 9 140267382367936 Menu item: Шурпа, image: 'http://localhost:8000/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg', image_full_url: 'http://localhost:8000/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg'
+INFO 2025-06-16 13:19:12,884 basehttp 9 140267382367936 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 471
+DEBUG 2025-06-16 13:19:13,689 middleware 9 140267382367936 Request from origin: 
+DEBUG 2025-06-16 13:19:13,690 middleware 9 140267382367936 CSRF Processing path: api/auth/csrf/, Method: GET
+DEBUG 2025-06-16 13:19:13,690 middleware 9 140267382367936 CSRF token in cookie: True
+DEBUG 2025-06-16 13:19:13,690 middleware 9 140267382367936 CSRF token in header: False
+DEBUG 2025-06-16 13:19:13,691 middleware 9 140267382367936 CSRF cookie token (first 6): R7VKrf...
+INFO 2025-06-16 13:19:13,697 auth 9 140267382367936 Запрос CSRF токена
+INFO 2025-06-16 13:19:13,697 auth 9 140267382367936 CSRF запрос от Origin: Unknown, Referer: http://localhost/admin/login
+DEBUG 2025-06-16 13:19:13,697 auth 9 140267382367936 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+INFO 2025-06-16 13:19:13,698 auth 9 140267382367936 CSRF токен сгенерирован: jmdveP... (первые 6 символов)
+DEBUG 2025-06-16 13:19:13,698 auth 9 140267382367936 Настройки CSRF cookie: {'csrf_cookie': {'name': 'csrftoken', 'secure': False, 'httponly': False, 'samesite': 'Lax'}}
+INFO 2025-06-16 13:19:13,699 basehttp 9 140267382367936 "GET /api/auth/csrf/ HTTP/1.0" 200 58
+DEBUG 2025-06-16 13:19:23,598 middleware 9 140267382367936 Request from origin: 
+DEBUG 2025-06-16 13:19:23,599 middleware 9 140267382367936 CSRF Processing path: api/auth/csrf/, Method: GET
+DEBUG 2025-06-16 13:19:23,599 middleware 9 140267382367936 CSRF token in cookie: True
+DEBUG 2025-06-16 13:19:23,600 middleware 9 140267382367936 CSRF token in header: False
+DEBUG 2025-06-16 13:19:23,600 middleware 9 140267382367936 CSRF cookie token (first 6): R7VKrf...
+INFO 2025-06-16 13:19:23,606 auth 9 140267382367936 Запрос CSRF токена
+INFO 2025-06-16 13:19:23,607 auth 9 140267382367936 CSRF запрос от Origin: Unknown, Referer: http://localhost/admin/login
+DEBUG 2025-06-16 13:19:23,607 auth 9 140267382367936 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+INFO 2025-06-16 13:19:23,607 auth 9 140267382367936 CSRF токен сгенерирован: 6P3KJO... (первые 6 символов)
+DEBUG 2025-06-16 13:19:23,608 auth 9 140267382367936 Настройки CSRF cookie: {'csrf_cookie': {'name': 'csrftoken', 'secure': False, 'httponly': False, 'samesite': 'Lax'}}
+INFO 2025-06-16 13:19:23,608 basehttp 9 140267382367936 "GET /api/auth/csrf/ HTTP/1.0" 200 58
+DEBUG 2025-06-16 13:19:24,391 middleware 9 140267382367936 Request from origin: 
+DEBUG 2025-06-16 13:19:24,391 middleware 9 140267382367936 CSRF Processing path: api/auth/csrf/, Method: GET
+DEBUG 2025-06-16 13:19:24,392 middleware 9 140267382367936 CSRF token in cookie: True
+DEBUG 2025-06-16 13:19:24,392 middleware 9 140267382367936 CSRF token in header: False
+DEBUG 2025-06-16 13:19:24,392 middleware 9 140267382367936 CSRF cookie token (first 6): R7VKrf...
+INFO 2025-06-16 13:19:24,398 auth 9 140267382367936 Запрос CSRF токена
+INFO 2025-06-16 13:19:24,398 auth 9 140267382367936 CSRF запрос от Origin: Unknown, Referer: http://localhost/admin/login
+DEBUG 2025-06-16 13:19:24,398 auth 9 140267382367936 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+INFO 2025-06-16 13:19:24,399 auth 9 140267382367936 CSRF токен сгенерирован: x3SXVO... (первые 6 символов)
+DEBUG 2025-06-16 13:19:24,399 auth 9 140267382367936 Настройки CSRF cookie: {'csrf_cookie': {'name': 'csrftoken', 'secure': False, 'httponly': False, 'samesite': 'Lax'}}
+INFO 2025-06-16 13:19:24,400 basehttp 9 140267382367936 "GET /api/auth/csrf/ HTTP/1.0" 200 58
+DEBUG 2025-06-16 13:19:24,700 middleware 9 140267382367936 Request from origin: 
+DEBUG 2025-06-16 13:19:24,701 middleware 9 140267382367936 CSRF Processing path: api/auth/csrf/, Method: GET
+DEBUG 2025-06-16 13:19:24,701 middleware 9 140267382367936 CSRF token in cookie: True
+DEBUG 2025-06-16 13:19:24,701 middleware 9 140267382367936 CSRF token in header: False
+DEBUG 2025-06-16 13:19:24,702 middleware 9 140267382367936 CSRF cookie token (first 6): R7VKrf...
+INFO 2025-06-16 13:19:24,708 auth 9 140267382367936 Запрос CSRF токена
+INFO 2025-06-16 13:19:24,708 auth 9 140267382367936 CSRF запрос от Origin: Unknown, Referer: http://localhost/admin/login
+DEBUG 2025-06-16 13:19:24,709 auth 9 140267382367936 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+INFO 2025-06-16 13:19:24,709 auth 9 140267382367936 CSRF токен сгенерирован: CfNCYT... (первые 6 символов)
+DEBUG 2025-06-16 13:19:24,709 auth 9 140267382367936 Настройки CSRF cookie: {'csrf_cookie': {'name': 'csrftoken', 'secure': False, 'httponly': False, 'samesite': 'Lax'}}
+INFO 2025-06-16 13:19:24,710 basehttp 9 140267382367936 "GET /api/auth/csrf/ HTTP/1.0" 200 58
+DEBUG 2025-06-16 13:19:25,003 middleware 9 140267382367936 Request from origin: http://localhost
+DEBUG 2025-06-16 13:19:25,004 middleware 9 140267382367936 CSRF Processing path: api/auth/login/, Method: POST
+DEBUG 2025-06-16 13:19:25,004 middleware 9 140267382367936 CSRF token in cookie: True
+DEBUG 2025-06-16 13:19:25,005 middleware 9 140267382367936 CSRF token in header: True
+DEBUG 2025-06-16 13:19:25,005 middleware 9 140267382367936 CSRF cookie token (first 6): R7VKrf...
+DEBUG 2025-06-16 13:19:25,005 middleware 9 140267382367936 CSRF header token (first 6): R7VKrf...
+INFO 2025-06-16 13:19:25,011 auth 9 140267382367936 Попытка входа с email: hello@gmail.com
+DEBUG 2025-06-16 13:19:25,011 auth 9 140267382367936 Запрос входа: {'email': 'hello@gmail.com', 'password': 'A166DB70'}
+INFO 2025-06-16 13:19:25,011 auth 9 140267382367936 CSRF токен в заголовке: R7VKrf...
+INFO 2025-06-16 13:19:25,012 auth 9 140267382367936 Origin заголовок: http://localhost
+INFO 2025-06-16 13:19:25,012 auth 9 140267382367936 HTTP метод: POST
+INFO 2025-06-16 13:19:25,012 auth 9 140267382367936 Content-Type: application/json
+INFO 2025-06-16 13:19:25,012 auth 9 140267382367936 Cookies: {'csrftoken': 'R7VKrfgb1AGJu4TltRHYqmsiiPd8tkle', 'sessionid': 'yueznorteride93tf1cxl3phhd8rilkl'}
+INFO 2025-06-16 13:19:25,013 auth 9 140267382367936 HTTP_X_CSRFTOKEN: R7VKrf...
+INFO 2025-06-16 13:19:25,013 auth 9 140267382367936 Cookie CSRF: R7VKrf...
+INFO 2025-06-16 13:19:25,013 auth 9 140267382367936 CSRF токены совпадают: True
+INFO 2025-06-16 13:19:25,014 auth 9 140267382367936 Проверка учетной записи: hello@gmail.com
+WARNING 2025-06-16 13:19:25,192 auth 9 140267382367936 Неверный пароль для пользователя hello@gmail.com
+WARNING 2025-06-16 13:19:25,193 log 9 140267382367936 Unauthorized: /api/auth/login/
+WARNING 2025-06-16 13:19:25,193 basehttp 9 140267382367936 "POST /api/auth/login/ HTTP/1.0" 401 56
+DEBUG 2025-06-16 13:19:26,435 middleware 9 140267382367936 Request from origin: 
+DEBUG 2025-06-16 13:19:26,436 middleware 9 140267382367936 CSRF Processing path: api/auth/csrf/, Method: GET
+DEBUG 2025-06-16 13:19:26,436 middleware 9 140267382367936 CSRF token in cookie: True
+DEBUG 2025-06-16 13:19:26,436 middleware 9 140267382367936 CSRF token in header: False
+DEBUG 2025-06-16 13:19:26,436 middleware 9 140267382367936 CSRF cookie token (first 6): R7VKrf...
+INFO 2025-06-16 13:19:26,443 auth 9 140267382367936 Запрос CSRF токена
+INFO 2025-06-16 13:19:26,444 auth 9 140267382367936 CSRF запрос от Origin: Unknown, Referer: http://localhost/admin/login
+DEBUG 2025-06-16 13:19:26,444 auth 9 140267382367936 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+INFO 2025-06-16 13:19:26,444 auth 9 140267382367936 CSRF токен сгенерирован: JKYXPB... (первые 6 символов)
+DEBUG 2025-06-16 13:19:26,445 auth 9 140267382367936 Настройки CSRF cookie: {'csrf_cookie': {'name': 'csrftoken', 'secure': False, 'httponly': False, 'samesite': 'Lax'}}
+INFO 2025-06-16 13:19:26,445 basehttp 9 140267382367936 "GET /api/auth/csrf/ HTTP/1.0" 200 58
+DEBUG 2025-06-16 13:19:27,218 middleware 9 140267382367936 Request from origin: 
+DEBUG 2025-06-16 13:19:27,218 middleware 9 140267382367936 CSRF Processing path: api/auth/csrf/, Method: GET
+DEBUG 2025-06-16 13:19:27,218 middleware 9 140267382367936 CSRF token in cookie: True
+DEBUG 2025-06-16 13:19:27,219 middleware 9 140267382367936 CSRF token in header: False
+DEBUG 2025-06-16 13:19:27,219 middleware 9 140267382367936 CSRF cookie token (first 6): R7VKrf...
+INFO 2025-06-16 13:19:27,226 auth 9 140267382367936 Запрос CSRF токена
+INFO 2025-06-16 13:19:27,226 auth 9 140267382367936 CSRF запрос от Origin: Unknown, Referer: http://localhost/admin/login
+DEBUG 2025-06-16 13:19:27,227 auth 9 140267382367936 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+INFO 2025-06-16 13:19:27,227 auth 9 140267382367936 CSRF токен сгенерирован: W347ds... (первые 6 символов)
+DEBUG 2025-06-16 13:19:27,227 auth 9 140267382367936 Настройки CSRF cookie: {'csrf_cookie': {'name': 'csrftoken', 'secure': False, 'httponly': False, 'samesite': 'Lax'}}
+INFO 2025-06-16 13:19:27,228 basehttp 9 140267382367936 "GET /api/auth/csrf/ HTTP/1.0" 200 58
+DEBUG 2025-06-16 13:19:27,521 middleware 9 140267382367936 Request from origin: 
+DEBUG 2025-06-16 13:19:27,522 middleware 9 140267382367936 CSRF Processing path: api/auth/csrf/, Method: GET
+DEBUG 2025-06-16 13:19:27,522 middleware 9 140267382367936 CSRF token in cookie: True
+DEBUG 2025-06-16 13:19:27,522 middleware 9 140267382367936 CSRF token in header: False
+DEBUG 2025-06-16 13:19:27,522 middleware 9 140267382367936 CSRF cookie token (first 6): R7VKrf...
+INFO 2025-06-16 13:19:27,528 auth 9 140267382367936 Запрос CSRF токена
+INFO 2025-06-16 13:19:27,528 auth 9 140267382367936 CSRF запрос от Origin: Unknown, Referer: http://localhost/admin/login
+DEBUG 2025-06-16 13:19:27,528 auth 9 140267382367936 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+INFO 2025-06-16 13:19:27,529 auth 9 140267382367936 CSRF токен сгенерирован: SKZorT... (первые 6 символов)
+DEBUG 2025-06-16 13:19:27,529 auth 9 140267382367936 Настройки CSRF cookie: {'csrf_cookie': {'name': 'csrftoken', 'secure': False, 'httponly': False, 'samesite': 'Lax'}}
+INFO 2025-06-16 13:19:27,530 basehttp 9 140267382367936 "GET /api/auth/csrf/ HTTP/1.0" 200 58
+DEBUG 2025-06-16 13:19:27,820 middleware 9 140267382367936 Request from origin: http://localhost
+DEBUG 2025-06-16 13:19:27,820 middleware 9 140267382367936 CSRF Processing path: api/auth/login/, Method: POST
+DEBUG 2025-06-16 13:19:27,821 middleware 9 140267382367936 CSRF token in cookie: True
+DEBUG 2025-06-16 13:19:27,821 middleware 9 140267382367936 CSRF token in header: True
+DEBUG 2025-06-16 13:19:27,821 middleware 9 140267382367936 CSRF cookie token (first 6): R7VKrf...
+DEBUG 2025-06-16 13:19:27,821 middleware 9 140267382367936 CSRF header token (first 6): R7VKrf...
+INFO 2025-06-16 13:19:27,828 auth 9 140267382367936 Попытка входа с email: hello@gmail.com
+DEBUG 2025-06-16 13:19:27,828 auth 9 140267382367936 Запрос входа: {'email': 'hello@gmail.com', 'password': 'A166DB701'}
+INFO 2025-06-16 13:19:27,828 auth 9 140267382367936 CSRF токен в заголовке: R7VKrf...
+INFO 2025-06-16 13:19:27,829 auth 9 140267382367936 Origin заголовок: http://localhost
+INFO 2025-06-16 13:19:27,829 auth 9 140267382367936 HTTP метод: POST
+INFO 2025-06-16 13:19:27,829 auth 9 140267382367936 Content-Type: application/json
+INFO 2025-06-16 13:19:27,830 auth 9 140267382367936 Cookies: {'csrftoken': 'R7VKrfgb1AGJu4TltRHYqmsiiPd8tkle', 'sessionid': 'yueznorteride93tf1cxl3phhd8rilkl'}
+INFO 2025-06-16 13:19:27,830 auth 9 140267382367936 HTTP_X_CSRFTOKEN: R7VKrf...
+INFO 2025-06-16 13:19:27,830 auth 9 140267382367936 Cookie CSRF: R7VKrf...
+INFO 2025-06-16 13:19:27,830 auth 9 140267382367936 CSRF токены совпадают: True
+INFO 2025-06-16 13:19:27,832 auth 9 140267382367936 Проверка учетной записи: hello@gmail.com
+INFO 2025-06-16 13:19:28,195 auth 9 140267382367936 Успешный вход пользователя: Hello
+INFO 2025-06-16 13:19:28,199 auth 9 140267382367936 Пользователь Hello является владельцем ресторана Aliya
+INFO 2025-06-16 13:19:28,200 auth 9 140267382367936 Данные для отправки: {'id': 2, 'email': 'hello@gmail.com', 'name': 'Hello', 'cafe_id': 1, 'role': 'owner'}
+INFO 2025-06-16 13:19:28,212 basehttp 9 140267382367936 "POST /api/auth/login/ HTTP/1.0" 200 76
+DEBUG 2025-06-16 13:19:28,229 middleware 9 140267382367936 Request from origin: 
+INFO 2025-06-16 13:19:28,241 basehttp 9 140267382367936 "GET /api/cafes/1/ HTTP/1.0" 200 442
+DEBUG 2025-06-16 13:19:28,245 middleware 9 140267382367936 Request from origin: 
+INFO 2025-06-16 13:19:28,261 basehttp 9 140267382367936 "GET /api/cafes/1/statistics/ HTTP/1.0" 200 79
+DEBUG 2025-06-16 13:19:28,265 middleware 9 140267382367936 Request from origin: 
+INFO 2025-06-16 13:19:28,276 basehttp 9 140267382367936 "GET /api/orders/?cafe=1 HTTP/1.0" 200 52
+DEBUG 2025-06-16 13:19:31,025 middleware 9 140267382367936 Request from origin: 
+INFO 2025-06-16 13:19:31,038 basehttp 9 140267382367936 "GET /api/cafes/?city=1&t=1750079971165 HTTP/1.0" 200 494
+DEBUG 2025-06-16 13:19:31,046 middleware 9 140267382367936 Request from origin: 
+INFO 2025-06-16 13:19:31,054 basehttp 9 140267382367936 "GET /media/cafe_covers/XXXL_1_1_ENDyb7O.webp?t=1750079971164 HTTP/1.0" 200 100380
+DEBUG 2025-06-16 13:19:31,750 middleware 9 140267382367936 Request from origin: 
+DEBUG 2025-06-16 13:19:31,763 views 9 140267382367936 Menu item: Шурпа, image: 'http://localhost:8000/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg', image_full_url: 'http://localhost:8000/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg'
+INFO 2025-06-16 13:19:31,765 basehttp 9 140267382367936 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 471
+DEBUG 2025-06-16 13:19:39,553 middleware 9 140267382367936 Request from origin: 
+DEBUG 2025-06-16 13:19:39,554 middleware 9 140267382367936 CSRF Processing path: api/auth/csrf/, Method: GET
+DEBUG 2025-06-16 13:19:39,554 middleware 9 140267382367936 CSRF token in cookie: True
+DEBUG 2025-06-16 13:19:39,554 middleware 9 140267382367936 CSRF token in header: False
+DEBUG 2025-06-16 13:19:39,555 middleware 9 140267382367936 CSRF cookie token (first 6): bA5MzF...
+INFO 2025-06-16 13:19:39,561 auth 9 140267382367936 Запрос CSRF токена
+INFO 2025-06-16 13:19:39,561 auth 9 140267382367936 CSRF запрос от Origin: Unknown, Referer: http://localhost/order-success
+DEBUG 2025-06-16 13:19:39,561 auth 9 140267382367936 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+INFO 2025-06-16 13:19:39,562 auth 9 140267382367936 CSRF токен сгенерирован: X6s9Wq... (первые 6 символов)
+DEBUG 2025-06-16 13:19:39,562 auth 9 140267382367936 Настройки CSRF cookie: {'csrf_cookie': {'name': 'csrftoken', 'secure': False, 'httponly': False, 'samesite': 'Lax'}}
+INFO 2025-06-16 13:19:39,563 basehttp 9 140267382367936 "GET /api/auth/csrf/ HTTP/1.0" 200 58
+DEBUG 2025-06-16 13:19:39,859 middleware 9 140267382367936 Request from origin: http://localhost
+INFO 2025-06-16 13:19:39,882 basehttp 9 140267382367936 "POST /api/orders/ HTTP/1.0" 201 221
+DEBUG 2025-06-16 13:19:40,609 middleware 9 140267382367936 Request from origin: 
+DEBUG 2025-06-16 13:19:40,621 views 9 140267382367936 Menu item: Шурпа, image: 'http://localhost:8000/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg', image_full_url: 'http://localhost:8000/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg'
+INFO 2025-06-16 13:19:40,622 basehttp 9 140267382367936 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 471
+DEBUG 2025-06-16 13:19:46,218 middleware 9 140267382367936 Request from origin: 
+INFO 2025-06-16 13:19:46,228 views 9 140267382367936 Health check запрос от 172.18.0.3: ok
+INFO 2025-06-16 13:19:46,229 basehttp 9 140267382367936 "GET /api/health/ HTTP/1.0" 200 245
+DEBUG 2025-06-16 13:19:46,236 middleware 9 140267382367936 Request from origin: 
+INFO 2025-06-16 13:19:46,247 basehttp 9 140267382367936 "GET /api/cities/ HTTP/1.0" 200 168
+DEBUG 2025-06-16 13:19:46,266 middleware 9 140267382367936 Request from origin: 
+INFO 2025-06-16 13:19:46,279 basehttp 9 140267382367936 "GET /api/cafes/?city=1&t=1750079985532 HTTP/1.0" 200 494
+DEBUG 2025-06-16 13:19:46,284 middleware 9 140267382367936 Request from origin: 
+DEBUG 2025-06-16 13:19:46,295 views 9 140267382367936 Menu item: Шурпа, image: 'http://localhost:8000/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg', image_full_url: 'http://localhost:8000/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg'
+INFO 2025-06-16 13:19:46,296 basehttp 9 140267382367936 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 471
+DEBUG 2025-06-16 13:19:47,179 middleware 9 140267382367936 Request from origin: 
+DEBUG 2025-06-16 13:19:47,180 middleware 9 140267382367936 CSRF Processing path: api/auth/csrf/, Method: GET
+DEBUG 2025-06-16 13:19:47,180 middleware 9 140267382367936 CSRF token in cookie: True
+DEBUG 2025-06-16 13:19:47,180 middleware 9 140267382367936 CSRF token in header: False
+DEBUG 2025-06-16 13:19:47,181 middleware 9 140267382367936 CSRF cookie token (first 6): bA5MzF...
+INFO 2025-06-16 13:19:47,188 auth 9 140267382367936 Запрос CSRF токена
+INFO 2025-06-16 13:19:47,188 auth 9 140267382367936 CSRF запрос от Origin: Unknown, Referer: http://localhost/admin/login
+DEBUG 2025-06-16 13:19:47,188 auth 9 140267382367936 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+INFO 2025-06-16 13:19:47,189 auth 9 140267382367936 CSRF токен сгенерирован: HRWdlT... (первые 6 символов)
+DEBUG 2025-06-16 13:19:47,189 auth 9 140267382367936 Настройки CSRF cookie: {'csrf_cookie': {'name': 'csrftoken', 'secure': False, 'httponly': False, 'samesite': 'Lax'}}
+INFO 2025-06-16 13:19:47,190 basehttp 9 140267382367936 "GET /api/auth/csrf/ HTTP/1.0" 200 58
+DEBUG 2025-06-16 13:19:56,006 middleware 9 140267382367936 Request from origin: 
+DEBUG 2025-06-16 13:19:56,006 middleware 9 140267382367936 CSRF Processing path: api/auth/csrf/, Method: GET
+DEBUG 2025-06-16 13:19:56,007 middleware 9 140267382367936 CSRF token in cookie: True
+DEBUG 2025-06-16 13:19:56,007 middleware 9 140267382367936 CSRF token in header: False
+DEBUG 2025-06-16 13:19:56,007 middleware 9 140267382367936 CSRF cookie token (first 6): bA5MzF...
+INFO 2025-06-16 13:19:56,013 auth 9 140267382367936 Запрос CSRF токена
+INFO 2025-06-16 13:19:56,013 auth 9 140267382367936 CSRF запрос от Origin: Unknown, Referer: http://localhost/admin/login
+DEBUG 2025-06-16 13:19:56,013 auth 9 140267382367936 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+INFO 2025-06-16 13:19:56,014 auth 9 140267382367936 CSRF токен сгенерирован: bL8WQn... (первые 6 символов)
+DEBUG 2025-06-16 13:19:56,014 auth 9 140267382367936 Настройки CSRF cookie: {'csrf_cookie': {'name': 'csrftoken', 'secure': False, 'httponly': False, 'samesite': 'Lax'}}
+INFO 2025-06-16 13:19:56,015 basehttp 9 140267382367936 "GET /api/auth/csrf/ HTTP/1.0" 200 58
+DEBUG 2025-06-16 13:19:56,790 middleware 9 140267382367936 Request from origin: 
+DEBUG 2025-06-16 13:19:56,791 middleware 9 140267382367936 CSRF Processing path: api/auth/csrf/, Method: GET
+DEBUG 2025-06-16 13:19:56,791 middleware 9 140267382367936 CSRF token in cookie: True
+DEBUG 2025-06-16 13:19:56,791 middleware 9 140267382367936 CSRF token in header: False
+DEBUG 2025-06-16 13:19:56,791 middleware 9 140267382367936 CSRF cookie token (first 6): bA5MzF...
+INFO 2025-06-16 13:19:56,797 auth 9 140267382367936 Запрос CSRF токена
+INFO 2025-06-16 13:19:56,797 auth 9 140267382367936 CSRF запрос от Origin: Unknown, Referer: http://localhost/admin/login
+DEBUG 2025-06-16 13:19:56,797 auth 9 140267382367936 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+INFO 2025-06-16 13:19:56,798 auth 9 140267382367936 CSRF токен сгенерирован: 8zY4rr... (первые 6 символов)
+DEBUG 2025-06-16 13:19:56,798 auth 9 140267382367936 Настройки CSRF cookie: {'csrf_cookie': {'name': 'csrftoken', 'secure': False, 'httponly': False, 'samesite': 'Lax'}}
+INFO 2025-06-16 13:19:56,799 basehttp 9 140267382367936 "GET /api/auth/csrf/ HTTP/1.0" 200 58
+DEBUG 2025-06-16 13:19:57,090 middleware 9 140267382367936 Request from origin: 
+DEBUG 2025-06-16 13:19:57,091 middleware 9 140267382367936 CSRF Processing path: api/auth/csrf/, Method: GET
+DEBUG 2025-06-16 13:19:57,091 middleware 9 140267382367936 CSRF token in cookie: True
+DEBUG 2025-06-16 13:19:57,091 middleware 9 140267382367936 CSRF token in header: False
+DEBUG 2025-06-16 13:19:57,092 middleware 9 140267382367936 CSRF cookie token (first 6): bA5MzF...
+INFO 2025-06-16 13:19:57,097 auth 9 140267382367936 Запрос CSRF токена
+INFO 2025-06-16 13:19:57,097 auth 9 140267382367936 CSRF запрос от Origin: Unknown, Referer: http://localhost/admin/login
+DEBUG 2025-06-16 13:19:57,098 auth 9 140267382367936 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+INFO 2025-06-16 13:19:57,098 auth 9 140267382367936 CSRF токен сгенерирован: PJ9x60... (первые 6 символов)
+DEBUG 2025-06-16 13:19:57,098 auth 9 140267382367936 Настройки CSRF cookie: {'csrf_cookie': {'name': 'csrftoken', 'secure': False, 'httponly': False, 'samesite': 'Lax'}}
+INFO 2025-06-16 13:19:57,099 basehttp 9 140267382367936 "GET /api/auth/csrf/ HTTP/1.0" 200 58
+DEBUG 2025-06-16 13:19:57,390 middleware 9 140267382367936 Request from origin: http://localhost
+DEBUG 2025-06-16 13:19:57,391 middleware 9 140267382367936 CSRF Processing path: api/auth/login/, Method: POST
+DEBUG 2025-06-16 13:19:57,391 middleware 9 140267382367936 CSRF token in cookie: True
+DEBUG 2025-06-16 13:19:57,392 middleware 9 140267382367936 CSRF token in header: True
+DEBUG 2025-06-16 13:19:57,392 middleware 9 140267382367936 CSRF cookie token (first 6): bA5MzF...
+DEBUG 2025-06-16 13:19:57,392 middleware 9 140267382367936 CSRF header token (first 6): bA5MzF...
+INFO 2025-06-16 13:19:57,398 auth 9 140267382367936 Попытка входа с email: hello@gmail.com
+DEBUG 2025-06-16 13:19:57,398 auth 9 140267382367936 Запрос входа: {'email': 'hello@gmail.com', 'password': 'A166DB70'}
+INFO 2025-06-16 13:19:57,398 auth 9 140267382367936 CSRF токен в заголовке: bA5MzF...
+INFO 2025-06-16 13:19:57,398 auth 9 140267382367936 Origin заголовок: http://localhost
+INFO 2025-06-16 13:19:57,399 auth 9 140267382367936 HTTP метод: POST
+INFO 2025-06-16 13:19:57,399 auth 9 140267382367936 Content-Type: application/json
+INFO 2025-06-16 13:19:57,399 auth 9 140267382367936 Cookies: {'csrftoken': 'bA5MzFY5eo5ypf4aWROE8SKyK3XTOUsg', 'sessionid': 'l25tdodhiwo6k9n3dtd6plahvpryo2bw'}
+INFO 2025-06-16 13:19:57,399 auth 9 140267382367936 HTTP_X_CSRFTOKEN: bA5MzF...
+INFO 2025-06-16 13:19:57,399 auth 9 140267382367936 Cookie CSRF: bA5MzF...
+INFO 2025-06-16 13:19:57,400 auth 9 140267382367936 CSRF токены совпадают: True
+INFO 2025-06-16 13:19:57,401 auth 9 140267382367936 Проверка учетной записи: hello@gmail.com
+WARNING 2025-06-16 13:19:57,545 auth 9 140267382367936 Неверный пароль для пользователя hello@gmail.com
+WARNING 2025-06-16 13:19:57,546 log 9 140267382367936 Unauthorized: /api/auth/login/
+WARNING 2025-06-16 13:19:57,547 basehttp 9 140267382367936 "POST /api/auth/login/ HTTP/1.0" 401 56
+DEBUG 2025-06-16 13:19:58,477 middleware 9 140267382367936 Request from origin: 
+DEBUG 2025-06-16 13:19:58,478 middleware 9 140267382367936 CSRF Processing path: api/auth/csrf/, Method: GET
+DEBUG 2025-06-16 13:19:58,478 middleware 9 140267382367936 CSRF token in cookie: True
+DEBUG 2025-06-16 13:19:58,478 middleware 9 140267382367936 CSRF token in header: False
+DEBUG 2025-06-16 13:19:58,479 middleware 9 140267382367936 CSRF cookie token (first 6): bA5MzF...
+INFO 2025-06-16 13:19:58,484 auth 9 140267382367936 Запрос CSRF токена
+INFO 2025-06-16 13:19:58,485 auth 9 140267382367936 CSRF запрос от Origin: Unknown, Referer: http://localhost/admin/login
+DEBUG 2025-06-16 13:19:58,485 auth 9 140267382367936 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+INFO 2025-06-16 13:19:58,485 auth 9 140267382367936 CSRF токен сгенерирован: p0rX3J... (первые 6 символов)
+DEBUG 2025-06-16 13:19:58,486 auth 9 140267382367936 Настройки CSRF cookie: {'csrf_cookie': {'name': 'csrftoken', 'secure': False, 'httponly': False, 'samesite': 'Lax'}}
+INFO 2025-06-16 13:19:58,487 basehttp 9 140267382367936 "GET /api/auth/csrf/ HTTP/1.0" 200 58
+DEBUG 2025-06-16 13:19:59,255 middleware 9 140267382367936 Request from origin: 
+DEBUG 2025-06-16 13:19:59,256 middleware 9 140267382367936 CSRF Processing path: api/auth/csrf/, Method: GET
+DEBUG 2025-06-16 13:19:59,256 middleware 9 140267382367936 CSRF token in cookie: True
+DEBUG 2025-06-16 13:19:59,256 middleware 9 140267382367936 CSRF token in header: False
+DEBUG 2025-06-16 13:19:59,257 middleware 9 140267382367936 CSRF cookie token (first 6): bA5MzF...
+INFO 2025-06-16 13:19:59,262 auth 9 140267382367936 Запрос CSRF токена
+INFO 2025-06-16 13:19:59,262 auth 9 140267382367936 CSRF запрос от Origin: Unknown, Referer: http://localhost/admin/login
+DEBUG 2025-06-16 13:19:59,263 auth 9 140267382367936 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+INFO 2025-06-16 13:19:59,263 auth 9 140267382367936 CSRF токен сгенерирован: wn9nAu... (первые 6 символов)
+DEBUG 2025-06-16 13:19:59,264 auth 9 140267382367936 Настройки CSRF cookie: {'csrf_cookie': {'name': 'csrftoken', 'secure': False, 'httponly': False, 'samesite': 'Lax'}}
+INFO 2025-06-16 13:19:59,264 basehttp 9 140267382367936 "GET /api/auth/csrf/ HTTP/1.0" 200 58
+DEBUG 2025-06-16 13:19:59,563 middleware 9 140267382367936 Request from origin: 
+DEBUG 2025-06-16 13:19:59,563 middleware 9 140267382367936 CSRF Processing path: api/auth/csrf/, Method: GET
+DEBUG 2025-06-16 13:19:59,564 middleware 9 140267382367936 CSRF token in cookie: True
+DEBUG 2025-06-16 13:19:59,564 middleware 9 140267382367936 CSRF token in header: False
+DEBUG 2025-06-16 13:19:59,564 middleware 9 140267382367936 CSRF cookie token (first 6): bA5MzF...
+INFO 2025-06-16 13:19:59,569 auth 9 140267382367936 Запрос CSRF токена
+INFO 2025-06-16 13:19:59,569 auth 9 140267382367936 CSRF запрос от Origin: Unknown, Referer: http://localhost/admin/login
+DEBUG 2025-06-16 13:19:59,570 auth 9 140267382367936 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+INFO 2025-06-16 13:19:59,570 auth 9 140267382367936 CSRF токен сгенерирован: N1wjZj... (первые 6 символов)
+DEBUG 2025-06-16 13:19:59,570 auth 9 140267382367936 Настройки CSRF cookie: {'csrf_cookie': {'name': 'csrftoken', 'secure': False, 'httponly': False, 'samesite': 'Lax'}}
+INFO 2025-06-16 13:19:59,571 basehttp 9 140267382367936 "GET /api/auth/csrf/ HTTP/1.0" 200 58
+DEBUG 2025-06-16 13:19:59,869 middleware 9 140267382367936 Request from origin: http://localhost
+DEBUG 2025-06-16 13:19:59,869 middleware 9 140267382367936 CSRF Processing path: api/auth/login/, Method: POST
+DEBUG 2025-06-16 13:19:59,870 middleware 9 140267382367936 CSRF token in cookie: True
+DEBUG 2025-06-16 13:19:59,870 middleware 9 140267382367936 CSRF token in header: True
+DEBUG 2025-06-16 13:19:59,870 middleware 9 140267382367936 CSRF cookie token (first 6): bA5MzF...
+DEBUG 2025-06-16 13:19:59,870 middleware 9 140267382367936 CSRF header token (first 6): bA5MzF...
+INFO 2025-06-16 13:19:59,876 auth 9 140267382367936 Попытка входа с email: hello@gmail.com
+DEBUG 2025-06-16 13:19:59,876 auth 9 140267382367936 Запрос входа: {'email': 'hello@gmail.com', 'password': 'A166DB701'}
+INFO 2025-06-16 13:19:59,876 auth 9 140267382367936 CSRF токен в заголовке: bA5MzF...
+INFO 2025-06-16 13:19:59,877 auth 9 140267382367936 Origin заголовок: http://localhost
+INFO 2025-06-16 13:19:59,877 auth 9 140267382367936 HTTP метод: POST
+INFO 2025-06-16 13:19:59,877 auth 9 140267382367936 Content-Type: application/json
+INFO 2025-06-16 13:19:59,877 auth 9 140267382367936 Cookies: {'csrftoken': 'bA5MzFY5eo5ypf4aWROE8SKyK3XTOUsg', 'sessionid': 'l25tdodhiwo6k9n3dtd6plahvpryo2bw'}
+INFO 2025-06-16 13:19:59,877 auth 9 140267382367936 HTTP_X_CSRFTOKEN: bA5MzF...
+INFO 2025-06-16 13:19:59,878 auth 9 140267382367936 Cookie CSRF: bA5MzF...
+INFO 2025-06-16 13:19:59,878 auth 9 140267382367936 CSRF токены совпадают: True
+INFO 2025-06-16 13:19:59,879 auth 9 140267382367936 Проверка учетной записи: hello@gmail.com
+INFO 2025-06-16 13:20:00,037 auth 9 140267382367936 Успешный вход пользователя: Hello
+INFO 2025-06-16 13:20:00,040 auth 9 140267382367936 Пользователь Hello является владельцем ресторана Aliya
+INFO 2025-06-16 13:20:00,041 auth 9 140267382367936 Данные для отправки: {'id': 2, 'email': 'hello@gmail.com', 'name': 'Hello', 'cafe_id': 1, 'role': 'owner'}
+INFO 2025-06-16 13:20:00,051 basehttp 9 140267382367936 "POST /api/auth/login/ HTTP/1.0" 200 76
+DEBUG 2025-06-16 13:20:00,061 middleware 9 140267382367936 Request from origin: 
+INFO 2025-06-16 13:20:00,073 basehttp 9 140267382367936 "GET /api/cafes/1/ HTTP/1.0" 200 442
+DEBUG 2025-06-16 13:20:00,077 middleware 9 140267382367936 Request from origin: 
+INFO 2025-06-16 13:20:00,090 basehttp 9 140267382367936 "GET /api/cafes/1/statistics/ HTTP/1.0" 200 87
+DEBUG 2025-06-16 13:20:00,094 middleware 9 140267382367936 Request from origin: 
+INFO 2025-06-16 13:20:00,109 basehttp 9 140267382367936 "GET /api/orders/?cafe=1 HTTP/1.0" 200 273
+DEBUG 2025-06-16 13:36:13,901 middleware 9 140267390760640 Request from origin: 
+INFO 2025-06-16 13:36:13,916 basehttp 9 140267390760640 "GET /api/cafes/?city=1&t=1750080975019 HTTP/1.0" 200 494
+DEBUG 2025-06-16 13:36:13,923 middleware 9 140267390760640 Request from origin: 
+INFO 2025-06-16 13:36:13,931 basehttp 9 140267390760640 "GET /media/cafe_covers/XXXL_1_1_ENDyb7O.webp?t=1750080975017 HTTP/1.0" 200 100380
+DEBUG 2025-06-16 13:36:14,395 middleware 9 140267390760640 Request from origin: 
+DEBUG 2025-06-16 13:36:14,410 views 9 140267390760640 Menu item: Шурпа, image: 'http://localhost:8000/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg', image_full_url: 'http://localhost:8000/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg'
+INFO 2025-06-16 13:36:14,411 basehttp 9 140267390760640 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 471
+DEBUG 2025-06-16 13:36:14,415 middleware 9 140267390760640 Request from origin: 
+DEBUG 2025-06-16 13:36:14,428 views 9 140267390760640 Menu item: Шурпа, image: 'http://localhost:8000/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg', image_full_url: 'http://localhost:8000/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg'
+INFO 2025-06-16 13:36:14,429 basehttp 9 140267390760640 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 471
+DEBUG 2025-06-16 13:36:15,181 middleware 9 140267390760640 Request from origin: 
+INFO 2025-06-16 13:36:15,184 basehttp 9 140267390760640 "GET /media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg HTTP/1.1" 304 0
+DEBUG 2025-06-16 13:36:29,784 middleware 9 140267382367936 Request from origin: 
+DEBUG 2025-06-16 13:36:29,785 middleware 9 140267382367936 CSRF Processing path: api/auth/csrf/, Method: GET
+DEBUG 2025-06-16 13:36:29,785 middleware 9 140267382367936 CSRF token in cookie: True
+DEBUG 2025-06-16 13:36:29,786 middleware 9 140267382367936 CSRF token in header: False
+DEBUG 2025-06-16 13:36:29,786 middleware 9 140267382367936 CSRF cookie token (first 6): vtnSTu...
+INFO 2025-06-16 13:36:29,794 auth 9 140267382367936 Запрос CSRF токена
+INFO 2025-06-16 13:36:29,794 auth 9 140267382367936 CSRF запрос от Origin: Unknown, Referer: http://localhost/admin/login
+DEBUG 2025-06-16 13:36:29,795 auth 9 140267382367936 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+INFO 2025-06-16 13:36:29,795 auth 9 140267382367936 CSRF токен сгенерирован: m7IhrZ... (первые 6 символов)
+DEBUG 2025-06-16 13:36:29,795 auth 9 140267382367936 Настройки CSRF cookie: {'csrf_cookie': {'name': 'csrftoken', 'secure': False, 'httponly': False, 'samesite': 'Lax'}}
+INFO 2025-06-16 13:36:29,796 basehttp 9 140267382367936 "GET /api/auth/csrf/ HTTP/1.0" 200 58
+DEBUG 2025-06-16 13:36:41,199 middleware 9 140267382367936 Request from origin: 
+DEBUG 2025-06-16 13:36:41,199 middleware 9 140267382367936 CSRF Processing path: api/auth/csrf/, Method: GET
+DEBUG 2025-06-16 13:36:41,200 middleware 9 140267382367936 CSRF token in cookie: True
+DEBUG 2025-06-16 13:36:41,200 middleware 9 140267382367936 CSRF token in header: False
+DEBUG 2025-06-16 13:36:41,200 middleware 9 140267382367936 CSRF cookie token (first 6): vtnSTu...
+INFO 2025-06-16 13:36:41,207 auth 9 140267382367936 Запрос CSRF токена
+INFO 2025-06-16 13:36:41,208 auth 9 140267382367936 CSRF запрос от Origin: Unknown, Referer: http://localhost/admin/login
+DEBUG 2025-06-16 13:36:41,208 auth 9 140267382367936 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+INFO 2025-06-16 13:36:41,208 auth 9 140267382367936 CSRF токен сгенерирован: jMW8PR... (первые 6 символов)
+DEBUG 2025-06-16 13:36:41,209 auth 9 140267382367936 Настройки CSRF cookie: {'csrf_cookie': {'name': 'csrftoken', 'secure': False, 'httponly': False, 'samesite': 'Lax'}}
+INFO 2025-06-16 13:36:41,209 basehttp 9 140267382367936 "GET /api/auth/csrf/ HTTP/1.0" 200 58
+DEBUG 2025-06-16 13:36:41,988 middleware 9 140267382367936 Request from origin: 
+DEBUG 2025-06-16 13:36:41,988 middleware 9 140267382367936 CSRF Processing path: api/auth/csrf/, Method: GET
+DEBUG 2025-06-16 13:36:41,989 middleware 9 140267382367936 CSRF token in cookie: True
+DEBUG 2025-06-16 13:36:41,989 middleware 9 140267382367936 CSRF token in header: False
+DEBUG 2025-06-16 13:36:41,989 middleware 9 140267382367936 CSRF cookie token (first 6): vtnSTu...
+INFO 2025-06-16 13:36:41,995 auth 9 140267382367936 Запрос CSRF токена
+INFO 2025-06-16 13:36:41,995 auth 9 140267382367936 CSRF запрос от Origin: Unknown, Referer: http://localhost/admin/login
+DEBUG 2025-06-16 13:36:41,996 auth 9 140267382367936 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+INFO 2025-06-16 13:36:41,996 auth 9 140267382367936 CSRF токен сгенерирован: q46Bkz... (первые 6 символов)
+DEBUG 2025-06-16 13:36:41,996 auth 9 140267382367936 Настройки CSRF cookie: {'csrf_cookie': {'name': 'csrftoken', 'secure': False, 'httponly': False, 'samesite': 'Lax'}}
+INFO 2025-06-16 13:36:41,997 basehttp 9 140267382367936 "GET /api/auth/csrf/ HTTP/1.0" 200 58
+DEBUG 2025-06-16 13:36:42,293 middleware 9 140267382367936 Request from origin: 
+DEBUG 2025-06-16 13:36:42,293 middleware 9 140267382367936 CSRF Processing path: api/auth/csrf/, Method: GET
+DEBUG 2025-06-16 13:36:42,294 middleware 9 140267382367936 CSRF token in cookie: True
+DEBUG 2025-06-16 13:36:42,294 middleware 9 140267382367936 CSRF token in header: False
+DEBUG 2025-06-16 13:36:42,294 middleware 9 140267382367936 CSRF cookie token (first 6): vtnSTu...
+INFO 2025-06-16 13:36:42,300 auth 9 140267382367936 Запрос CSRF токена
+INFO 2025-06-16 13:36:42,300 auth 9 140267382367936 CSRF запрос от Origin: Unknown, Referer: http://localhost/admin/login
+DEBUG 2025-06-16 13:36:42,301 auth 9 140267382367936 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+INFO 2025-06-16 13:36:42,301 auth 9 140267382367936 CSRF токен сгенерирован: tBlDz5... (первые 6 символов)
+DEBUG 2025-06-16 13:36:42,301 auth 9 140267382367936 Настройки CSRF cookie: {'csrf_cookie': {'name': 'csrftoken', 'secure': False, 'httponly': False, 'samesite': 'Lax'}}
+INFO 2025-06-16 13:36:42,302 basehttp 9 140267382367936 "GET /api/auth/csrf/ HTTP/1.0" 200 58
+DEBUG 2025-06-16 13:36:42,597 middleware 9 140267382367936 Request from origin: http://localhost
+DEBUG 2025-06-16 13:36:42,597 middleware 9 140267382367936 CSRF Processing path: api/auth/login/, Method: POST
+DEBUG 2025-06-16 13:36:42,597 middleware 9 140267382367936 CSRF token in cookie: True
+DEBUG 2025-06-16 13:36:42,598 middleware 9 140267382367936 CSRF token in header: True
+DEBUG 2025-06-16 13:36:42,598 middleware 9 140267382367936 CSRF cookie token (first 6): vtnSTu...
+DEBUG 2025-06-16 13:36:42,598 middleware 9 140267382367936 CSRF header token (first 6): vtnSTu...
+INFO 2025-06-16 13:36:42,604 auth 9 140267382367936 Попытка входа с email: hello@gmail.com
+DEBUG 2025-06-16 13:36:42,604 auth 9 140267382367936 Запрос входа: {'email': 'hello@gmail.com', 'password': 'A166DB70'}
+INFO 2025-06-16 13:36:42,604 auth 9 140267382367936 CSRF токен в заголовке: vtnSTu...
+INFO 2025-06-16 13:36:42,604 auth 9 140267382367936 Origin заголовок: http://localhost
+INFO 2025-06-16 13:36:42,605 auth 9 140267382367936 HTTP метод: POST
+INFO 2025-06-16 13:36:42,605 auth 9 140267382367936 Content-Type: application/json
+INFO 2025-06-16 13:36:42,605 auth 9 140267382367936 Cookies: {'sessionid': 'l25tdodhiwo6k9n3dtd6plahvpryo2bw', 'csrftoken': 'vtnSTu6DmtDWxrULuTgIsQ6iKOz0hmSd'}
+INFO 2025-06-16 13:36:42,605 auth 9 140267382367936 HTTP_X_CSRFTOKEN: vtnSTu...
+INFO 2025-06-16 13:36:42,606 auth 9 140267382367936 Cookie CSRF: vtnSTu...
+INFO 2025-06-16 13:36:42,606 auth 9 140267382367936 CSRF токены совпадают: True
+INFO 2025-06-16 13:36:42,607 auth 9 140267382367936 Проверка учетной записи: hello@gmail.com
+WARNING 2025-06-16 13:36:42,752 auth 9 140267382367936 Неверный пароль для пользователя hello@gmail.com
+WARNING 2025-06-16 13:36:42,753 log 9 140267382367936 Unauthorized: /api/auth/login/
+WARNING 2025-06-16 13:36:42,754 basehttp 9 140267382367936 "POST /api/auth/login/ HTTP/1.0" 401 56
+DEBUG 2025-06-16 13:36:43,660 middleware 9 140267382367936 Request from origin: 
+DEBUG 2025-06-16 13:36:43,660 middleware 9 140267382367936 CSRF Processing path: api/auth/csrf/, Method: GET
+DEBUG 2025-06-16 13:36:43,661 middleware 9 140267382367936 CSRF token in cookie: True
+DEBUG 2025-06-16 13:36:43,661 middleware 9 140267382367936 CSRF token in header: False
+DEBUG 2025-06-16 13:36:43,661 middleware 9 140267382367936 CSRF cookie token (first 6): vtnSTu...
+INFO 2025-06-16 13:36:43,667 auth 9 140267382367936 Запрос CSRF токена
+INFO 2025-06-16 13:36:43,668 auth 9 140267382367936 CSRF запрос от Origin: Unknown, Referer: http://localhost/admin/login
+DEBUG 2025-06-16 13:36:43,668 auth 9 140267382367936 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+INFO 2025-06-16 13:36:43,668 auth 9 140267382367936 CSRF токен сгенерирован: Q2ijeY... (первые 6 символов)
+DEBUG 2025-06-16 13:36:43,668 auth 9 140267382367936 Настройки CSRF cookie: {'csrf_cookie': {'name': 'csrftoken', 'secure': False, 'httponly': False, 'samesite': 'Lax'}}
+INFO 2025-06-16 13:36:43,669 basehttp 9 140267382367936 "GET /api/auth/csrf/ HTTP/1.0" 200 58
+DEBUG 2025-06-16 13:36:44,446 middleware 9 140267382367936 Request from origin: 
+DEBUG 2025-06-16 13:36:44,446 middleware 9 140267382367936 CSRF Processing path: api/auth/csrf/, Method: GET
+DEBUG 2025-06-16 13:36:44,446 middleware 9 140267382367936 CSRF token in cookie: True
+DEBUG 2025-06-16 13:36:44,447 middleware 9 140267382367936 CSRF token in header: False
+DEBUG 2025-06-16 13:36:44,447 middleware 9 140267382367936 CSRF cookie token (first 6): vtnSTu...
+INFO 2025-06-16 13:36:44,453 auth 9 140267382367936 Запрос CSRF токена
+INFO 2025-06-16 13:36:44,453 auth 9 140267382367936 CSRF запрос от Origin: Unknown, Referer: http://localhost/admin/login
+DEBUG 2025-06-16 13:36:44,454 auth 9 140267382367936 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+INFO 2025-06-16 13:36:44,454 auth 9 140267382367936 CSRF токен сгенерирован: L53TWA... (первые 6 символов)
+DEBUG 2025-06-16 13:36:44,454 auth 9 140267382367936 Настройки CSRF cookie: {'csrf_cookie': {'name': 'csrftoken', 'secure': False, 'httponly': False, 'samesite': 'Lax'}}
+INFO 2025-06-16 13:36:44,455 basehttp 9 140267382367936 "GET /api/auth/csrf/ HTTP/1.0" 200 58
+DEBUG 2025-06-16 13:36:44,756 middleware 9 140267382367936 Request from origin: 
+DEBUG 2025-06-16 13:36:44,757 middleware 9 140267382367936 CSRF Processing path: api/auth/csrf/, Method: GET
+DEBUG 2025-06-16 13:36:44,757 middleware 9 140267382367936 CSRF token in cookie: True
+DEBUG 2025-06-16 13:36:44,758 middleware 9 140267382367936 CSRF token in header: False
+DEBUG 2025-06-16 13:36:44,758 middleware 9 140267382367936 CSRF cookie token (first 6): vtnSTu...
+INFO 2025-06-16 13:36:44,763 auth 9 140267382367936 Запрос CSRF токена
+INFO 2025-06-16 13:36:44,763 auth 9 140267382367936 CSRF запрос от Origin: Unknown, Referer: http://localhost/admin/login
+DEBUG 2025-06-16 13:36:44,764 auth 9 140267382367936 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+INFO 2025-06-16 13:36:44,764 auth 9 140267382367936 CSRF токен сгенерирован: FAjJem... (первые 6 символов)
+DEBUG 2025-06-16 13:36:44,764 auth 9 140267382367936 Настройки CSRF cookie: {'csrf_cookie': {'name': 'csrftoken', 'secure': False, 'httponly': False, 'samesite': 'Lax'}}
+INFO 2025-06-16 13:36:44,765 basehttp 9 140267382367936 "GET /api/auth/csrf/ HTTP/1.0" 200 58
+DEBUG 2025-06-16 13:36:45,062 middleware 9 140267382367936 Request from origin: http://localhost
+DEBUG 2025-06-16 13:36:45,063 middleware 9 140267382367936 CSRF Processing path: api/auth/login/, Method: POST
+DEBUG 2025-06-16 13:36:45,063 middleware 9 140267382367936 CSRF token in cookie: True
+DEBUG 2025-06-16 13:36:45,064 middleware 9 140267382367936 CSRF token in header: True
+DEBUG 2025-06-16 13:36:45,064 middleware 9 140267382367936 CSRF cookie token (first 6): vtnSTu...
+DEBUG 2025-06-16 13:36:45,064 middleware 9 140267382367936 CSRF header token (first 6): vtnSTu...
+INFO 2025-06-16 13:36:45,070 auth 9 140267382367936 Попытка входа с email: hello@gmail.com
+DEBUG 2025-06-16 13:36:45,070 auth 9 140267382367936 Запрос входа: {'email': 'hello@gmail.com', 'password': 'A166DB701'}
+INFO 2025-06-16 13:36:45,070 auth 9 140267382367936 CSRF токен в заголовке: vtnSTu...
+INFO 2025-06-16 13:36:45,070 auth 9 140267382367936 Origin заголовок: http://localhost
+INFO 2025-06-16 13:36:45,070 auth 9 140267382367936 HTTP метод: POST
+INFO 2025-06-16 13:36:45,071 auth 9 140267382367936 Content-Type: application/json
+INFO 2025-06-16 13:36:45,071 auth 9 140267382367936 Cookies: {'sessionid': 'l25tdodhiwo6k9n3dtd6plahvpryo2bw', 'csrftoken': 'vtnSTu6DmtDWxrULuTgIsQ6iKOz0hmSd'}
+INFO 2025-06-16 13:36:45,071 auth 9 140267382367936 HTTP_X_CSRFTOKEN: vtnSTu...
+INFO 2025-06-16 13:36:45,071 auth 9 140267382367936 Cookie CSRF: vtnSTu...
+INFO 2025-06-16 13:36:45,071 auth 9 140267382367936 CSRF токены совпадают: True
+INFO 2025-06-16 13:36:45,073 auth 9 140267382367936 Проверка учетной записи: hello@gmail.com
+INFO 2025-06-16 13:36:45,239 auth 9 140267382367936 Успешный вход пользователя: Hello
+INFO 2025-06-16 13:36:45,243 auth 9 140267382367936 Пользователь Hello является владельцем ресторана Aliya
+INFO 2025-06-16 13:36:45,243 auth 9 140267382367936 Данные для отправки: {'id': 2, 'email': 'hello@gmail.com', 'name': 'Hello', 'cafe_id': 1, 'role': 'owner'}
+INFO 2025-06-16 13:36:45,254 basehttp 9 140267382367936 "POST /api/auth/login/ HTTP/1.0" 200 76
+DEBUG 2025-06-16 13:36:45,268 middleware 9 140267382367936 Request from origin: 
+INFO 2025-06-16 13:36:45,282 basehttp 9 140267382367936 "GET /api/cafes/1/ HTTP/1.0" 200 442
+DEBUG 2025-06-16 13:36:45,287 middleware 9 140267382367936 Request from origin: 
+INFO 2025-06-16 13:36:45,305 basehttp 9 140267382367936 "GET /api/cafes/1/statistics/ HTTP/1.0" 200 87
+DEBUG 2025-06-16 13:36:45,309 middleware 9 140267382367936 Request from origin: 
+INFO 2025-06-16 13:36:45,327 basehttp 9 140267382367936 "GET /api/orders/?cafe=1 HTTP/1.0" 200 273
+DEBUG 2025-06-16 13:36:51,940 middleware 9 140267382367936 Request from origin: 
+DEBUG 2025-06-16 13:36:51,948 middleware 9 140267373713088 Request from origin: 
+INFO 2025-06-16 13:36:51,952 views 9 140267382367936 Health check запрос от 172.18.0.3: ok
+INFO 2025-06-16 13:36:51,954 basehttp 9 140267382367936 "GET /api/health/ HTTP/1.0" 200 245
+DEBUG 2025-06-16 13:36:51,959 middleware 9 140267382367936 Request from origin: 
+INFO 2025-06-16 13:36:51,967 basehttp 9 140267373713088 "GET /api/cafes/1/ HTTP/1.0" 200 442
+INFO 2025-06-16 13:36:51,975 basehttp 9 140267382367936 "GET /api/cities/ HTTP/1.0" 200 168
+DEBUG 2025-06-16 13:36:51,985 middleware 9 140267382367936 Request from origin: 
+DEBUG 2025-06-16 13:36:51,986 middleware 9 140267373713088 Request from origin: 
+INFO 2025-06-16 13:36:52,001 basehttp 9 140267382367936 "GET /api/cafes/?city=1&t=1750081012405 HTTP/1.0" 200 494
+DEBUG 2025-06-16 13:36:52,007 middleware 9 140267382367936 Request from origin: 
+INFO 2025-06-16 13:36:52,011 basehttp 9 140267373713088 "GET /api/cafes/1/statistics/ HTTP/1.0" 200 87
+DEBUG 2025-06-16 13:36:52,015 middleware 9 140267373713088 Request from origin: 
+DEBUG 2025-06-16 13:36:52,022 views 9 140267382367936 Menu item: Шурпа, image: 'http://localhost:8000/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg', image_full_url: 'http://localhost:8000/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg'
+INFO 2025-06-16 13:36:52,024 basehttp 9 140267382367936 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 471
+INFO 2025-06-16 13:36:52,035 basehttp 9 140267373713088 "GET /api/orders/?cafe=1 HTTP/1.0" 200 273
+DEBUG 2025-06-16 13:37:17,113 middleware 9 140267373713088 Request from origin: 
+DEBUG 2025-06-16 13:37:17,123 middleware 9 140267382367936 Request from origin: 
+INFO 2025-06-16 13:37:17,125 views 9 140267373713088 Health check запрос от 172.18.0.3: ok
+INFO 2025-06-16 13:37:17,126 basehttp 9 140267373713088 "GET /api/health/ HTTP/1.0" 200 244
+INFO 2025-06-16 13:37:17,138 basehttp 9 140267382367936 "GET /api/cafes/1/ HTTP/1.0" 200 442
+DEBUG 2025-06-16 13:37:17,155 middleware 9 140267382367936 Request from origin: 
+DEBUG 2025-06-16 13:37:17,156 middleware 9 140267373713088 Request from origin: 
+INFO 2025-06-16 13:37:17,168 basehttp 9 140267373713088 "GET /api/cities/ HTTP/1.0" 200 168
+DEBUG 2025-06-16 13:37:17,173 middleware 9 140267373713088 Request from origin: 
+INFO 2025-06-16 13:37:17,173 basehttp 9 140267382367936 "GET /api/cafes/1/statistics/ HTTP/1.0" 200 87
+DEBUG 2025-06-16 13:37:17,178 middleware 9 140267382367936 Request from origin: 
+INFO 2025-06-16 13:37:17,189 basehttp 9 140267373713088 "GET /api/cafes/?city=1&t=1750081037697 HTTP/1.0" 200 494
+DEBUG 2025-06-16 13:37:17,193 middleware 9 140267373713088 Request from origin: 
+INFO 2025-06-16 13:37:17,197 basehttp 9 140267382367936 "GET /api/orders/?cafe=1 HTTP/1.0" 200 273
+DEBUG 2025-06-16 13:37:17,207 views 9 140267373713088 Menu item: Шурпа, image: 'http://localhost:8000/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg', image_full_url: 'http://localhost:8000/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg'
+INFO 2025-06-16 13:37:17,208 basehttp 9 140267373713088 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 471
+DEBUG 2025-06-16 13:37:17,622 middleware 9 140267373713088 Request from origin: 
+DEBUG 2025-06-16 13:37:17,627 middleware 9 140267382367936 Request from origin: 
+INFO 2025-06-16 13:37:17,634 views 9 140267373713088 Health check запрос от 172.18.0.3: ok
+INFO 2025-06-16 13:37:17,636 basehttp 9 140267373713088 "GET /api/health/ HTTP/1.0" 200 245
+INFO 2025-06-16 13:37:17,642 basehttp 9 140267382367936 "GET /api/cafes/1/ HTTP/1.0" 200 442
+DEBUG 2025-06-16 13:37:17,658 middleware 9 140267382367936 Request from origin: 
+DEBUG 2025-06-16 13:37:17,659 middleware 9 140267373713088 Request from origin: 
+INFO 2025-06-16 13:37:17,672 basehttp 9 140267373713088 "GET /api/cities/ HTTP/1.0" 200 168
+DEBUG 2025-06-16 13:37:17,677 middleware 9 140267373713088 Request from origin: 
+INFO 2025-06-16 13:37:17,678 basehttp 9 140267382367936 "GET /api/cafes/1/statistics/ HTTP/1.0" 200 87
+DEBUG 2025-06-16 13:37:17,682 middleware 9 140267382367936 Request from origin: 
+INFO 2025-06-16 13:37:17,694 basehttp 9 140267373713088 "GET /api/cafes/?city=1&t=1750081038201 HTTP/1.0" 200 494
+DEBUG 2025-06-16 13:37:17,698 middleware 9 140267373713088 Request from origin: 
+INFO 2025-06-16 13:37:17,703 basehttp 9 140267382367936 "GET /api/orders/?cafe=1 HTTP/1.0" 200 273
+DEBUG 2025-06-16 13:37:17,712 views 9 140267373713088 Menu item: Шурпа, image: 'http://localhost:8000/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg', image_full_url: 'http://localhost:8000/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg'
+INFO 2025-06-16 13:37:17,713 basehttp 9 140267373713088 "GET /api/menu-items/?cafe=1 HTTP/1.0" 200 471

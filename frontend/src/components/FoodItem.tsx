@@ -193,21 +193,60 @@ const Badge = styled.span`
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 `;
 
+// Функция для очистки URL от невидимых символов
+const cleanUrlString = (url?: string): string => {
+  if (!url) return '';
+  
+  // Удаляем все невидимые символы из всей строки, а не только в конце
+  return url.replace(/[\u200B-\u200D\uFEFF\u2060,\s]+/g, '');
+};
+
 // Хелпер-функция для проверки URL изображения
 const generateImageUrl = (url?: string): string => {
+  console.log('FoodItem: Generating image URL from:', url);
+  
   // Если URL отсутствует или пустой
   if (!url || url.trim() === '') {
+    console.log('FoodItem: Empty URL, returning placeholder');
     return '/food-placeholder.png';
   }
 
+  // Очищаем URL от запятых и невидимых символов
+  let cleanUrl = cleanUrlString(url);
+  
+  // Исправляем URL, если он использует неправильный порт
+  if (cleanUrl.includes('http://localhost/media/')) {
+    cleanUrl = cleanUrl.replace('http://localhost/media/', 'http://localhost:8000/media/');
+  }
+  
+  console.log('FoodItem: Cleaned URL:', cleanUrl);
+
   // Если это data URL или внешний URL, возвращаем как есть
-  if (url.startsWith('data:image/') || url.startsWith('http')) {
-    return url;
+  if (cleanUrl.startsWith('data:image/') || cleanUrl.startsWith('http')) {
+    console.log('FoodItem: URL is already absolute, returning as is');
+    return cleanUrl;
   }
 
   // В остальных случаях считаем, что это относительный путь с бэкенда
-  // и добавляем базовый URL
-  return `http://localhost:8000${url}`;
+  // и добавляем базовый URL с правильным портом
+  // Обрабатываем случай, если URL начинается с /media
+  if (cleanUrl.startsWith('/media')) {
+    const result = `http://localhost:8000${cleanUrl}`;
+    console.log('FoodItem: Relative media URL, converting to:', result);
+    return result;
+  }
+  
+  // Для других относительных путей добавляем /media/ если это путь к media_items
+  if (cleanUrl.includes('menu_items/')) {
+    const result = `http://localhost:8000/media/${cleanUrl}`;
+    console.log('FoodItem: Menu item path, converting to:', result);
+    return result;
+  }
+  
+  // Все другие случаи - просто объединяем с origin и портом
+  const result = `http://localhost:8000${cleanUrl}`;
+  console.log('FoodItem: Other relative URL, converting to:', result);
+  return result;
 };
 
 // Оптимизированный компонент с мемоизацией
@@ -224,6 +263,25 @@ const FoodItem: React.FC<FoodItemProps> = memo(({ id, name, description, price, 
   
   // Получаем URL изображения с использованием нашей утилиты
   const imageUrl = generateImageUrl(item?.imageUrl);
+  console.log(`FoodItem ${itemName}: Final image URL: ${imageUrl}`);
+  
+  // Проверка загрузки изображения
+  useEffect(() => {
+    // Проверяем валидность URL изображения
+    if (imageUrl && imageUrl !== '/food-placeholder.png') {
+      console.log(`Testing image load for "${itemName}": ${imageUrl}`);
+      const img = new Image();
+      img.onload = () => {
+        console.log(`Image load SUCCESS for "${itemName}": ${imageUrl}`);
+        setIsImageError(false);
+      };
+      img.onerror = () => {
+        console.error(`Image load FAILED for "${itemName}": ${imageUrl}`);
+        setIsImageError(true);
+      };
+      img.src = imageUrl;
+    }
+  }, [imageUrl, itemName]);
   
   // Добавляем глобальные стили анимации
   useEffect(() => {

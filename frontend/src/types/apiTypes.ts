@@ -8,10 +8,10 @@ export interface City {
 export interface Restaurant {
   id: number;
   name: string;
-  cityId: number;
+  city: number;  // Поле называется city в API, а не cityId
   address: string;
   description: string;
-  coverImage: string;
+  cover_image: string;  // Поле называется cover_image в API (snake_case)
   rating: number;
 }
 

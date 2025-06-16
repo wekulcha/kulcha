@@ -61,9 +61,43 @@ class CafeOwnerSerializer(serializers.ModelSerializer):
 
 
 class MenuItemSerializer(serializers.ModelSerializer):
+    image_full_url = serializers.SerializerMethodField()
+    image = serializers.SerializerMethodField()
+    
     class Meta:
         model = MenuItem
         fields = '__all__'
+    
+    def get_image(self, obj):
+        """
+        Возвращает очищенный URL изображения
+        """
+        if not obj.image:
+            return None
+        
+        # Получаем оригинальный URL изображения
+        original_url = obj.image.url
+        
+        # Возвращаем полный URL с портом 8000
+        if original_url.startswith('/'):
+            return f"http://localhost:8000{original_url}"
+        else:
+            return f"http://localhost:8000/{original_url}"
+    
+    def get_image_full_url(self, obj):
+        """
+        Возвращает полный URL изображения с корректным хостом и портом
+        """
+        if not obj.image:
+            return None
+        
+        # Всегда используем порт 8000 для доступа к медиа-файлам в Docker
+        image_path = str(obj.image.url)
+        if image_path.startswith('/'):
+            image_path = image_path[1:]
+        
+        # Явно указываем порт 8000 для localhost
+        return f"http://localhost:8000/{image_path}"
 
 
 class UserAddressSerializer(serializers.ModelSerializer):
