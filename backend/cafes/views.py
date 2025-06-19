@@ -17,6 +17,8 @@ import time
 import socket
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
+from rest_framework import serializers
+from django.db import models
 
 # Настраиваем логирование
 logger = logging.getLogger(__name__)
@@ -304,14 +306,14 @@ class MenuItemViewSet(viewsets.ModelViewSet):
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
-    permission_classes = [IsAuthenticated]  # Только авторизованные пользователи
+    permission_classes = [AllowAny]  # Разрешаем создание заказов без аутентификации
     
     def get_queryset(self):
         queryset = self.queryset
         user = self.request.user
         
         # Если пользователь не администратор, возвращаем только его заказы
-        if not user.is_staff:
+        if not user.is_staff and user.is_authenticated:
             queryset = queryset.filter(user=user)
             
         cafe_id = self.request.query_params.get('cafe', None)
@@ -321,12 +323,90 @@ class OrderViewSet(viewsets.ModelViewSet):
                 queryset = queryset.filter(cafe=cafe_id)
             except (ValueError, TypeError):
                 return Order.objects.none()
+        
+        # Фильтрация по client_order_id, если параметр передан
+        client_order_id = self.request.query_params.get('client_order_id', None)
+        if client_order_id is not None:
+            logger.info(f"Filtering orders by client_order_id: '{client_order_id}'")
+            queryset = queryset.filter(client_order_id=client_order_id)
+            logger.info(f"Found {queryset.count()} orders with client_order_id '{client_order_id}'")
+        
+        # Удаляем дубликаты по client_order_id (оставляем только самый последний заказ с таким ID)
+        # Сначала получаем список всех client_order_id
+        duplicate_ids = queryset.exclude(client_order_id__isnull=True).exclude(client_order_id='') \
+                                .values('client_order_id') \
+                                .annotate(count=models.Count('id')) \
+                                .filter(count__gt=1) \
+                                .values_list('client_order_id', flat=True)
+        
+        # Для каждого дублирующегося client_order_id, оставляем только самый последний заказ
+        for duplicate_id in duplicate_ids:
+            latest_order = queryset.filter(client_order_id=duplicate_id).latest('created_at')
+            queryset = queryset.exclude(client_order_id=duplicate_id).exclude(id=latest_order.id) | queryset.filter(id=latest_order.id)
                 
         return queryset
     
+    def create(self, request, *args, **kwargs):
+        """
+        Создание нового заказа с проверкой на дубликаты по client_order_id
+        """
+        client_order_id = request.data.get('client_order_id')
+        
+        # Проверяем, существует ли заказ с таким client_order_id
+        if client_order_id:
+            logger.info(f"Checking if order with client_order_id '{client_order_id}' already exists")
+            existing_order = Order.objects.filter(client_order_id=client_order_id).first()
+            
+            if existing_order:
+                logger.info(f"Found existing order with client_order_id '{client_order_id}' (Order #{existing_order.id})")
+                serializer = self.get_serializer(existing_order)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        # Если заказ не существует, создаем новый
+        return super().create(request, *args, **kwargs)
+        
     def perform_create(self, serializer):
-        # Устанавливаем текущего пользователя
-        serializer.save(user=self.request.user)
+        # Получаем имя клиента из запроса
+        customer_name = self.request.data.get('customer_name', '')
+        client_order_id = self.request.data.get('client_order_id', '')
+        order_type = self.request.data.get('order_type', 'delivery')
+        
+        logger.info(f"Creating order with customer_name: '{customer_name}', client_order_id: '{client_order_id}', order_type: '{order_type}'")
+        logger.info(f"Request data: {self.request.data}")
+        
+        # Валидируем order_type
+        valid_order_types = [choice[0] for choice in Order.ORDER_TYPES]
+        if order_type not in valid_order_types:
+            logger.warning(f"Invalid order_type '{order_type}', defaulting to 'delivery'")
+            order_type = 'delivery'
+        
+        # Если пользователь аутентифицирован, устанавливаем его
+        if self.request.user.is_authenticated:
+            logger.info(f"User is authenticated: {self.request.user.username}")
+            serializer.save(
+                user=self.request.user, 
+                customer_name=customer_name,
+                client_order_id=client_order_id,
+                order_type=order_type
+            )
+        else:
+            # Если нет, используем админа или первого пользователя, но сохраняем имя клиента
+            logger.info("User is not authenticated, using admin or first user")
+            admin_user = User.objects.filter(is_staff=True).first() or User.objects.first()
+            if admin_user:
+                logger.info(f"Using user: {admin_user.username}")
+                serializer.save(
+                    user=admin_user, 
+                    customer_name=customer_name,
+                    client_order_id=client_order_id,
+                    order_type=order_type
+                )
+            else:
+                # Если в системе нет пользователей, возвращаем ошибку
+                logger.error("No users in the system to assign to the order")
+                raise serializers.ValidationError("Невозможно создать заказ: нет пользователей в системе")
+        
+        logger.info(f"Order created successfully with ID: {serializer.instance.id}, order_type: {serializer.instance.order_type}, client_order_id: {serializer.instance.client_order_id}")
 
     @action(detail=True, methods=['post'])
     def update_status(self, request, pk=None):

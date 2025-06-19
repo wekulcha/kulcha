@@ -102,7 +102,8 @@ class UserAddress(TimestampMixin):
 class Order(TimestampMixin):
     ORDER_TYPES = [
         ('in_place', 'В ресторане'),
-        ('delivery', 'Доставка')
+        ('delivery', 'Доставка'),
+        ('pickup', 'Самовывоз')
     ]
 
     ORDER_STATUS = [
@@ -115,11 +116,13 @@ class Order(TimestampMixin):
     ]
 
     cafe = models.ForeignKey(Cafe, on_delete=models.CASCADE, related_name='orders', db_index=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders', db_index=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders', db_index=True, null=True, blank=True)
+    customer_name = models.CharField(max_length=100, blank=True, null=True, help_text="Имя клиента для неавторизованных заказов")
     order_type = models.CharField(max_length=20, choices=ORDER_TYPES)
     status = models.CharField(max_length=20, choices=ORDER_STATUS, default='new', db_index=True)
     total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     delivery_address = models.ForeignKey(UserAddress, on_delete=models.SET_NULL, null=True, blank=True)
+    client_order_id = models.CharField(max_length=100, blank=True, null=True, help_text="Уникальный ID заказа на стороне клиента")
 
     def calculate_total_price(self):
         """ Пересчитывает стоимость заказа """
@@ -140,7 +143,8 @@ class Order(TimestampMixin):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"Order #{self.id} - {self.cafe.name} - {self.user.username}"
+        username = self.user.username if self.user else (self.customer_name or "Гость")
+        return f"Order #{self.id} - {self.cafe.name} - {username}"
 
     class Meta:
         ordering = ['-created_at']

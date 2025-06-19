@@ -129,6 +129,7 @@ class OrderItemSerializer(serializers.ModelSerializer):
 class OrderSerializer(serializers.ModelSerializer):
     order_items = OrderItemSerializer(many=True, read_only=True)
     user = serializers.StringRelatedField(read_only=True)
+    customer_name = serializers.CharField(write_only=True, required=False)
     delivery_address = UserAddressSerializer(read_only=True)
     delivery_address_id = serializers.PrimaryKeyRelatedField(
         queryset=UserAddress.objects.all(),
@@ -140,3 +141,6 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = '__all__'
+        extra_kwargs = {
+            'user': {'required': False},
+        }

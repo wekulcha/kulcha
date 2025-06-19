@@ -244,42 +244,90 @@ const OrderSuccessPage: React.FC = () => {
     
     // Синхронизируем заказ с админ-панелью
     const syncOrderWithAdmin = async () => {
-      // Проверяем, был ли заказ уже отправлен в бэкенд
-      const orderShortKey = `${lastOrder.restaurantId}_${Math.round(lastOrder.totalAmount)}`;
-      if (localStorage.getItem(`global_order_created_${orderShortKey}`)) {
-        console.log(`Order already sent to backend (shortKey: ${orderShortKey}), skipping duplication`);
+      // Проверяем, был ли этот конкретный заказ уже отправлен в бэкенд
+      // Используем ID заказа для уникальности вместо shortKey, который может совпадать для разных заказов
+      const orderUniqueKey = `order_sent_${lastOrder.id}`;
+      if (localStorage.getItem(orderUniqueKey)) {
+        console.log(`This specific order (ID: ${lastOrder.id}) was already sent to backend, skipping duplication`);
         return;
       }
       
-      if (lastOrder && lastOrder.restaurantId) {
-        // Определяем имя клиента для заказа
-        const customerName = lastOrder.userAddress 
-          ? lastOrder.userAddress.name 
-          : 'Гость';
+      // Создаем временную блокировку для предотвращения одновременной синхронизации
+      // из-за StrictMode или других причин повторного рендеринга
+      const syncLockKey = `sync_lock_${lastOrder.id}`;
+      if (localStorage.getItem(syncLockKey)) {
+        console.log(`Sync already in progress for order ID: ${lastOrder.id}`);
+        return;
+      }
+      
+      try {
+        // Устанавливаем блокировку
+        localStorage.setItem(syncLockKey, new Date().toISOString());
+        console.log(`Sync lock acquired for order ID: ${lastOrder.id}`);
         
-        try {
-          console.log('Syncing order with admin panel, creating in backend...');
+        if (lastOrder && lastOrder.restaurantId) {
+          // Определяем имя клиента для заказа
+          const customerName = lastOrder.userAddress 
+            ? lastOrder.userAddress.name 
+            : 'Гость';
           
-          // Добавляем заказ в админ-панель владельца ресторана - ЕДИНСТВЕННОЕ место,
-          // где мы создаем заказ на бэкенде
-          const adminOrder = await addOrder({
-            restaurantId: lastOrder.restaurantId,
-            customer: customerName,
-            date: lastOrder.date,
-            amount: lastOrder.totalAmount,
-            status: 'new' // Начальный статус заказа
-          });
+          // Получаем более уникальный ID заказа из localStorage, или генерируем новый 
+          let uniqueClientOrderId = localStorage.getItem(`order_unique_id_${lastOrder.id}`);
           
-          if (adminOrder && adminOrder.id > 0) {
-            console.log('Order successfully created in backend, ID:', adminOrder.id);
-          } else {
-            console.warn('Order creation may have failed or was handled by another component');
+          // Если в localStorage нет ID или мы сталкивались с дубликатами ранее,
+          // генерируем полностью новый ID, добавляя текущее время
+          if (!uniqueClientOrderId || localStorage.getItem(`order_duplicate_${lastOrder.id}`)) {
+            const timestamp = Date.now();
+            const randomStr = Math.random().toString(36).substring(2, 10); // Используем более длинную строку
+            uniqueClientOrderId = `${timestamp}-${randomStr}`;
+            localStorage.setItem(`order_unique_id_${lastOrder.id}`, uniqueClientOrderId);
+            console.log(`Generated new unique client order ID: ${uniqueClientOrderId}`);
           }
-        } catch (error) {
-          console.error('Error creating order in backend:', error);
+          
+          try {
+            console.log('Syncing order with admin panel, creating in backend...');
+            console.log('Using delivery method:', lastOrder.deliveryMethod);
+            console.log('Using unique client order ID:', uniqueClientOrderId);
+            
+            // Добавляем заказ в админ-панель владельца ресторана - ЕДИНСТВЕННОЕ место,
+            // где мы создаем заказ на бэкенде
+            const adminOrder = await addOrder({
+              restaurantId: lastOrder.restaurantId,
+              customer: customerName,
+              date: lastOrder.date,
+              amount: lastOrder.totalAmount,
+              status: 'new', // Начальный статус заказа
+              // Используем более уникальный идентификатор
+              clientOrderId: uniqueClientOrderId,
+              // Передаем тип доставки
+              deliveryMethod: lastOrder.deliveryMethod
+            });
+            
+            if (adminOrder && adminOrder.id > 0) {
+              console.log('Order successfully created in backend, ID:', adminOrder.id);
+              console.log('Order type saved as:', adminOrder.deliveryMethod);
+              // Помечаем этот конкретный заказ как отправленный
+              localStorage.setItem(orderUniqueKey, 'true');
+              
+              // Очищаем флаг дубликата, если он был
+              localStorage.removeItem(`order_duplicate_${lastOrder.id}`);
+            } else {
+              console.warn('Order creation may have failed or was handled by another component');
+              // Ставим флаг о возможном дубликате для следующей попытки
+              localStorage.setItem(`order_duplicate_${lastOrder.id}`, 'true');
+            }
+          } catch (error) {
+            console.error('Error creating order in backend:', error);
+            // Ставим флаг о возможном дубликате для следующей попытки
+            localStorage.setItem(`order_duplicate_${lastOrder.id}`, 'true');
+          }
+        } else {
+          console.warn('Cannot create order: missing restaurantId', lastOrder);
         }
-      } else {
-        console.warn('Cannot create order: missing restaurantId', lastOrder);
+      } finally {
+        // Очищаем блокировку
+        localStorage.removeItem(syncLockKey);
+        console.log(`Sync lock released for order ID: ${lastOrder.id}`);
       }
     };
     

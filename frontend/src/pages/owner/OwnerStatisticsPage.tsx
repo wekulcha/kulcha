@@ -1066,10 +1066,10 @@ const OwnerStatisticsPage: React.FC = () => {
           console.log('Restaurant orders:', ordersData);
           
           if (ordersData && ordersData.length > 0) {
-            // Добавляем deliveryMethod как случайное значение для демонстрации
+            // Используем фактические данные о способе доставки из бэкенда
             const extendedOrders = ordersData.map(order => ({
               ...order,
-              deliveryMethod: Math.random() > 0.5 ? 'delivery' as const : 'pickup' as const
+              // deliveryMethod уже должен быть установлен в getRestaurantOrders
             }));
             
             setOrders(extendedOrders);
@@ -1168,10 +1168,10 @@ const OwnerStatisticsPage: React.FC = () => {
         console.log('Refreshed orders:', ordersData);
         
         if (ordersData && ordersData.length > 0) {
-          // Добавляем deliveryMethod как случайное значение для демонстрации
+          // Используем фактические данные о способе доставки из бэкенда
           const extendedOrders = ordersData.map(order => ({
             ...order,
-            deliveryMethod: Math.random() > 0.5 ? 'delivery' as const : 'pickup' as const
+            // deliveryMethod уже должен быть установлен в getRestaurantOrders
           }));
           
           console.log('Extended orders with delivery method:', extendedOrders);

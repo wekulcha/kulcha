@@ -70,6 +70,8 @@ export interface AdminOrder {
   date: string;
   amount: number;
   status: string;
+  clientOrderId?: string;
+  deliveryMethod?: DeliveryMethod;
 }
 
 // Интерфейс для пункта меню ресторана
@@ -235,56 +237,100 @@ export const getRestaurantStatistics = async (
   try {
     console.log(`Fetching statistics for restaurant ID: ${restaurantId}`);
 
+    if (!restaurantId) {
+      console.error("Invalid restaurant ID:", restaurantId);
+      throw new Error("Invalid restaurant ID");
+    }
+
     const config = await getAxiosConfig();
 
     // Получаем статистику ресторана
-    const response = await axios.get(
-      `${API_BASE_URL}/cafes/${restaurantId}/statistics/`,
-      config
-    );
-    const data = response.data;
-    console.log("Restaurant statistics data:", data);
+    let statsData = {
+      total_orders: 0,
+      total_revenue: 0,
+      average_order_value: 0,
+      popular_items: []
+    };
+    
+    try {
+      const response = await axios.get(
+        `${API_BASE_URL}/cafes/${restaurantId}/statistics/`,
+        config
+      );
+      statsData = response.data;
+      console.log("Restaurant statistics data:", statsData);
+    } catch (statsError) {
+      console.error("Error fetching restaurant statistics:", statsError);
+      // Продолжаем выполнение с пустыми данными статистики
+    }
 
     // Получаем последние заказы для ресторана
-    const ordersResponse = await axios.get(
-      `${API_BASE_URL}/orders/?cafe=${restaurantId}`,
-      config
-    );
-    const ordersData = ordersResponse.data;
-    console.log("Restaurant orders data:", ordersData);
+    let ordersData = [];
+    try {
+      const ordersResponse = await axios.get(
+        `${API_BASE_URL}/orders/?cafe=${restaurantId}`,
+        config
+      );
+      
+      // Проверяем формат данных (есть ли пагинация)
+      if (ordersResponse.data && ordersResponse.data.results) {
+        ordersData = ordersResponse.data.results;
+      } else if (Array.isArray(ordersResponse.data)) {
+        ordersData = ordersResponse.data;
+      }
+      
+      console.log("Restaurant orders data:", ordersData);
+    } catch (ordersError) {
+      console.error("Error fetching restaurant orders:", ordersError);
+      // Продолжаем выполнение с пустым списком заказов
+    }
 
-    // Упрощаем процесс получения данных заказа для улучшения производительности
-    const transformedOrders = ordersData.map((order: any) => {
-      return {
-        id: order.id,
-        items: order.items || [],
-        totalAmount: order.total_price,
-        deliveryMethod: order.order_type === "delivery" ? "delivery" : "pickup",
-        date: order.created_at,
-        status: order.status,
-        restaurantId: order.cafe,
-        userAddress: order.delivery_address || "",
-      };
-    });
+    // Преобразуем данные заказов в нужный формат
+    const transformedOrders = (ordersData || []).map((order: any) => {
+      try {
+        return {
+          id: order.id || 0,
+          items: order.order_items || [],
+          totalAmount: order.total_price || 0,
+          deliveryMethod: order.order_type === "delivery" ? "delivery" : "pickup",
+          date: order.created_at || new Date().toISOString(),
+          status: order.status || "new",
+          restaurantId: order.cafe || restaurantId,
+          userAddress: order.delivery_address || null,
+        };
+      } catch (itemError) {
+        console.error("Error transforming order:", itemError, order);
+        return null;
+      }
+    }).filter(Boolean); // Удаляем null значения
+
+    // Преобразуем популярные товары
+    const popularItems = (statsData.popular_items || []).map((item: any) => {
+      try {
+        return {
+          id: item.id || 0,
+          restaurantId: item.cafe || restaurantId,
+          name: item.name || "Неизвестное блюдо",
+          description: item.description || "",
+          price: item.price || 0,
+          category: item.category || "Другое",
+          imageUrl: item.image || item.image_url || "",
+          available: item.available !== undefined ? item.available : true,
+        };
+      } catch (itemError) {
+        console.error("Error transforming popular item:", itemError, item);
+        return null;
+      }
+    }).filter(Boolean) as MenuItem[]; // Используем явное приведение типа после фильтрации
 
     return {
       statistics: {
-        totalSales: data.total_revenue || 0,
-        orderCount: data.total_orders || 0,
-        averageOrderValue: data.average_order_value || 0,
-        popularItems:
-          data.popular_items?.map((item: any) => ({
-            id: item.id,
-            restaurantId: item.cafe,
-            name: item.name,
-            description: item.description || "",
-            price: item.price,
-            category: item.category,
-            imageUrl: item.image_url || "",
-            available: item.available,
-          })) || [],
+        totalSales: statsData.total_revenue || 0,
+        orderCount: statsData.total_orders || 0,
+        averageOrderValue: statsData.average_order_value || 0,
+        popularItems: popularItems,
       },
-      recentOrders: transformedOrders.slice(0, 5), // Берем только 5 последних заказов
+      recentOrders: transformedOrders.slice(0, 10), // Берем только 10 последних заказов
     };
   } catch (error) {
     console.error("Error in getRestaurantStatistics:", error);
@@ -483,28 +529,79 @@ export const getRestaurantOrders = async (
   try {
     console.log(`Fetching orders for restaurant ID: ${restaurantId}`);
 
-    // Получаем заказы для конкретного ресторана
     const config = await getAxiosConfig();
     const response = await axios.get(
       `${API_BASE_URL}/orders/?cafe=${restaurantId}`,
       config
     );
 
-    const data = response.data;
-    console.log("Restaurant orders data:", data);
+    // Проверяем, является ли это пагинированным ответом
+    const ordersData = response.data.results
+      ? response.data.results
+      : response.data;
 
-    // Check if the data is paginated and has a results array
-    const ordersList = data.results ? data.results : data;
+    console.log("Orders data:", ordersData);
 
-    // Преобразуем данные в формат, используемый на фронтенде
-    return ordersList.map((order: any) => ({
-      id: order.id,
-      restaurantId: order.cafe,
-      customer: order.user || "Неизвестный клиент",
-      date: order.created_at,
-      amount: order.total_price,
-      status: order.status,
-    }));
+    // Преобразование данных о заказах в формат, используемый на фронтенде
+    const transformedOrders = ordersData.map((order: any) => {
+      // Обработка полей с безопасным доступом к вложенным объектам
+      const customerName = order.user
+        ? `${order.user.first_name || ""} ${order.user.last_name || ""}`.trim() ||
+          order.user.username ||
+          "Гость"
+        : order.customer_name || "Гость";
+        
+      // Логируем данные о способе доставки из бэкенда
+      console.log(`Order #${order.id} - order_type: ${order.order_type}, client_order_id: ${order.client_order_id}`);
+
+      // Определяем delivery method исходя из order_type
+      let deliveryMethod: DeliveryMethod;
+      if (order.order_type === "pickup") {
+        deliveryMethod = "pickup";
+      } else {
+        deliveryMethod = "delivery"; // По умолчанию и для всех других значений используем delivery
+      }
+      console.log(`Order #${order.id} - mapped deliveryMethod: ${deliveryMethod}`);
+
+      // Проверка наличия поля client_order_id
+      const clientOrderId = order.client_order_id !== undefined ? 
+        order.client_order_id : 
+        undefined;
+
+      return {
+        id: order.id,
+        restaurantId: order.cafe,
+        customer: customerName,
+        date: order.created_at,
+        amount: parseFloat(order.total_price),
+        status: order.status,
+        clientOrderId: clientOrderId,
+        deliveryMethod: deliveryMethod,
+      };
+    });
+    
+    // Проверяем дубликаты заказов по client_order_id
+    const clientOrderMap = new Map<string, AdminOrder[]>();
+    for (const order of transformedOrders) {
+      if (order.clientOrderId) {
+        if (!clientOrderMap.has(order.clientOrderId)) {
+          clientOrderMap.set(order.clientOrderId, []);
+        }
+        clientOrderMap.get(order.clientOrderId)!.push(order);
+      }
+    }
+    
+    // Логируем информацию о дубликатах
+    clientOrderMap.forEach((orders, clientOrderId) => {
+      if (orders.length > 1) {
+        console.warn(`Found ${orders.length} orders with the same clientOrderId: ${clientOrderId}`);
+        orders.forEach(order => {
+          console.warn(`- Order ID: ${order.id}, Delivery Method: ${order.deliveryMethod}, Status: ${order.status}`);
+        });
+      }
+    });
+    
+    return transformedOrders;
   } catch (error) {
     console.error("Error in getRestaurantOrders:", error);
     return handleError(error, []);
@@ -718,146 +815,166 @@ export const updateOrderStatus = async (
   status: AdminOrder["status"]
 ): Promise<boolean> => {
   try {
+    console.log(`Updating order ${orderId} status to ${status}`);
+    
     // Получаем конфигурацию для axios с CSRF токеном
     const config = await getAxiosConfig(true, true);
 
-    await axios.post(
+    const response = await axios.post(
       `${API_BASE_URL}/orders/${orderId}/update_status/`,
       { status },
       config
     );
-
-    return true;
+    
+    // Проверяем успешность обновления
+    if (response.status >= 200 && response.status < 300) {
+      console.log(`Order ${orderId} status successfully updated to ${status}`);
+      return true;
+    } else {
+      console.error(`Error updating order status: ${response.status}`);
+      return false;
+    }
   } catch (error) {
+    console.error('Error updating order status:', error);
     return handleError(error, false);
   }
 };
-
-// Store processed order IDs to prevent duplicates
-const processedOrderIds = new Set<string>();
-// Track orders being processed to prevent concurrent duplicates
-const pendingOrders = new Set<string>();
 
 // Добавление нового заказа
 export const addOrder = async (
   order: Omit<AdminOrder, "id">
 ): Promise<AdminOrder | null> => {
   try {
-    // Create a unique ID based on order properties to detect duplicates
-    const orderKey = `${order.restaurantId}_${order.date}_${
-      order.amount
-    }_${Math.round(order.amount * 100)}`;
-    const shortKey = `${order.restaurantId}_${Math.round(order.amount)}`;
-
-    // Check if this exact order has already been globally processed
-    const globalOrderExists = localStorage.getItem(
-      `global_order_created_${shortKey}`
-    );
-    if (globalOrderExists) {
-      console.log(
-        "Order already exists globally, skipping submission:",
-        shortKey
-      );
-      // Return cached successful response from localStorage if available
-      const cachedOrder = localStorage.getItem(`order_response_${shortKey}`);
-      if (cachedOrder) {
-        return JSON.parse(cachedOrder);
-      }
-      return null;
+    console.log("=== НАЧАЛО СОЗДАНИЯ ЗАКАЗА ===");
+    console.log("Данные заказа:", order);
+    
+    // Дополнительная защита от одновременных вызовов API
+    const orderProcessingKey = `order_processing_${order.clientOrderId}`;
+    if (sessionStorage.getItem(orderProcessingKey)) {
+      console.log(`Заказ с clientOrderId ${order.clientOrderId} уже в процессе создания, отменяем дублирование`);
+      
+      // Ждем небольшое время, чтобы дать возможность первому запросу завершиться
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Возвращаем временную заглушку заказа для потенциально уже созданного заказа
+      // Реальные данные будут получены позже при запросе истории заказов
+      return {
+        id: -1, // Временный ID, будет заменен на реальный при получении списка заказов
+        restaurantId: order.restaurantId,
+        customer: order.customer,
+        date: order.date,
+        amount: order.amount,
+        status: order.status,
+        clientOrderId: order.clientOrderId,
+        deliveryMethod: order.deliveryMethod,
+      };
     }
-
-    // Check if we've already processed this order
-    if (processedOrderIds.has(orderKey)) {
-      console.log("Duplicate order detected, skipping submission:", orderKey);
-      // Return cached successful response from localStorage if available
-      const cachedOrder = localStorage.getItem(`order_response_${orderKey}`);
-      if (cachedOrder) {
-        return JSON.parse(cachedOrder);
-      }
-      return null;
-    }
-
-    // If order with similar properties is currently being processed, wait and return to prevent duplicates
-    if (pendingOrders.has(shortKey)) {
-      console.log("Order is already being processed:", shortKey);
-      // Wait for the pending order to complete, checking every 100ms
-      for (let i = 0; i < 20; i++) {
-        await new Promise((resolve) => setTimeout(resolve, 100));
-        const cachedOrder = localStorage.getItem(`order_response_${shortKey}`);
-        if (cachedOrder) {
-          console.log("Found completed order from concurrent request");
-          return JSON.parse(cachedOrder);
+    
+    try {
+      // Устанавливаем флаг создания заказа
+      sessionStorage.setItem(orderProcessingKey, "true");
+      
+      // Проверяем, был ли уже создан заказ с таким clientOrderId
+      if (order.clientOrderId) {
+        try {
+          // Debug log
+          console.log(`Checking for existing order with clientOrderId: ${order.clientOrderId}`);
+          
+          const url = `${API_BASE_URL}/orders/?client_order_id=${encodeURIComponent(order.clientOrderId)}`;
+          console.log(`Making request to: ${url}`);
+          
+          const existingOrdersConfig = await getAxiosConfig(false, true);
+          console.log("Config for checking existing orders:", existingOrdersConfig);
+          
+          const existingOrders = await axios.get(url, existingOrdersConfig);
+          
+          console.log("Existing orders response:", {
+            status: existingOrders.status,
+            data: existingOrders.data,
+            results: existingOrders.data.results ? existingOrders.data.results.length : 'N/A'
+          });
+          
+          // Проверяем ответ на существование результатов
+          if (existingOrders.data.results && existingOrders.data.results.length > 0) {
+            console.log(`Заказ с clientOrderId ${order.clientOrderId} уже существует, пропускаем создание дубликата`);
+            // Проверяем, что возвращенные данные соответствуют ожидаемому формату
+            const existingOrder = existingOrders.data.results[0];
+            console.log("Existing order data:", existingOrder);
+            
+            // Форматируем и возвращаем существующий заказ
+            return {
+              id: existingOrder.id,
+              restaurantId: existingOrder.cafe,
+              customer: existingOrder.user || existingOrder.customer_name || "Неизвестный клиент",
+              date: existingOrder.created_at,
+              amount: existingOrder.total_price,
+              status: existingOrder.status,
+              clientOrderId: existingOrder.client_order_id,
+              deliveryMethod: (existingOrder.order_type === 'pickup' ? 'pickup' : 'delivery') as DeliveryMethod,
+            };
+          } else {
+            console.log(`Заказ с clientOrderId ${order.clientOrderId} не найден, создаем новый`);
+          }
+        } catch (error) {
+          // Логируем ошибку, но продолжаем создание заказа
+          console.error("Ошибка при проверке существующего заказа:", error);
+          console.log("Продолжаем с созданием нового заказа");
         }
       }
-      return null;
-    }
-
-    // Mark this order as being processed
-    pendingOrders.add(shortKey);
-    console.log("Processing new order request:", shortKey);
-
-    try {
+      
       // Преобразуем данные в формат API
       const apiData = {
         cafe: order.restaurantId,
-        order_type: "in_place", // Значение по умолчанию
+        order_type: order.deliveryMethod === 'pickup' ? 'pickup' : 'delivery', // Явно указываем какой тип доставки передать
         status: order.status,
         total_price: order.amount,
+        client_order_id: order.clientOrderId, // Передаем clientOrderId на бэкенд, если он есть
+        customer_name: order.customer // Передаем имя клиента на бэкенд
       };
+      
+      console.log("Данные для отправки на API:", apiData);
+      console.log("delivery_method из order:", order.deliveryMethod);
+      console.log("order_type отправляемый на бэкенд:", apiData.order_type);
 
       // Получаем конфигурацию для axios с CSRF токеном
       const config = await getAxiosConfig(true, true);
       console.log("Config for order:", config);
 
+      console.log("Отправляем запрос на создание заказа:", `${API_BASE_URL}/orders/`);
       const response = await axios.post(
         `${API_BASE_URL}/orders/`,
         apiData,
         config
       );
+      console.log("Ответ API:", response.status, response.data);
+      
       const data = response.data;
 
       // Возвращаем новый заказ в формате, используемом на фронтенде
-      const resultOrder = {
+      const resultOrder: AdminOrder = {
         id: data.id,
         restaurantId: data.cafe,
         customer: data.user || "Неизвестный клиент",
         date: data.created_at,
         amount: data.total_price,
         status: data.status,
+        clientOrderId: order.clientOrderId,
+        deliveryMethod: (data.order_type === 'pickup' ? 'pickup' : 'delivery') as DeliveryMethod,
       };
-
-      // Mark the order as processed to prevent future duplications
-      processedOrderIds.add(orderKey);
-
-      // Cache the successful response
-      localStorage.setItem(
-        `order_response_${shortKey}`,
-        JSON.stringify(resultOrder)
-      );
-      localStorage.setItem(
-        `order_response_${orderKey}`,
-        JSON.stringify(resultOrder)
-      );
-
-      // Set a global flag this order has been created
-      localStorage.setItem(`global_order_created_${shortKey}`, "true");
-
-      // Remove from pending orders
-      pendingOrders.delete(shortKey);
-      console.log(
-        "Order processed successfully:",
-        shortKey,
-        "with backend ID:",
-        data.id
-      );
-
+      
+      console.log("Созданный заказ:", resultOrder);
+      console.log("Тип доставки из бэкенда:", data.order_type);
+      console.log("Установленный deliveryMethod:", resultOrder.deliveryMethod);
+      console.log("=== КОНЕЦ СОЗДАНИЯ ЗАКАЗА ===");
+      
       return resultOrder;
-    } catch (error) {
-      // Make sure to remove from pending orders in case of error
-      pendingOrders.delete(shortKey);
-      throw error;
+    } finally {
+      // Очищаем флаг создания заказа
+      sessionStorage.removeItem(orderProcessingKey);
     }
   } catch (error) {
+    console.error("Ошибка при создании заказа:", error);
+    console.log("=== ОШИБКА СОЗДАНИЯ ЗАКАЗА ===");
     return handleError(error, null);
   }
 };

@@ -285,9 +285,14 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
 
   // Функция для размещения заказа
   const placeOrder = () => {
+    // Создаем более уникальный ID, сочетая timestamp и случайную строку
+    const timestamp = Date.now();
+    const randomStr = Math.random().toString(36).substring(2, 8);
+    const uniqueOrderId = `${timestamp}-${randomStr}`;
+    
     // Создаем новый заказ на основе данных корзины
     const newOrder: Order = {
-      id: Date.now(), // Генерируем уникальный ID
+      id: timestamp, // Используем только timestamp для обратной совместимости
       items: [...state.cart],
       totalAmount: state.cart.reduce((total, item) => total + item.price * item.quantity, 0),
       date: new Date().toISOString(),
@@ -299,10 +304,14 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     
     console.log('Creating new order:', {
       id: newOrder.id,
+      clientOrderId: uniqueOrderId,
       restaurantId: newOrder.restaurantId,
       items: newOrder.items.length,
       total: newOrder.totalAmount
     });
+    
+    // Сохраняем уникальный ID заказа в localStorage для обращения к нему позже
+    localStorage.setItem(`order_unique_id_${newOrder.id}`, uniqueOrderId);
     
     // Добавляем заказ в историю
     addToOrderHistory(newOrder);
