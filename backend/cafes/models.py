@@ -82,6 +82,57 @@ class MenuItem(TimestampMixin):
 
     class Meta:
         ordering = ['category', 'name']
+        
+    def save(self, *args, **kwargs):
+        import logging
+        logger = logging.getLogger(__name__)
+        
+        # Log initial state
+        logger.info(f"Saving MenuItem {self.name}")
+        logger.info(f"- Image field: {self.image}")
+        logger.info(f"- Image URL field: {self.image_url}")
+        
+        # Save the object
+        super().save(*args, **kwargs)
+        
+        # Log state after save
+        logger.info(f"MenuItem {self.name} saved")
+        logger.info(f"- Image field after save: {self.image}")
+        logger.info(f"- Image URL field after save: {self.image_url}")
+        
+        # Check if image file exists on disk
+        if self.image:
+            import os
+            from django.conf import settings
+            
+            file_path = os.path.join(settings.MEDIA_ROOT, str(self.image))
+            logger.info(f"Checking if image file exists at: {file_path}")
+            
+            if os.path.exists(file_path):
+                file_size = os.path.getsize(file_path)
+                logger.info(f"File exists! Size: {file_size} bytes")
+            else:
+                logger.warning(f"File does not exist: {file_path}")
+                
+                # Check if the directory exists
+                directory = os.path.dirname(file_path)
+                if not os.path.exists(directory):
+                    logger.warning(f"Directory does not exist: {directory}")
+                    try:
+                        os.makedirs(directory, exist_ok=True)
+                        logger.info(f"Created directory: {directory}")
+                    except Exception as e:
+                        logger.error(f"Error creating directory: {str(e)}")
+                else:
+                    logger.info(f"Directory exists: {directory}")
+                    # List files in directory for debugging
+                    try:
+                        files = os.listdir(directory)
+                        logger.info(f"Files in directory: {files}")
+                    except Exception as e:
+                        logger.error(f"Error listing directory: {str(e)}")
+        else:
+            logger.warning("No image field set after save")
 
 
 class UserAddress(TimestampMixin):

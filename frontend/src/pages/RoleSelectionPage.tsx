@@ -1,239 +1,192 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { useAppContext } from '../contexts/AppContext';
 import useTelegram from '../hooks/useTelegram';
 import { PageTransition } from '../styles/Components';
-import { useAppContext } from '../contexts/AppContext';
-import { City } from '../types/apiTypes';
 
 const Container = styled(PageTransition)`
-  padding: var(--spacing-lg);
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-lg);
   align-items: center;
   justify-content: flex-start;
   min-height: 100vh;
-  background-color: var(--background-color);
-  background-image: linear-gradient(to bottom, var(--background-color), var(--background-light));
+  padding: 0 var(--spacing-md);
+  background: linear-gradient(180deg, rgba(0,0,0,0.95) 0%, rgba(18,18,18,0.95) 100%);
+`;
+
+const LogoContainer = styled.div`
+  margin-top: 10vh;
+  margin-bottom: var(--spacing-xl);
+  text-align: center;
 `;
 
 const Logo = styled.div`
-  width: auto;
-  height: auto;
-  margin-top: var(--spacing-lg);
-  margin-bottom: var(--spacing-xl);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--spacing-md);
-  position: relative;
-
-  img {
-    width: 100px;
-    height: 100px;
-    object-fit: contain;
-  }
+  font-size: 3rem;
+  font-weight: 700;
+  letter-spacing: -1px;
+  color: var(--primary-color);
+  margin-bottom: var(--spacing-sm);
+  text-shadow: 0 2px 10px rgba(255, 159, 13, 0.3);
 `;
 
-const Title = styled.h1`
-  color: var(--text-color);
-  text-align: center;
-  margin-bottom: var(--spacing-lg);
-  font-size: 2.2rem;
-  position: relative;
-  z-index: 1;
-
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: -12px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 80px;
-    height: 4px;
-    background: var(--primary-color);
-    border-radius: 2px;
-  }
-`;
-
-const Subtitle = styled.p`
-  color: var(--text-secondary);
-  text-align: center;
-  margin-bottom: var(--spacing-xl);
+const Tagline = styled.div`
   font-size: 1.2rem;
-  max-width: 600px;
+  color: var(--text-secondary);
+  font-weight: 300;
 `;
 
-const RoleCards = styled.div`
+const RolesContainer = styled.div`
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-xl);
-  max-width: 400px;
+  gap: var(--spacing-lg);
   width: 100%;
-
-  @media (min-width: 768px) {
-    flex-direction: row;
-    max-width: 800px;
-  }
+  max-width: 500px;
+  margin-top: var(--spacing-xl);
 `;
 
 const RoleCard = styled.div`
-  flex: 1;
-  background-color: var(--card-bg);
+  background-color: rgba(26, 26, 26, 0.8);
   border-radius: var(--border-radius-lg);
-  padding: var(--spacing-xl);
+  padding: var(--spacing-lg);
   display: flex;
-  flex-direction: column;
   align-items: center;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
   cursor: pointer;
+  transition: all var(--transition-normal);
   position: relative;
   overflow: hidden;
-
-  &:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.15);
-  }
-
-  &::before {
+  
+  &:before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 6px;
-    background: var(--primary-color);
+    width: 4px;
+    height: 100%;
+    background-color: var(--primary-color);
+    transform: scaleY(0);
+    transform-origin: bottom;
+    transition: transform var(--transition-normal);
+  }
+  
+  &:hover {
+    transform: translateY(-5px);
+    border-color: rgba(255, 159, 13, 0.3);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+    
+    &:before {
+      transform: scaleY(1);
+    }
   }
 `;
 
-const RoleIcon = styled.div<{ $variant: 'user' | 'owner' }>`
-  width: 80px;
-  height: 80px;
+const RoleIcon = styled.div`
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
-  background-color: ${props => props.$variant === 'user' ? 'rgba(255, 159, 13, 0.1)' : 'rgba(59, 130, 246, 0.1)'};
-  color: ${props => props.$variant === 'user' ? 'var(--primary-color)' : '#3B82F6'};
+  background-color: rgba(255, 159, 13, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: var(--spacing-md);
-  font-size: 2rem;
+  margin-right: var(--spacing-lg);
+  font-size: 1.8rem;
 `;
 
-const RoleTitle = styled.h2`
+const RoleInfo = styled.div`
+  flex: 1;
+`;
+
+const RoleName = styled.h3`
+  margin: 0 0 var(--spacing-xs) 0;
+  font-weight: 600;
   color: var(--text-color);
-  font-size: 1.3rem;
-  margin-bottom: var(--spacing-sm);
-  text-align: center;
 `;
 
 const RoleDescription = styled.p`
+  margin: 0;
   color: var(--text-secondary);
-  text-align: center;
-  font-size: 0.95rem;
-  margin-bottom: var(--spacing-lg);
-  line-height: 1.5;
+  font-size: 0.9rem;
+  line-height: 1.4;
 `;
 
-const ActionButton = styled.button<{ $variant: 'user' | 'owner' }>`
-  padding: var(--spacing-sm) var(--spacing-lg);
-  border: none;
-  border-radius: var(--border-radius-md);
-  background-color: ${props => props.$variant === 'user' ? 'var(--primary-color)' : '#3B82F6'};
-  color: white;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
+const ArrowIcon = styled.div`
+  margin-left: var(--spacing-md);
+  color: var(--primary-color);
+  font-size: 1.4rem;
+`;
+
+const Footer = styled.div`
   margin-top: auto;
-  
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: ${props => props.$variant === 'user' 
-      ? '0 4px 12px rgba(255, 159, 13, 0.3)' 
-      : '0 4px 12px rgba(59, 130, 246, 0.3)'};
-  }
-  
-  &:active {
-    transform: translateY(0);
-  }
+  padding: var(--spacing-lg);
+  text-align: center;
+  color: var(--text-tertiary);
+  font-size: 0.8rem;
 `;
 
 const RoleSelectionPage: React.FC = () => {
   const navigate = useNavigate();
-  const { } = useTelegram();
-  const { setUserRole, cities } = useAppContext();
+  const { setUserRole } = useAppContext();
+  const { tg } = useTelegram();
 
-  // Загружаем города при первом рендере
   useEffect(() => {
-    // Убедимся, что у нас есть данные о городах для выбора
-    if (!cities || cities.length === 0) {
-      // Создаем базовые города прямо в коде вместо использования mockData
-      const defaultCities: City[] = [
-        { id: 1, name: 'Москва' },
-        { id: 2, name: 'Санкт-Петербург' },
-        { id: 3, name: 'Казань' },
-        { id: 4, name: 'Новосибирск' },
-        { id: 5, name: 'Екатеринбург' }
-      ];
-      localStorage.setItem('cities', JSON.stringify(defaultCities));
-    }
-  }, [cities]);
-
-  const handleUserSelect = () => {
-    // Установим роль пользователя как "user"
-    localStorage.setItem('userRole', 'user');
-    setUserRole('user');
+    // Устанавливаем заголовок страницы
+    document.title = 'Выберите роль | Kulcha';
     
-    // Перенаправляем на специальный маршрут перенаправления
-    // который выполнит асинхронное перенаправление на выбор ресторана
-    navigate('/role-to-city');
-  };
+    // Если открыто в Telegram, показываем кнопку "Назад"
+    if (tg) {
+      tg.BackButton.show();
+      tg.BackButton.onClick(() => navigate(-1));
+      
+      return () => {
+        tg.BackButton.hide();
+      };
+    }
+  }, [navigate, tg]);
 
-  const handleOwnerSelect = () => {
-    navigate('/admin/login');
+  // Обработчик выбора роли
+  const handleRoleSelect = (role: string) => {
+    setUserRole(role);
+    
+    // Перенаправляем пользователя в зависимости от выбранной роли
+    if (role === 'customer') {
+      navigate('/city-selection');
+    } else if (role === 'owner') {
+      navigate('/admin/login');
+    }
   };
 
   return (
     <Container>
-      <Logo>
-        <img src="/assets/images/logo.png" alt="Kulcha Logo" />
-      </Logo>
-      <Title>Добро пожаловать в Kulcha!</Title>
-      <Subtitle>Выберите, как вы хотите использовать наше приложение</Subtitle>
+      <LogoContainer>
+        <Logo>KULCHA</Logo>
+        <Tagline>Вкусная еда от лучших ресторанов</Tagline>
+      </LogoContainer>
       
-      <RoleCards>
-        <RoleCard onClick={handleUserSelect}>
-          <RoleIcon $variant="user">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" width="36" height="36">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-            </svg>
-          </RoleIcon>
-          <RoleTitle>Для клиентов</RoleTitle>
-          <RoleDescription>
-            Заказывайте ваши любимые блюда, следите за заказами и изучайте меню ресторанов
-          </RoleDescription>
-          <ActionButton $variant="user">
-            Войти как клиент
-          </ActionButton>
+      <RolesContainer>
+        <RoleCard onClick={() => handleRoleSelect('customer')}>
+          <RoleIcon>🍔</RoleIcon>
+          <RoleInfo>
+            <RoleName>Покупатель</RoleName>
+            <RoleDescription>Заказывайте еду из любимых ресторанов с доставкой или навынос</RoleDescription>
+          </RoleInfo>
+          <ArrowIcon>→</ArrowIcon>
         </RoleCard>
         
-        <RoleCard onClick={handleOwnerSelect}>
-          <RoleIcon $variant="owner">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" width="36" height="36">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349m-16.5 11.65V9.35m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.016a3.001 3.001 0 003.75.614m-16.5 0a3.004 3.004 0 01-.621-4.72L4.318 3.44A1.5 1.5 0 015.378 3h13.243a1.5 1.5 0 011.06.44l1.19 1.189a3 3 0 01-.621 4.72m-13.5 8.65h3.75a.75.75 0 00.75-.75V13.5a.75.75 0 00-.75-.75H6.75a.75.75 0 00-.75.75v3.75c0 .415.336.75.75.75z" />
-            </svg>
-          </RoleIcon>
-          <RoleTitle>Для владельцев</RoleTitle>
-          <RoleDescription>
-            Управляйте вашим рестораном, следите за статистикой и обновляйте меню
-          </RoleDescription>
-          <ActionButton $variant="owner">
-            Войти как владелец
-          </ActionButton>
+        <RoleCard onClick={() => handleRoleSelect('owner')}>
+          <RoleIcon>🏪</RoleIcon>
+          <RoleInfo>
+            <RoleName>Владелец ресторана</RoleName>
+            <RoleDescription>Управляйте меню, принимайте заказы и следите за аналитикой</RoleDescription>
+          </RoleInfo>
+          <ArrowIcon>→</ArrowIcon>
         </RoleCard>
-      </RoleCards>
+      </RolesContainer>
+      
+      <Footer>
+        © 2025 Kulcha Food Delivery | Все права защищены
+      </Footer>
     </Container>
   );
 };

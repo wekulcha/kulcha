@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { useAppContext } from '../contexts/AppContext';
 
@@ -160,6 +160,28 @@ const ButtonContent = styled.div`
   flex-direction: column;
   align-items: center;
   position: relative;
+`;
+
+export const BackToRolesButton = styled(Link)`
+  display: inline-flex;
+  align-items: center;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  text-decoration: none;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-md);
+  transition: all var(--transition-normal);
+  margin: var(--spacing-md);
+  
+  &:hover {
+    color: var(--primary-color);
+    background-color: rgba(255, 159, 13, 0.1);
+    transform: translateX(-2px);
+  }
+  
+  svg {
+    margin-right: var(--spacing-xs);
+  }
 `;
 
 const Navigation: React.FC = () => {

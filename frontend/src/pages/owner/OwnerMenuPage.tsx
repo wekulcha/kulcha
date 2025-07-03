@@ -240,27 +240,12 @@ const MenuCard = styled.div`
   }
 `;
 
-const FoodImage = styled.div<{ $imageUrl: string }>`
+const FoodImage = styled.div<{ $imageUrl?: string }>`
   height: 200px;
-  background-image: url(${props => props.$imageUrl || 'https://via.placeholder.com/400x300/333/555?text=Нет+изображения'});
+  background-image: ${props => props.$imageUrl ? `url(${props.$imageUrl})` : 'url(/food-placeholder.png)'};
   background-size: cover;
   background-position: center;
-  position: relative;
-  
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 50px;
-    background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
-  }
-  
-  /* Адаптация для Telegram WebApp */
-  @media (max-width: 768px) {
-    height: 150px;
-  }
+  border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
 `;
 
 const CardContent = styled.div`

@@ -685,25 +685,89 @@ export const updateRestaurantData = async (
 // Обновление пункта меню
 export const updateMenuItem = async (menuItem: MenuItem): Promise<MenuItem> => {
   try {
-    // Преобразуем данные в формат API
-    const apiData = {
-      cafe: menuItem.restaurantId,
-      name: menuItem.name,
-      description: menuItem.description,
-      price: menuItem.price,
-      category: menuItem.category,
-      image_url: menuItem.imageUrl,
-      available: menuItem.available,
-    };
+    // Проверяем, является ли imageUrl строкой в формате base64
+    const isBase64Image = typeof menuItem.imageUrl === 'string' && 
+                         menuItem.imageUrl.startsWith('data:image');
+    
+    // Создаем FormData для любого типа запроса
+    const formData = new FormData();
+    
+    // Добавляем базовые поля в FormData
+    formData.append('cafe', menuItem.restaurantId.toString());
+    formData.append('name', menuItem.name);
+    formData.append('description', menuItem.description || '');
+    formData.append('price', menuItem.price.toString());
+    formData.append('category', menuItem.category);
+    formData.append('available', menuItem.available ? 'true' : 'false');
+    
+    // Если у нас есть внешний URL изображения (не base64), добавляем его
+    if (!isBase64Image && menuItem.imageUrl) {
+      formData.append('image_url', menuItem.imageUrl);
+    }
 
-    console.log("Updating menu item:", menuItem.id, apiData);
+    console.log("Updating menu item:", menuItem.id);
 
-    // Получаем конфигурацию для axios с CSRF токеном
-    const config = await getAxiosConfig(true, true);
-
+    // Если у нас есть base64 изображение, обрабатываем его
+    if (isBase64Image) {
+      try {
+        // Получаем чистую base64 строку без префикса (data:image/jpeg;base64,)
+        const parts = menuItem.imageUrl.split(',');
+        const base64String = parts[1];
+        
+        // Определяем mime-тип из строки данных
+        let mimeType = 'image/jpeg'; // По умолчанию
+        const mimeMatch = parts[0].match(/:(.*?);/);
+        if (mimeMatch && mimeMatch[1]) {
+          mimeType = mimeMatch[1];
+        }
+        
+        // Преобразуем строку base64 в двоичные данные
+        const byteCharacters = atob(base64String);
+        const byteArrays = [];
+        
+        for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+          const slice = byteCharacters.slice(offset, offset + 512);
+          
+          const byteNumbers = new Array(slice.length);
+          for (let i = 0; i < slice.length; i++) {
+            byteNumbers[i] = slice.charCodeAt(i);
+          }
+          
+          const byteArray = new Uint8Array(byteNumbers);
+          byteArrays.push(byteArray);
+        }
+        
+        // Создаем Blob из двоичных данных
+        const blob = new Blob(byteArrays, { type: mimeType });
+        
+        // Создаем имя файла на основе текущей даты и времени
+        const ext = mimeType.split('/')[1];
+        const fileName = `menu_item_${new Date().getTime()}.${ext}`;
+        
+        // Создаем объект File из Blob
+        const file = new File([blob], fileName, { type: mimeType });
+        
+        // Добавляем файл в FormData - важно использовать именно "image" как имя поля!
+        formData.append('image', file, fileName);
+        console.log(`Added image file to FormData: ${fileName}, size: ${file.size} bytes`);
+      } catch (error) {
+        console.error("Error processing base64 image:", error);
+      }
+    }
+    
+    // Выводим содержимое formData для отладки
+    console.log('FormData содержимое:');
+    Array.from(formData.entries()).forEach(pair => {
+      console.log(`${pair[0]}: ${typeof pair[1] === 'object' ? 'File object' : pair[1]}`);
+    });
+    
+    // Получаем конфигурацию для FormData (без Content-Type)
+    const config = await getAxiosConfig(false, true);
+    
+    // Отправляем запрос с FormData
     const response = await axios.put(
       `${API_BASE_URL}/menu-items/${menuItem.id}/`,
-      apiData,
+      formData,
       config
     );
 
@@ -719,6 +783,8 @@ export const updateMenuItem = async (menuItem: MenuItem): Promise<MenuItem> => {
         : `${API_BASE_URL}${data.image}`;
     } else if (data.image_url) {
       imageUrl = data.image_url;
+    } else if (data.image_full_url) {
+      imageUrl = data.image_full_url;
     }
 
     return {
@@ -739,25 +805,89 @@ export const updateMenuItem = async (menuItem: MenuItem): Promise<MenuItem> => {
 // Создание нового пункта меню
 export const createMenuItem = async (menuItem: MenuItem): Promise<MenuItem> => {
   try {
-    // Преобразуем данные в формат API
-    const apiData = {
-      cafe: menuItem.restaurantId,
-      name: menuItem.name,
-      description: menuItem.description,
-      price: menuItem.price,
-      category: menuItem.category,
-      image_url: menuItem.imageUrl,
-      available: menuItem.available !== undefined ? menuItem.available : true,
-    };
+    // Проверяем, является ли imageUrl строкой в формате base64
+    const isBase64Image = typeof menuItem.imageUrl === 'string' && 
+                         menuItem.imageUrl.startsWith('data:image');
+    
+    // Создаем FormData для любого типа запроса
+    const formData = new FormData();
+    
+    // Добавляем базовые поля в FormData
+    formData.append('cafe', menuItem.restaurantId.toString());
+    formData.append('name', menuItem.name);
+    formData.append('description', menuItem.description || '');
+    formData.append('price', menuItem.price.toString());
+    formData.append('category', menuItem.category);
+    formData.append('available', (menuItem.available !== undefined ? menuItem.available : true) ? 'true' : 'false');
+    
+    // Если у нас есть внешний URL изображения (не base64), добавляем его
+    if (!isBase64Image && menuItem.imageUrl) {
+      formData.append('image_url', menuItem.imageUrl);
+    }
 
-    console.log("Creating new menu item:", apiData);
+    console.log("Creating new menu item:", menuItem);
 
-    // Получаем конфигурацию для axios с CSRF токеном
-    const config = await getAxiosConfig(true, true);
-
+    // Если у нас есть base64 изображение, обрабатываем его
+    if (isBase64Image) {
+      try {
+        // Получаем чистую base64 строку без префикса (data:image/jpeg;base64,)
+        const parts = menuItem.imageUrl.split(',');
+        const base64String = parts[1];
+        
+        // Определяем mime-тип из строки данных
+        let mimeType = 'image/jpeg'; // По умолчанию
+        const mimeMatch = parts[0].match(/:(.*?);/);
+        if (mimeMatch && mimeMatch[1]) {
+          mimeType = mimeMatch[1];
+        }
+        
+        // Преобразуем строку base64 в двоичные данные
+        const byteCharacters = atob(base64String);
+        const byteArrays = [];
+        
+        for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+          const slice = byteCharacters.slice(offset, offset + 512);
+          
+          const byteNumbers = new Array(slice.length);
+          for (let i = 0; i < slice.length; i++) {
+            byteNumbers[i] = slice.charCodeAt(i);
+          }
+          
+          const byteArray = new Uint8Array(byteNumbers);
+          byteArrays.push(byteArray);
+        }
+        
+        // Создаем Blob из двоичных данных
+        const blob = new Blob(byteArrays, { type: mimeType });
+        
+        // Создаем имя файла на основе текущей даты и времени
+        const ext = mimeType.split('/')[1];
+        const fileName = `menu_item_${new Date().getTime()}.${ext}`;
+        
+        // Создаем объект File из Blob
+        const file = new File([blob], fileName, { type: mimeType });
+        
+        // Добавляем файл в FormData - важно использовать именно "image" как имя поля!
+        formData.append('image', file, fileName);
+        console.log(`Added image file to FormData: ${fileName}, size: ${file.size} bytes`);
+      } catch (error) {
+        console.error("Error processing base64 image:", error);
+      }
+    }
+    
+    // Выводим содержимое formData для отладки
+    console.log('FormData содержимое (create):');
+    Array.from(formData.entries()).forEach(pair => {
+      console.log(`${pair[0]}: ${typeof pair[1] === 'object' ? 'File object' : pair[1]}`);
+    });
+    
+    // Получаем конфигурацию для FormData (без Content-Type)
+    const config = await getAxiosConfig(false, true);
+    
+    // Отправляем запрос с FormData
     const response = await axios.post(
       `${API_BASE_URL}/menu-items/`,
-      apiData,
+      formData,
       config
     );
 
@@ -765,7 +895,6 @@ export const createMenuItem = async (menuItem: MenuItem): Promise<MenuItem> => {
     console.log("Menu item created successfully:", data);
 
     // Возвращаем новый пункт меню в формате, используемом на фронтенде
-    // Construct proper image URL for locally uploaded images
     let imageUrl = "";
     if (data.image) {
       // Check if it's a relative path (locally uploaded) or already a full URL
@@ -774,6 +903,8 @@ export const createMenuItem = async (menuItem: MenuItem): Promise<MenuItem> => {
         : `${API_BASE_URL}${data.image}`;
     } else if (data.image_url) {
       imageUrl = data.image_url;
+    } else if (data.image_full_url) {
+      imageUrl = data.image_full_url;
     }
 
     return {

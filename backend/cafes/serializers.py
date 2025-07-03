@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import City, Cafe, CafeContact, MenuItem, Order, OrderItem, UserAddress
 from django.contrib.auth.models import User
+import logging
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -62,7 +63,7 @@ class CafeOwnerSerializer(serializers.ModelSerializer):
 
 class MenuItemSerializer(serializers.ModelSerializer):
     image_full_url = serializers.SerializerMethodField()
-    image = serializers.SerializerMethodField()
+    image = serializers.ImageField(required=False, allow_null=True)
     
     class Meta:
         model = MenuItem
@@ -72,32 +73,85 @@ class MenuItemSerializer(serializers.ModelSerializer):
         """
         Возвращает очищенный URL изображения
         """
+        logger = logging.getLogger(__name__)
+        logger.info(f"get_image called for {obj.name}, image field: {obj.image}")
+        
         if not obj.image:
+            logger.info(f"{obj.name}: image field is empty")
             return None
         
         # Получаем оригинальный URL изображения
-        original_url = obj.image.url
-        
-        # Возвращаем полный URL с портом 8000
-        if original_url.startswith('/'):
-            return f"http://localhost:8000{original_url}"
-        else:
-            return f"http://localhost:8000/{original_url}"
+        try:
+            original_url = obj.image.url
+            logger.info(f"{obj.name}: image URL is {original_url}")
+            
+            # Возвращаем полный URL с портом 8000
+            if original_url.startswith('/'):
+                result = f"http://localhost:8000{original_url}"
+                logger.info(f"{obj.name}: returning {result}")
+                return result
+            else:
+                result = f"http://localhost:8000/{original_url}"
+                logger.info(f"{obj.name}: returning {result}")
+                return result
+        except Exception as e:
+            logger.error(f"Error getting image URL for {obj.name}: {e}")
+            return None
     
     def get_image_full_url(self, obj):
         """
         Возвращает полный URL изображения с корректным хостом и портом
         """
+        logger = logging.getLogger(__name__)
+        logger.info(f"get_image_full_url called for {obj.name}, image field: {obj.image}")
+        
         if not obj.image:
+            logger.info(f"{obj.name}: image field is empty for image_full_url")
             return None
         
-        # Всегда используем порт 8000 для доступа к медиа-файлам в Docker
-        image_path = str(obj.image.url)
-        if image_path.startswith('/'):
-            image_path = image_path[1:]
+        try:
+            # Всегда используем порт 8000 для доступа к медиа-файлам в Docker
+            image_path = str(obj.image.url)
+            logger.info(f"{obj.name}: image path is {image_path}")
+            
+            if image_path.startswith('/'):
+                image_path = image_path[1:]
+            
+            # Явно указываем порт 8000 для localhost
+            result = f"http://localhost:8000/{image_path}"
+            logger.info(f"{obj.name}: returning full URL {result}")
+            return result
+        except Exception as e:
+            logger.error(f"Error getting image_full_url for {obj.name}: {e}")
+            return None
+            
+    def create(self, validated_data):
+        logger = logging.getLogger(__name__)
+        logger.info(f"Creating menu item with data: {validated_data}")
         
-        # Явно указываем порт 8000 для localhost
-        return f"http://localhost:8000/{image_path}"
+        # Explicitly log image field
+        if 'image' in validated_data:
+            logger.info(f"Image found in validated_data: {validated_data['image']}")
+        else:
+            logger.info("No image in validated_data")
+            
+        instance = super().create(validated_data)
+        logger.info(f"Created instance: {instance.id}, image: {instance.image}")
+        return instance
+        
+    def update(self, instance, validated_data):
+        logger = logging.getLogger(__name__)
+        logger.info(f"Updating menu item {instance.id} with data: {validated_data}")
+        
+        # Explicitly log image field
+        if 'image' in validated_data:
+            logger.info(f"Image found in validated_data: {validated_data['image']}")
+        else:
+            logger.info("No image in validated_data")
+            
+        instance = super().update(instance, validated_data)
+        logger.info(f"Updated instance: {instance.id}, image: {instance.image}")
+        return instance
 
 
 class UserAddressSerializer(serializers.ModelSerializer):

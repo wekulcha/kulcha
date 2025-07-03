@@ -279,6 +279,36 @@ class MenuItemViewSet(viewsets.ModelViewSet):
             
         return queryset
     
+    def create(self, request, *args, **kwargs):
+        logger.info("=== CREATE MENU ITEM ===")
+        logger.info(f"Request data: {request.data}")
+        logger.info(f"Request FILES: {request.FILES}")
+        
+        # Check if we have an image file
+        if 'image' in request.FILES:
+            logger.info(f"Image file found in request.FILES: {request.FILES['image']}")
+            logger.info(f"Image file size: {request.FILES['image'].size} bytes")
+            logger.info(f"Image file content type: {request.FILES['image'].content_type}")
+        else:
+            logger.info("No image file in request.FILES")
+        
+        return super().create(request, *args, **kwargs)
+    
+    def update(self, request, *args, **kwargs):
+        logger.info("=== UPDATE MENU ITEM ===")
+        logger.info(f"Request data: {request.data}")
+        logger.info(f"Request FILES: {request.FILES}")
+        
+        # Check if we have an image file
+        if 'image' in request.FILES:
+            logger.info(f"Image file found in request.FILES: {request.FILES['image']}")
+            logger.info(f"Image file size: {request.FILES['image'].size} bytes")
+            logger.info(f"Image file content type: {request.FILES['image'].content_type}")
+        else:
+            logger.info("No image file in request.FILES")
+        
+        return super().update(request, *args, **kwargs)
+    
     def list(self, request, *args, **kwargs):
         try:
             paginator = PageNumberPagination()
