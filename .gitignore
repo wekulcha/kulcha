@@ -27,4 +27,11 @@ yarn-error.log*
 .idea
 .vscode
 *.swp
-*.swo 
+*.swo
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python 
