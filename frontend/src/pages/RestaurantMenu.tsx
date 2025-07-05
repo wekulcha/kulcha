@@ -4,38 +4,49 @@ import { MenuItem } from '../data/adminDatabase';
 import { useAppContext } from '../contexts/AppContext';
 import LoadingSpinner from '../components/LoadingSpinner';
 
-// Оптимизированные стили с уменьшенным количеством CSS
+// Modern, minimalistic menu container
 const MenuContainer = styled.div`
   padding: var(--spacing-md);
   max-width: 1400px;
   margin: 0 auto;
+  position: relative;
 `;
 
 const MenuHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
 `;
 
 const MenuTitle = styled.h2`
   margin: 0;
   color: var(--text-color);
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  
+  span {
+    color: var(--primary-color);
+    font-weight: 800;
+  }
 `;
 
 const FiltersContainer = styled.div`
   display: flex;
   gap: var(--spacing-sm);
-  margin-bottom: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
   overflow-x: auto;
-  padding-bottom: var(--spacing-xs);
+  padding: var(--spacing-sm) 0;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
   
   &::-webkit-scrollbar {
     height: 4px;
   }
   
   &::-webkit-scrollbar-track {
-    background: var(--card-bg);
+    background: rgba(26, 26, 26, 0.2);
     border-radius: 4px;
   }
   
@@ -46,47 +57,59 @@ const FiltersContainer = styled.div`
 `;
 
 const FilterButton = styled.button<{ $active: boolean }>`
-  background-color: ${props => props.$active ? 'var(--primary-color)' : 'var(--card-bg)'};
-  color: ${props => props.$active ? 'white' : 'var(--text-color)'};
-  border: none;
-  padding: var(--spacing-xs) var(--spacing-md);
-  border-radius: var(--border-radius-md);
-  font-weight: ${props => props.$active ? '600' : '400'};
+  background-color: ${props => props.$active ? 'var(--primary-color)' : 'rgba(26, 26, 26, 0.5)'};
+  color: ${props => props.$active ? 'white' : 'var(--text-secondary)'};
+  border: ${props => props.$active ? 'none' : '1px solid rgba(255, 255, 255, 0.1)'};
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-radius: var(--border-radius-lg);
+  font-weight: ${props => props.$active ? '600' : '500'};
   cursor: pointer;
   white-space: nowrap;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   display: flex;
   align-items: center;
+  backdrop-filter: blur(10px);
+  box-shadow: ${props => props.$active ? '0 8px 16px rgba(255, 159, 13, 0.25)' : 'none'};
   
-  svg, span {
+  span {
     margin-right: var(--spacing-xs);
-    font-size: 1.1rem;
+    font-size: 1.2rem;
   }
   
   &:hover {
-    background-color: ${props => props.$active ? 'var(--primary-light)' : 'var(--card-hover)'};
-    transform: translateY(-2px);
+    background-color: ${props => props.$active ? 'var(--primary-light)' : 'rgba(26, 26, 26, 0.7)'};
+    transform: translateY(-3px);
+    box-shadow: ${props => props.$active 
+      ? '0 10px 20px rgba(255, 159, 13, 0.3)' 
+      : '0 6px 12px rgba(0, 0, 0, 0.1)'};
+  }
+  
+  &:active {
+    transform: translateY(-1px);
   }
 `;
 
 const FoodGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: var(--spacing-md);
+  gap: var(--spacing-lg);
   transition: opacity 0.3s ease;
 `;
 
-// Комбинированные стили карточки для лучшей производительности
+// Modern card with glassmorphism effects
 const FoodCard = styled.div`
-  border-radius: var(--border-radius-md);
+  border-radius: var(--border-radius-xl);
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  background-color: var(--card-bg);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  background: rgba(26, 26, 26, 0.4);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
   
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 159, 13, 0.15);
     
     img {
       transform: scale(1.05);
@@ -95,7 +118,7 @@ const FoodCard = styled.div`
 `;
 
 const ImageContainer = styled.div`
-  height: 180px;
+  height: 200px;
   overflow: hidden;
   position: relative;
   
@@ -106,8 +129,9 @@ const ImageContainer = styled.div`
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(to bottom, transparent 70%, rgba(0, 0, 0, 0.2) 100%);
+    background: linear-gradient(to bottom, transparent 50%, rgba(0, 0, 0, 0.5) 100%);
     pointer-events: none;
+    z-index: 1;
   }
 `;
 
@@ -115,17 +139,19 @@ const FoodImage = styled.img`
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.3s ease;
+  transition: transform 0.5s ease;
 `;
 
 const FoodDetails = styled.div`
-  padding: var(--spacing-md);
+  padding: var(--spacing-lg);
 `;
 
 const FoodName = styled.h3`
   margin: 0 0 var(--spacing-xs) 0;
-  font-size: 1.1rem;
+  font-size: 1.3rem;
   color: var(--text-color);
+  font-weight: 700;
+  letter-spacing: -0.01em;
 `;
 
 const FoodDescription = styled.p`
@@ -136,13 +162,23 @@ const FoodDescription = styled.p`
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  line-height: 1.4;
 `;
 
 const FoodPrice = styled.div`
-  font-weight: 700;
+  font-weight: 800;
   color: var(--primary-color);
-  font-size: 1.1rem;
-  margin-bottom: var(--spacing-sm);
+  font-size: 1.2rem;
+  margin-bottom: var(--spacing-md);
+  display: flex;
+  align-items: center;
+  
+  &::before {
+    content: '₽';
+    font-size: 0.9rem;
+    margin-right: 2px;
+    opacity: 0.9;
+  }
 `;
 
 const AddToCartButton = styled.button`
@@ -150,25 +186,27 @@ const AddToCartButton = styled.button`
   background-color: var(--primary-color);
   color: white;
   border: none;
-  padding: var(--spacing-sm);
-  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius-lg);
   font-weight: 600;
+  font-size: 1rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   gap: var(--spacing-xs);
   position: relative;
   overflow: hidden;
   
   &:hover {
     background-color: var(--primary-light);
-    transform: translateY(-2px);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(255, 159, 13, 0.3);
   }
   
   &:active {
-    transform: translateY(0);
+    transform: translateY(-1px);
   }
   
   &.added {
@@ -202,10 +240,13 @@ const CategoryTag = styled.span`
   left: var(--spacing-sm);
   background-color: rgba(0, 0, 0, 0.6);
   color: white;
-  padding: 4px 8px;
-  border-radius: var(--border-radius-sm);
-  font-size: 0.8rem;
+  padding: 6px 12px;
+  border-radius: var(--border-radius-md);
+  font-size: 0.85rem;
+  font-weight: 500;
   z-index: 5;
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 `;
 
 const EmptyState = styled.div`
@@ -216,21 +257,29 @@ const EmptyState = styled.div`
   text-align: center;
   padding: var(--spacing-xl);
   color: var(--text-secondary);
+  background: rgba(26, 26, 26, 0.4);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: var(--border-radius-xl);
+  min-height: 300px;
   
   svg {
-    width: 48px;
-    height: 48px;
+    width: 64px;
+    height: 64px;
     margin-bottom: var(--spacing-md);
-    color: var(--border-color);
+    color: var(--primary-color);
+    opacity: 0.8;
   }
   
   h3 {
     margin: 0 0 var(--spacing-xs) 0;
     color: var(--text-color);
+    font-size: 1.5rem;
   }
   
   p {
     margin: 0;
+    max-width: 400px;
   }
 `;
 
@@ -241,7 +290,7 @@ const formatPrice = (price: number): string => {
 
 // Обновлённые фильтры для категорий меню с иконками
 const MENU_FILTERS = [
-  { id: 'all', name: 'Все', icon: '🍽️' },
+  { id: 'all', name: 'Все блюда', icon: '🍽️' },
   { id: 'main', name: 'Основное', icon: '🍲' },
   { id: 'soups', name: 'Супы', icon: '🥣' },
   { id: 'appetizers', name: 'Закуски', icon: '🥪' },
@@ -269,22 +318,22 @@ const QuantityControl = styled.div`
   align-items: center;
   justify-content: space-between;
   margin-bottom: var(--spacing-sm);
-  height: 32px;
+  height: 36px;
 `;
 
 const QuantityButton = styled.button`
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  background-color: var(--card-hover);
+  background-color: rgba(26, 26, 26, 0.6);
   color: var(--text-color);
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   font-size: 1.2rem;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   
   &:hover {
     background-color: var(--primary-light);
@@ -293,17 +342,18 @@ const QuantityButton = styled.button`
   }
   
   &:disabled {
-    background-color: var(--border-color);
-    color: var(--text-secondary);
+    background-color: rgba(26, 26, 26, 0.3);
+    color: var(--text-tertiary);
     cursor: not-allowed;
     transform: none;
+    border: 1px solid rgba(255, 255, 255, 0.05);
   }
 `;
 
 const QuantityDisplay = styled.span`
   font-weight: 600;
   color: var(--text-color);
-  font-size: 1.1rem;
+  font-size: 1.2rem;
 `;
 
 // Анимация добавления в корзину
@@ -311,7 +361,7 @@ const CartAnimation = styled.div`
   position: absolute;
   top: -20px;
   right: 10px;
-  color: var(--primary-color);
+  color: white;
   font-weight: bold;
   font-size: 1.2rem;
   animation: flyUp 0.8s forwards;
@@ -354,6 +404,18 @@ const AnimatedFoodGrid = styled(FoodGrid)`
     from { opacity: 0; }
     to { opacity: 1; }
   }
+`;
+
+// Пульсирующий индикатор загрузки
+const CustomLoadingSpinner = styled(LoadingSpinner)`
+  min-height: 300px;
+  background: rgba(26, 26, 26, 0.4);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: var(--border-radius-xl);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const RestaurantMenu: React.FC<RestaurantMenuProps> = ({ menuItems }) => {
@@ -444,7 +506,7 @@ const RestaurantMenu: React.FC<RestaurantMenuProps> = ({ menuItems }) => {
   
   // Обновляем компонент загрузки
   const loadingComponent = useMemo(() => (
-    <LoadingSpinner text="Загрузка меню..." />
+    <CustomLoadingSpinner text="Загрузка меню..." />
   ), []);
   
   // Мемоизированное содержимое меню
@@ -457,13 +519,14 @@ const RestaurantMenu: React.FC<RestaurantMenuProps> = ({ menuItems }) => {
       return (
         <EmptyState>
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M3 2h18"></path>
-            <path d="M10 11v4"></path>
-            <path d="M14 9v6"></path>
-            <path d="M4 22h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2Z"></path>
+            <path d="M17 8c.7 0 1.3.13 2 .35V6a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4"></path>
+            <path d="M20 14v3m0 0v3m0-3h-3m3 0h3"></path>
+            <circle cx="9" cy="7" r="1"></circle>
+            <circle cx="9" cy="17" r="1"></circle>
+            <circle cx="9" cy="12" r="1"></circle>
           </svg>
           <h3>Нет доступных блюд</h3>
-          <p>В данной категории пока нет блюд.</p>
+          <p>В данной категории пока нет блюд. Пожалуйста, выберите другую категорию или вернитесь позже.</p>
         </EmptyState>
       );
     }
@@ -493,7 +556,7 @@ const RestaurantMenu: React.FC<RestaurantMenuProps> = ({ menuItems }) => {
             <FoodDetails>
               <FoodName>{item.name}</FoodName>
               <FoodDescription>{item.description}</FoodDescription>
-              <FoodPrice>₽{formatPrice(item.price)}</FoodPrice>
+              <FoodPrice>{formatPrice(item.price)}</FoodPrice>
               
               {/* Контроль количества */}
               <QuantityControl>
@@ -523,17 +586,17 @@ const RestaurantMenu: React.FC<RestaurantMenuProps> = ({ menuItems }) => {
                 )}
                 {addedItems[item.id] ? (
                   <>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <polyline points="20 6 9 17 4 12"></polyline>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M20 6L9 17l-5-5"></path>
                     </svg>
                     Добавлено
                   </>
                 ) : (
                   <>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M9 20a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"></path>
-                      <path d="M20 20a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"></path>
-                      <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="8" cy="21" r="1"></circle>
+                      <circle cx="19" cy="21" r="1"></circle>
+                      <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"></path>
                     </svg>
                     {getQuantity(item.id) > 1 ? `Добавить (${getQuantity(item.id)})` : 'В корзину'}
                   </>
@@ -549,7 +612,7 @@ const RestaurantMenu: React.FC<RestaurantMenuProps> = ({ menuItems }) => {
   return (
     <MenuContainer>
       <MenuHeader>
-        <MenuTitle>Меню</MenuTitle>
+        <MenuTitle>Меню <span>ресторана</span></MenuTitle>
       </MenuHeader>
       
       <FiltersContainer>

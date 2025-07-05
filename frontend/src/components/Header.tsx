@@ -7,15 +7,18 @@ const HeaderContainer = styled.header`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 20px;
-  background: rgba(18, 18, 18, 0.5);
-  backdrop-filter: blur(10px);
+  padding: 18px 24px;
+  background: rgba(18, 18, 18, 0.6);
+  backdrop-filter: blur(15px);
   position: sticky;
   top: 0;
   z-index: 100;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
   
   @media (max-width: 768px) {
-    padding: 12px 16px;
+    padding: 14px 18px;
   }
 `;
 
@@ -23,18 +26,23 @@ const LogoContainer = styled.div`
   display: flex;
   align-items: center;
   cursor: pointer;
-  border-radius: 50%;
+  border-radius: var(--border-radius-md);
   padding: 6px;
-`;
-
-const LogoImage = styled.img`
-  height: 40px;
-  width: auto;
-  transition: transform 0.2s ease;
+  transition: transform 0.3s ease;
   
   &:hover {
     transform: scale(1.05);
   }
+  
+  &:active {
+    transform: scale(0.98);
+  }
+`;
+
+const LogoImage = styled.img`
+  height: 42px;
+  width: auto;
+  transition: all 0.3s ease;
   
   @media (max-width: 768px) {
     height: 36px;
@@ -43,47 +51,44 @@ const LogoImage = styled.img`
 
 const ActionsContainer = styled.div`
   display: flex;
-  gap: 12px;
+  gap: 16px;
 `;
 
 const ActionButton = styled.button`
-  background: transparent;
-  border: none;
+  background: rgba(26, 26, 26, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   color: var(--text-color);
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   position: relative;
+  backdrop-filter: blur(10px);
   
   svg {
     width: 22px;
     height: 22px;
-    transition: transform 0.2s ease, color 0.2s ease;
+    transition: all 0.3s ease;
+    stroke-width: 1.5px;
   }
   
   &:hover {
-    color: white;
+    background: rgba(255, 159, 13, 0.15);
+    border-color: rgba(255, 159, 13, 0.3);
+    color: var(--primary-color);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
     
     svg {
-      transform: translateY(-2px);
-      color: white;
+      transform: scale(1.1);
     }
-    
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      border: 1px solid #fff;
-      border-radius: 50%;
-      pointer-events: none;
-    }
+  }
+  
+  &:active {
+    transform: translateY(-2px);
   }
 `;
 
@@ -94,6 +99,7 @@ const HiddenButton = styled.button`
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
+  const { selectedCity } = useAppContext();
 
   const handleLogoClick = () => {
     navigate('/home');
@@ -120,7 +126,7 @@ const Header: React.FC = () => {
         {/* Profile icon */}
         <ActionButton onClick={handleProfileClick}>
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
         </ActionButton>
       </ActionsContainer>

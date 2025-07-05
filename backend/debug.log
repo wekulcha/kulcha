@@ -15241,3 +15241,138 @@ INFO 2025-07-06 03:35:05,973 serializers 29752 14680 Шурпа: returning full URL h
 DEBUG 2025-07-06 03:35:05,974 views 29752 14680 Menu item: Лепешка, image: 'http://localhost:8000/media/menu_items/menu_item_1751552964961.jpeg', image_full_url: 'http://localhost:8000/media/menu_items/menu_item_1751552964961.jpeg'
 DEBUG 2025-07-06 03:35:05,974 views 29752 14680 Menu item: Шурпа, image: 'http://localhost:8000/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg', image_full_url: 'http://localhost:8000/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg'
 INFO 2025-07-06 03:35:05,974 basehttp 29752 14680 "GET /api/menu-items/?cafe=1 HTTP/1.1" 200 946
+INFO 2025-07-06 03:46:45,524 autoreload 23652 28376 Watching for file changes with StatReloader
+INFO 2025-07-06 03:46:45,950 middleware 23652 8632 CORS Middleware initialized with allowed origins: ['http://localhost', 'http://localhost:3000', 'http://localhost:80', 'http://127.0.0.1', 'http://127.0.0.1:3000', 'http://127.0.0.1:80', 'http://frontend', 'http://localhost:3001', 'http://127.0.0.1:3001', 'http://localhost:8000', 'http://127.0.0.1:8000', 'https://ec4db675c64c9f.lhr.life']
+INFO 2025-07-06 03:46:45,950 middleware 23652 8632 Custom CSRF Middleware initialized with exempt paths: ['/api/auth/login/', '/api/auth/csrf/']
+DEBUG 2025-07-06 03:46:52,794 middleware 23652 17060 Request from origin: http://localhost:3000
+INFO 2025-07-06 03:46:52,798 views 23652 17060 Health check запрос от 127.0.0.1: ok
+INFO 2025-07-06 03:46:52,799 basehttp 23652 17060 "GET /api/health/ HTTP/1.1" 200 249
+DEBUG 2025-07-06 03:46:52,802 middleware 23652 2444 Request from origin: http://localhost:3000
+INFO 2025-07-06 03:46:52,805 views 23652 2444 Health check запрос от 127.0.0.1: ok
+INFO 2025-07-06 03:46:52,806 basehttp 23652 2444 "GET /api/health/ HTTP/1.1" 200 250
+DEBUG 2025-07-06 03:46:52,812 middleware 23652 2444 Request from origin: http://localhost:3000
+INFO 2025-07-06 03:46:52,817 basehttp 23652 2444 "GET /api/cities/ HTTP/1.1" 200 168
+DEBUG 2025-07-06 03:46:52,818 middleware 23652 17060 Request from origin: http://localhost:3000
+INFO 2025-07-06 03:46:52,821 basehttp 23652 17060 "GET /api/cities/ HTTP/1.1" 200 168
+DEBUG 2025-07-06 03:46:52,857 middleware 23652 17060 Request from origin: http://localhost:3000
+DEBUG 2025-07-06 03:46:52,859 middleware 23652 2444 Request from origin: http://localhost:3000
+INFO 2025-07-06 03:46:52,866 basehttp 23652 17060 "GET /api/cafes/?city=1&t=1751744812854 HTTP/1.1" 200 970
+INFO 2025-07-06 03:46:52,867 basehttp 23652 2444 "GET /api/cafes/?city=1&t=1751744812855 HTTP/1.1" 200 970
+DEBUG 2025-07-06 03:46:52,871 middleware 23652 2444 Request from origin: http://localhost:3000
+INFO 2025-07-06 03:46:52,875 serializers 23652 2444 get_image_full_url called for Лепешка, image field: menu_items/menu_item_1751552964961.jpeg
+INFO 2025-07-06 03:46:52,875 serializers 23652 2444 Лепешка: image path is /media/menu_items/menu_item_1751552964961.jpeg
+INFO 2025-07-06 03:46:52,876 serializers 23652 2444 Лепешка: returning full URL http://localhost:8000/media/menu_items/menu_item_1751552964961.jpeg
+INFO 2025-07-06 03:46:52,876 serializers 23652 2444 get_image_full_url called for Шурпа, image field: menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg
+INFO 2025-07-06 03:46:52,876 serializers 23652 2444 Шурпа: image path is /media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg
+INFO 2025-07-06 03:46:52,877 serializers 23652 2444 Шурпа: returning full URL http://localhost:8000/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg
+DEBUG 2025-07-06 03:46:52,877 views 23652 2444 Menu item: Лепешка, image: 'http://127.0.0.1:8000/media/menu_items/menu_item_1751552964961.jpeg', image_full_url: 'http://localhost:8000/media/menu_items/menu_item_1751552964961.jpeg'
+DEBUG 2025-07-06 03:46:52,877 views 23652 2444 Menu item: Шурпа, image: 'http://127.0.0.1:8000/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg', image_full_url: 'http://localhost:8000/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg'
+INFO 2025-07-06 03:46:52,878 basehttp 23652 2444 "GET /api/menu-items/?cafe=1 HTTP/1.1" 200 946
+DEBUG 2025-07-06 03:46:52,878 middleware 23652 17060 Request from origin: http://localhost:3000
+INFO 2025-07-06 03:46:52,881 serializers 23652 17060 get_image_full_url called for Лепешка, image field: menu_items/menu_item_1751552964961.jpeg
+INFO 2025-07-06 03:46:52,882 serializers 23652 17060 Лепешка: image path is /media/menu_items/menu_item_1751552964961.jpeg
+INFO 2025-07-06 03:46:52,882 serializers 23652 17060 Лепешка: returning full URL http://localhost:8000/media/menu_items/menu_item_1751552964961.jpeg
+INFO 2025-07-06 03:46:52,882 serializers 23652 17060 get_image_full_url called for Шурпа, image field: menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg
+INFO 2025-07-06 03:46:52,883 serializers 23652 17060 Шурпа: image path is /media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg
+INFO 2025-07-06 03:46:52,883 serializers 23652 17060 Шурпа: returning full URL http://localhost:8000/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg
+DEBUG 2025-07-06 03:46:52,883 views 23652 17060 Menu item: Лепешка, image: 'http://127.0.0.1:8000/media/menu_items/menu_item_1751552964961.jpeg', image_full_url: 'http://localhost:8000/media/menu_items/menu_item_1751552964961.jpeg'
+DEBUG 2025-07-06 03:46:52,883 views 23652 17060 Menu item: Шурпа, image: 'http://127.0.0.1:8000/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg', image_full_url: 'http://localhost:8000/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg'
+INFO 2025-07-06 03:46:52,884 basehttp 23652 17060 "GET /api/menu-items/?cafe=1 HTTP/1.1" 200 946
+DEBUG 2025-07-06 03:46:58,045 middleware 23652 17060 Request from origin: http://localhost:3000
+INFO 2025-07-06 03:46:58,049 basehttp 23652 17060 "GET /api/cafes/?city=1&t=1751744818043 HTTP/1.1" 200 970
+DEBUG 2025-07-06 03:46:58,050 middleware 23652 2444 Request from origin: http://localhost:3000
+INFO 2025-07-06 03:46:58,055 basehttp 23652 2444 "GET /api/cafes/?city=1&t=1751744818043 HTTP/1.1" 200 970
+DEBUG 2025-07-06 03:47:00,373 middleware 23652 23192 Request from origin: http://localhost:3000
+INFO 2025-07-06 03:47:00,376 serializers 23652 23192 get_image_full_url called for Лепешка, image field: menu_items/menu_item_1751552964961.jpeg
+INFO 2025-07-06 03:47:00,376 serializers 23652 23192 Лепешка: image path is /media/menu_items/menu_item_1751552964961.jpeg
+INFO 2025-07-06 03:47:00,376 serializers 23652 23192 Лепешка: returning full URL http://localhost:8000/media/menu_items/menu_item_1751552964961.jpeg
+INFO 2025-07-06 03:47:00,376 serializers 23652 23192 get_image_full_url called for Шурпа, image field: menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg
+INFO 2025-07-06 03:47:00,377 serializers 23652 23192 Шурпа: image path is /media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg
+INFO 2025-07-06 03:47:00,377 serializers 23652 23192 Шурпа: returning full URL http://localhost:8000/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg
+DEBUG 2025-07-06 03:47:00,377 views 23652 23192 Menu item: Лепешка, image: 'http://localhost:8000/media/menu_items/menu_item_1751552964961.jpeg', image_full_url: 'http://localhost:8000/media/menu_items/menu_item_1751552964961.jpeg'
+DEBUG 2025-07-06 03:47:00,377 views 23652 23192 Menu item: Шурпа, image: 'http://localhost:8000/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg', image_full_url: 'http://localhost:8000/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg'
+INFO 2025-07-06 03:47:00,378 basehttp 23652 23192 "GET /api/menu-items/?cafe=1 HTTP/1.1" 200 946
+DEBUG 2025-07-06 03:47:00,379 middleware 23652 23192 Request from origin: http://localhost:3000
+INFO 2025-07-06 03:47:00,382 serializers 23652 23192 get_image_full_url called for Лепешка, image field: menu_items/menu_item_1751552964961.jpeg
+INFO 2025-07-06 03:47:00,382 serializers 23652 23192 Лепешка: image path is /media/menu_items/menu_item_1751552964961.jpeg
+INFO 2025-07-06 03:47:00,383 serializers 23652 23192 Лепешка: returning full URL http://localhost:8000/media/menu_items/menu_item_1751552964961.jpeg
+INFO 2025-07-06 03:47:00,383 serializers 23652 23192 get_image_full_url called for Шурпа, image field: menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg
+INFO 2025-07-06 03:47:00,383 serializers 23652 23192 Шурпа: image path is /media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg
+INFO 2025-07-06 03:47:00,383 serializers 23652 23192 Шурпа: returning full URL http://localhost:8000/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg
+DEBUG 2025-07-06 03:47:00,383 views 23652 23192 Menu item: Лепешка, image: 'http://localhost:8000/media/menu_items/menu_item_1751552964961.jpeg', image_full_url: 'http://localhost:8000/media/menu_items/menu_item_1751552964961.jpeg'
+DEBUG 2025-07-06 03:47:00,384 views 23652 23192 Menu item: Шурпа, image: 'http://localhost:8000/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg', image_full_url: 'http://localhost:8000/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg'
+INFO 2025-07-06 03:47:00,384 basehttp 23652 23192 "GET /api/menu-items/?cafe=1 HTTP/1.1" 200 946
+DEBUG 2025-07-06 03:48:00,778 middleware 23652 2444 Request from origin: http://localhost:3000
+DEBUG 2025-07-06 03:48:00,780 middleware 23652 17060 Request from origin: http://localhost:3000
+DEBUG 2025-07-06 03:48:00,782 middleware 23652 13460 Request from origin: http://localhost:3000
+INFO 2025-07-06 03:48:00,788 views 23652 17060 Health check запрос от 127.0.0.1: ok
+INFO 2025-07-06 03:48:00,789 basehttp 23652 2444 "GET /api/cafes/?city=1&t=1751744880770 HTTP/1.1" 200 970
+INFO 2025-07-06 03:48:00,790 basehttp 23652 17060 "GET /api/health/ HTTP/1.1" 200 249
+DEBUG 2025-07-06 03:48:00,794 middleware 23652 17060 Request from origin: http://localhost:3000
+INFO 2025-07-06 03:48:00,800 basehttp 23652 17060 "GET /api/cafes/?city=1&t=1751744880792 HTTP/1.1" 200 970
+INFO 2025-07-06 03:48:00,803 basehttp 23652 13460 "GET /api/cafes/?city=1&t=1751744880772 HTTP/1.1" 200 970
+DEBUG 2025-07-06 03:48:03,285 middleware 23652 13460 Request from origin: http://localhost:3000
+DEBUG 2025-07-06 03:48:03,290 middleware 23652 17060 Request from origin: http://localhost:3000
+DEBUG 2025-07-06 03:48:03,291 middleware 23652 2444 Request from origin: http://localhost:3000
+INFO 2025-07-06 03:48:03,297 basehttp 23652 13460 "GET /api/cafes/?city=1&t=1751744883277 HTTP/1.1" 200 970
+INFO 2025-07-06 03:48:03,300 views 23652 2444 Health check запрос от 127.0.0.1: ok
+INFO 2025-07-06 03:48:03,302 basehttp 23652 2444 "GET /api/health/ HTTP/1.1" 200 250
+INFO 2025-07-06 03:48:03,302 basehttp 23652 17060 "GET /api/cafes/?city=1&t=1751744883280 HTTP/1.1" 200 970
+DEBUG 2025-07-06 03:48:03,303 middleware 23652 13460 Request from origin: http://localhost:3000
+INFO 2025-07-06 03:48:03,309 basehttp 23652 13460 "GET /api/cafes/?city=1&t=1751744883280 HTTP/1.1" 200 970
+DEBUG 2025-07-06 03:48:03,310 middleware 23652 17060 Request from origin: http://localhost:3000
+INFO 2025-07-06 03:48:03,315 basehttp 23652 17060 "GET /api/cafes/?city=1&t=1751744883308 HTTP/1.1" 200 970
+DEBUG 2025-07-06 03:48:05,419 middleware 23652 17060 Request from origin: http://localhost:3000
+DEBUG 2025-07-06 03:48:05,421 middleware 23652 13460 Request from origin: http://localhost:3000
+INFO 2025-07-06 03:48:05,427 basehttp 23652 17060 "GET /api/cafes/?city=1&t=1751744885412 HTTP/1.1" 200 970
+INFO 2025-07-06 03:48:05,429 basehttp 23652 13460 "GET /api/cafes/?city=1&t=1751744885413 HTTP/1.1" 200 970
+DEBUG 2025-07-06 03:48:06,117 middleware 23652 13460 Request from origin: http://localhost:3000
+DEBUG 2025-07-06 03:48:06,118 middleware 23652 23192 Request from origin: http://localhost:3000
+INFO 2025-07-06 03:48:06,121 views 23652 13460 Health check запрос от 127.0.0.1: ok
+INFO 2025-07-06 03:48:06,123 serializers 23652 23192 get_image_full_url called for Лепешка, image field: menu_items/menu_item_1751552964961.jpeg
+INFO 2025-07-06 03:48:06,123 serializers 23652 23192 Лепешка: image path is /media/menu_items/menu_item_1751552964961.jpeg
+INFO 2025-07-06 03:48:06,123 basehttp 23652 13460 "GET /api/health/ HTTP/1.1" 200 250
+INFO 2025-07-06 03:48:06,123 serializers 23652 23192 Лепешка: returning full URL http://localhost:8000/media/menu_items/menu_item_1751552964961.jpeg
+INFO 2025-07-06 03:48:06,124 serializers 23652 23192 get_image_full_url called for Шурпа, image field: menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg
+INFO 2025-07-06 03:48:06,124 serializers 23652 23192 Шурпа: image path is /media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg
+INFO 2025-07-06 03:48:06,124 serializers 23652 23192 Шурпа: returning full URL http://localhost:8000/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg
+DEBUG 2025-07-06 03:48:06,125 views 23652 23192 Menu item: Лепешка, image: 'http://localhost:8000/media/menu_items/menu_item_1751552964961.jpeg', image_full_url: 'http://localhost:8000/media/menu_items/menu_item_1751552964961.jpeg'
+DEBUG 2025-07-06 03:48:06,125 views 23652 23192 Menu item: Шурпа, image: 'http://localhost:8000/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg', image_full_url: 'http://localhost:8000/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg'
+INFO 2025-07-06 03:48:06,125 basehttp 23652 23192 "GET /api/menu-items/?cafe=1 HTTP/1.1" 200 946
+DEBUG 2025-07-06 03:48:06,127 middleware 23652 23192 Request from origin: http://localhost:3000
+DEBUG 2025-07-06 03:48:06,128 middleware 23652 13460 Request from origin: http://localhost:3000
+INFO 2025-07-06 03:48:06,132 serializers 23652 23192 get_image_full_url called for Лепешка, image field: menu_items/menu_item_1751552964961.jpeg
+INFO 2025-07-06 03:48:06,132 serializers 23652 23192 Лепешка: image path is /media/menu_items/menu_item_1751552964961.jpeg
+INFO 2025-07-06 03:48:06,132 serializers 23652 23192 Лепешка: returning full URL http://localhost:8000/media/menu_items/menu_item_1751552964961.jpeg
+INFO 2025-07-06 03:48:06,133 serializers 23652 23192 get_image_full_url called for Шурпа, image field: menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg
+INFO 2025-07-06 03:48:06,134 serializers 23652 23192 Шурпа: image path is /media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg
+INFO 2025-07-06 03:48:06,134 serializers 23652 23192 Шурпа: returning full URL http://localhost:8000/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg
+DEBUG 2025-07-06 03:48:06,135 views 23652 23192 Menu item: Лепешка, image: 'http://localhost:8000/media/menu_items/menu_item_1751552964961.jpeg', image_full_url: 'http://localhost:8000/media/menu_items/menu_item_1751552964961.jpeg'
+DEBUG 2025-07-06 03:48:06,135 views 23652 23192 Menu item: Шурпа, image: 'http://localhost:8000/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg', image_full_url: 'http://localhost:8000/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg'
+INFO 2025-07-06 03:48:06,135 basehttp 23652 13460 "GET /api/cafes/?city=1&t=1751744886125 HTTP/1.1" 200 970
+INFO 2025-07-06 03:48:06,136 basehttp 23652 23192 "GET /api/menu-items/?cafe=1 HTTP/1.1" 200 946
+DEBUG 2025-07-06 03:49:19,365 middleware 23652 13460 Request from origin: http://localhost:3000
+INFO 2025-07-06 03:49:19,370 basehttp 23652 13460 "GET /api/cafes/?city=1&t=1751744959357 HTTP/1.1" 200 970
+DEBUG 2025-07-06 03:49:19,371 middleware 23652 17060 Request from origin: http://localhost:3000
+INFO 2025-07-06 03:49:19,376 basehttp 23652 17060 "GET /api/cafes/?city=1&t=1751744959357 HTTP/1.1" 200 970
+DEBUG 2025-07-06 03:49:20,420 middleware 23652 23192 Request from origin: http://localhost:3000
+INFO 2025-07-06 03:49:20,424 serializers 23652 23192 get_image_full_url called for Лепешка, image field: menu_items/menu_item_1751552964961.jpeg
+INFO 2025-07-06 03:49:20,424 serializers 23652 23192 Лепешка: image path is /media/menu_items/menu_item_1751552964961.jpeg
+INFO 2025-07-06 03:49:20,424 serializers 23652 23192 Лепешка: returning full URL http://localhost:8000/media/menu_items/menu_item_1751552964961.jpeg
+INFO 2025-07-06 03:49:20,424 serializers 23652 23192 get_image_full_url called for Шурпа, image field: menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg
+INFO 2025-07-06 03:49:20,425 serializers 23652 23192 Шурпа: image path is /media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg
+INFO 2025-07-06 03:49:20,425 serializers 23652 23192 Шурпа: returning full URL http://localhost:8000/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg
+DEBUG 2025-07-06 03:49:20,425 views 23652 23192 Menu item: Лепешка, image: 'http://localhost:8000/media/menu_items/menu_item_1751552964961.jpeg', image_full_url: 'http://localhost:8000/media/menu_items/menu_item_1751552964961.jpeg'
+DEBUG 2025-07-06 03:49:20,425 views 23652 23192 Menu item: Шурпа, image: 'http://localhost:8000/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg', image_full_url: 'http://localhost:8000/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg'
+INFO 2025-07-06 03:49:20,426 basehttp 23652 23192 "GET /api/menu-items/?cafe=1 HTTP/1.1" 200 946
+DEBUG 2025-07-06 03:49:20,427 middleware 23652 23192 Request from origin: http://localhost:3000
+INFO 2025-07-06 03:49:20,431 serializers 23652 23192 get_image_full_url called for Лепешка, image field: menu_items/menu_item_1751552964961.jpeg
+INFO 2025-07-06 03:49:20,431 serializers 23652 23192 Лепешка: image path is /media/menu_items/menu_item_1751552964961.jpeg
+INFO 2025-07-06 03:49:20,431 serializers 23652 23192 Лепешка: returning full URL http://localhost:8000/media/menu_items/menu_item_1751552964961.jpeg
+INFO 2025-07-06 03:49:20,432 serializers 23652 23192 get_image_full_url called for Шурпа, image field: menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg
+INFO 2025-07-06 03:49:20,432 serializers 23652 23192 Шурпа: image path is /media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg
+INFO 2025-07-06 03:49:20,432 serializers 23652 23192 Шурпа: returning full URL http://localhost:8000/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg
+DEBUG 2025-07-06 03:49:20,432 views 23652 23192 Menu item: Лепешка, image: 'http://localhost:8000/media/menu_items/menu_item_1751552964961.jpeg', image_full_url: 'http://localhost:8000/media/menu_items/menu_item_1751552964961.jpeg'
+DEBUG 2025-07-06 03:49:20,432 views 23652 23192 Menu item: Шурпа, image: 'http://localhost:8000/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg', image_full_url: 'http://localhost:8000/media/menu_items/1ef19980-8e08-45b7-aff2-5292b5797aa9_kJopm0u.jpeg'
+INFO 2025-07-06 03:49:20,433 basehttp 23652 23192 "GET /api/menu-items/?cafe=1 HTTP/1.1" 200 946
+INFO 2025-07-06 03:52:05,893 autoreload 10508 26924 Watching for file changes with StatReloader
