@@ -2,19 +2,25 @@ import styled, { keyframes } from 'styled-components';
 
 // Анимация появления страницы
 const fadeIn = keyframes`
-  from {
+  0% {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(20px) scale(0.98);
+    filter: blur(5px);
   }
-  to {
+  100% {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
+    filter: blur(0);
   }
 `;
 
 // Компонент для плавного перехода между страницами
 export const PageTransition = styled.div`
-  animation: ${fadeIn} 0.3s ease-out;
+  animation: ${fadeIn} 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+  transform-origin: center top;
+  min-height: calc(100vh - var(--bottom-nav-height));
+  padding-bottom: var(--bottom-nav-height);
 `;
 
 // Общие компоненты кнопок

@@ -10,6 +10,14 @@ node_modules
 /build
 /dist
 
+# Фронтенд сборка
+frontend/build/
+frontend/build/static/js/*.js
+frontend/build/static/js/*.js.map
+frontend/build/static/css/*.css
+frontend/build/static/css/*.css.map
+frontend/build/static/media/
+
 # Misc
 .DS_Store
 .env

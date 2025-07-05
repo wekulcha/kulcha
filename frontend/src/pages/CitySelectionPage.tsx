@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { Container, MainContent, ProfileHeading } from '../styles/Components';
+import { Container, MainContent, ProfileHeading, PageTransition } from '../styles/Components';
 import Header from '../components/Header';
 import Navigation from '../components/Navigation';
 import CartButton from '../components/CartButton';
@@ -449,50 +449,63 @@ const CitySelectionPage: React.FC = () => {
   }
 
   return (
-    <ResponsiveContainer>
-      <Header />
-      <Navigation />
-      <AdaptiveMainContent>
-        <HeadingContainer>
-          <PageTitle>Выберите город</PageTitle>
-          <PageDescription>Выберите свой город, чтобы найти рестораны поблизости</PageDescription>
-        </HeadingContainer>
-        
-        <SearchContainer>
-          <SearchIcon>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </SearchIcon>
-          <SearchInput 
-            type="text"
-            placeholder="Поиск города..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </SearchContainer>
-        
-        {filteredCities.length > 0 ? (
-          <CityGrid>
-            {filteredCities.map(city => (
-              <CityCard 
-                key={city.id} 
-                onClick={() => handleCitySelect(city.id)}
-                onTouchStart={() => handleTouchStart(city.id)}
-              >
-                <CityName>{city.name}</CityName>
-                <CityDescription>Выбрать</CityDescription>
-              </CityCard>
-            ))}
-          </CityGrid>
-        ) : (
-          <EmptyResults>
-            Не найдено городов по вашему запросу
-          </EmptyResults>
-        )}
-      </AdaptiveMainContent>
+    <PageTransition>
+      <Container>
+        <Header />
+        <MainContent>
+          <HeadingContainer>
+            <PageTitle>Выберите город</PageTitle>
+            <PageDescription>Выберите свой город, чтобы найти рестораны поблизости</PageDescription>
+          </HeadingContainer>
+          
+          <SearchContainer>
+            <SearchIcon>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </SearchIcon>
+            <SearchInput 
+              type="text"
+              placeholder="Поиск города..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </SearchContainer>
+          
+          {loading ? (
+            <CityGrid>
+              {Array.from({ length: 8 }).map((_, index) => (
+                <CityCard key={`skeleton-${index}`} style={{ opacity: 0.5 }}>
+                  <CityName>Загрузка...</CityName>
+                </CityCard>
+              ))}
+            </CityGrid>
+          ) : filteredCities.length > 0 ? (
+            <CityGrid>
+              {filteredCities.map(city => (
+                <CityCard 
+                  key={city.id} 
+                  onClick={() => handleCitySelect(city.id)}
+                  onTouchStart={() => handleTouchStart(city.id)}
+                >
+                  <CityName>{city.name}</CityName>
+                </CityCard>
+              ))}
+            </CityGrid>
+          ) : (
+            <EmptyResults>
+              {cities.length > 0 ? 
+                'Города не найдены. Попробуйте изменить поисковый запрос.' : 
+                'Список городов пуст. Пожалуйста, попробуйте позже.'
+              }
+            </EmptyResults>
+          )}
+        </MainContent>
+        <Navigation />
+      </Container>
       <CartButton />
-    </ResponsiveContainer>
+    </PageTransition>
   );
 };
 

@@ -6,6 +6,21 @@ import LazyLoader from './components/LazyLoader';
 import ErrorBoundary from './components/ErrorBoundary';
 import { initializeAdminDatabase } from './data/adminDatabase';
 import RoleRedirect from './components/RoleRedirect';
+import styled from 'styled-components';
+
+// Создаем контейнер для стабильной структуры приложения
+const AppContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+`;
+
+const ContentContainer = styled.div`
+  flex: 1;
+  padding-bottom: var(--bottom-nav-height);
+`;
 
 // Lazy loaded components
 const HomePage = lazy(() => import('./pages/HomePage'));
@@ -71,34 +86,36 @@ function App() {
       <AppProvider>
         <GlobalStyles />
         <Router>
-          <div className="App">
-            <LazyLoader>
-              <Routes>
-                {/* Всегда перенаправляем с корневого пути на страницу выбора роли */}
-                <Route path="/" element={<Navigate to="/role-selection" replace />} />
-                
-                {/* Специальный путь для перенаправления с role-selection на restaurant-selection */}
-                <Route path="/role-to-city" element={<RoleRedirect fromPath="/role-selection" toPath="/restaurant-selection" />} />
-                
-                <Route path="/home" element={<HomePage />} />
-                <Route path="/city-selection" element={<CitySelectionPage />} />
-                <Route path="/restaurant-selection" element={<RestaurantSelectionPage />} />
-                <Route path="/profile" element={<ProfilePage />} />
-                <Route path="/cart" element={<CartPage />} />
-                <Route path="/checkout" element={<CheckoutPage />} />
-                <Route path="/order-success" element={<OrderSuccessPage />} />
-                <Route path="/orders/:orderId" element={<OrderDetailsPage />} />
-                <Route path="/role-selection" element={<RoleSelectionPage />} />
-                <Route path="/admin/login" element={<AdminLoginPage />} />
-                <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
-                <Route path="/admin/menu" element={<AdminMenuManagementPage />} />
-                <Route path="/owner/statistics" element={<OwnerStatisticsPage />} />
-                <Route path="/owner/analytics" element={<OwnerAnalyticsPage />} />
-                <Route path="/owner/menu" element={<OwnerMenuPage />} />
-                <Route path="/config/tunnel" element={<TunnelConfigPage />} />
-              </Routes>
-            </LazyLoader>
-          </div>
+          <AppContainer>
+            <ContentContainer>
+              <LazyLoader>
+                <Routes>
+                  {/* Всегда перенаправляем с корневого пути на страницу выбора роли */}
+                  <Route path="/" element={<Navigate to="/role-selection" replace />} />
+                  
+                  {/* Специальный путь для перенаправления с role-selection на restaurant-selection */}
+                  <Route path="/role-to-city" element={<RoleRedirect fromPath="/role-selection" toPath="/restaurant-selection" />} />
+                  
+                  <Route path="/home" element={<HomePage />} />
+                  <Route path="/city-selection" element={<CitySelectionPage />} />
+                  <Route path="/restaurant-selection" element={<RestaurantSelectionPage />} />
+                  <Route path="/profile" element={<ProfilePage />} />
+                  <Route path="/cart" element={<CartPage />} />
+                  <Route path="/checkout" element={<CheckoutPage />} />
+                  <Route path="/order-success" element={<OrderSuccessPage />} />
+                  <Route path="/orders/:orderId" element={<OrderDetailsPage />} />
+                  <Route path="/role-selection" element={<RoleSelectionPage />} />
+                  <Route path="/admin/login" element={<AdminLoginPage />} />
+                  <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
+                  <Route path="/admin/menu" element={<AdminMenuManagementPage />} />
+                  <Route path="/owner/statistics" element={<OwnerStatisticsPage />} />
+                  <Route path="/owner/analytics" element={<OwnerAnalyticsPage />} />
+                  <Route path="/owner/menu" element={<OwnerMenuPage />} />
+                  <Route path="/config/tunnel" element={<TunnelConfigPage />} />
+                </Routes>
+              </LazyLoader>
+            </ContentContainer>
+          </AppContainer>
         </Router>
       </AppProvider>
     </ErrorBoundary>

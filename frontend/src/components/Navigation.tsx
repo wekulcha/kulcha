@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import { useAppContext } from '../contexts/AppContext';
 
 // Нижняя навигационная панель в современном стиле
@@ -9,7 +9,8 @@ const BottomNavBar = styled.nav`
   justify-content: space-around;
   align-items: center;
   width: 100%;
-  padding: 10px;
+  height: var(--bottom-nav-height);
+  padding: 0 10px;
   background: rgba(18, 18, 18, 0.8);
   backdrop-filter: blur(20px);
   position: fixed;
@@ -19,13 +20,25 @@ const BottomNavBar = styled.nav`
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
+  transform: translateZ(0);
+  backface-visibility: hidden;
   
   @media (max-width: 768px) {
-    padding: 8px 5px;
+    padding: 0 5px;
   }
 `;
 
-const NavItem = styled.button<{ $active?: boolean }>`
+// Анимация появления иконок и текста
+const fadeIn = keyframes`
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+`;
+
+const NavItem = styled.button<{ $active?: boolean; $index?: number }>`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -36,6 +49,7 @@ const NavItem = styled.button<{ $active?: boolean }>`
   padding: 8px 12px;
   position: relative;
   transition: all 0.2s ease;
+  opacity: 1;
   
   &:disabled {
     opacity: 0.5;
@@ -123,8 +137,10 @@ const CenterButton = styled.button`
   box-shadow: 0 2px 10px rgba(255, 159, 13, 0.5);
   border: none;
   cursor: pointer;
+  position: relative;
   transform: translateY(-15px);
   transition: all 0.2s ease;
+  opacity: 1;
   
   svg {
     width: 24px;
@@ -251,6 +267,7 @@ const Navigation: React.FC = () => {
       <NavItem 
         onClick={handleCityClick}
         $active={activePage === 'city'}
+        $index={0}
       >
         <ButtonContent>
           <LocationBadge $active={!!selectedCity} />
@@ -266,6 +283,7 @@ const Navigation: React.FC = () => {
         onClick={handleRestaurantClick}
         disabled={!selectedCity}
         $active={activePage === 'restaurant'}
+        $index={1}
       >
         <ButtonContent>
           <LocationBadge $active={!!restaurant} />
@@ -285,6 +303,7 @@ const Navigation: React.FC = () => {
       <NavItem 
         onClick={deliveryMethod === 'delivery' ? handlePickupClick : handleDeliveryClick}
         $active={false}
+        $index={2}
       >
         <ButtonContent>
           {deliveryMethod === 'delivery' ? (
@@ -309,6 +328,7 @@ const Navigation: React.FC = () => {
       <NavItem 
         onClick={handleCartClick}
         $active={activePage === 'cart'}
+        $index={3}
       >
         <ButtonContent>
           <LocationBadge $active={cartItemsCount > 0} />

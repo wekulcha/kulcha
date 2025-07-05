@@ -40,18 +40,27 @@ const GlobalStyles = createGlobalStyle`
 
   html {
     font-size: 16px;
+    height: 100%;
   }
 
   body {
     font-family: 'Poppins', sans-serif;
     background-color: var(--background-color);
     color: var(--text-color);
-    min-height: 100vh;
+    min-height: 100%;
+    height: 100%;
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    /* Добавляем отступ снизу для нижней навигации */
-    padding-bottom: calc(var(--bottom-nav-height) + 20px);
+    padding-bottom: var(--bottom-nav-height);
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  #root {
+    min-height: 100%;
+    position: relative;
+    padding-bottom: var(--bottom-nav-height);
   }
 
   h1, h2, h3, h4, h5, h6 {

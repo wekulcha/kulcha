@@ -13,6 +13,7 @@ export interface Restaurant {
   description: string;
   cover_image: string;  // Поле называется cover_image в API (snake_case)
   rating: number;
+  is_featured?: boolean;  // Флаг для отображения популярных ресторанов
 }
 
 export interface FoodItem {

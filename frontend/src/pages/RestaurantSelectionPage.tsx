@@ -248,13 +248,25 @@ const RestaurantSelectionPage: React.FC = () => {
 
   if (loading) {
     return (
-      <Container>
-        <Header />
-        <Navigation />
-        <MainContent>
-          <ProfileHeading>Загрузка ресторанов...</ProfileHeading>
-        </MainContent>
-      </Container>
+      <PageTransition>
+        <Container>
+          <Header />
+          <MainContent>
+            <ProfileHeading>
+              {selectedCity && `Рестораны в ${selectedCity.name}`}
+            </ProfileHeading>
+            <FoodGrid>
+              {Array.from({ length: 6 }).map((_, index) => (
+                <RestaurantCard key={`skeleton-${index}`} style={{ opacity: 0.5 }}>
+                  <RestaurantImage />
+                </RestaurantCard>
+              ))}
+            </FoodGrid>
+          </MainContent>
+          <Navigation />
+          <CartButton />
+        </Container>
+      </PageTransition>
     );
   }
 
@@ -262,20 +274,19 @@ const RestaurantSelectionPage: React.FC = () => {
     <PageTransition>
       <Container>
         <Header />
-        <Navigation />
         <MainContent>
           <ProfileHeading>
-            {selectedCity ? `Рестораны в городе ${selectedCity.name}` : 'Выберите ресторан'}
+            {selectedCity && `Рестораны в ${selectedCity.name}`}
           </ProfileHeading>
           
           <SearchContainer>
             <SearchIcon>
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="11" cy="11" r="8"></circle>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
               </svg>
             </SearchIcon>
-            <SearchInput 
+            <SearchInput
               type="text"
               placeholder="Поиск ресторанов..."
               value={searchQuery}
@@ -287,15 +298,12 @@ const RestaurantSelectionPage: React.FC = () => {
             <FoodGrid>
               {filteredRestaurants.map((restaurant, index) => (
                 <RestaurantCard 
-                  key={restaurant.id}
+                  key={restaurant.id} 
                   onClick={() => handleRestaurantSelect(restaurant.id)}
                 >
                   <RestaurantImage 
-                    $bgImage={`${restaurant.cover_image || getRandomImage(index)}?t=${imageTimestamp}`} 
+                    $bgImage={restaurant.cover_image || getRandomImage(index)} 
                   />
-                  <RestaurantBadge>
-                    ⭐ {restaurant.rating}
-                  </RestaurantBadge>
                   <RestaurantInfo className="restaurant-info">
                     <h3>{restaurant.name}</h3>
                     <p>{restaurant.address}</p>
@@ -303,17 +311,21 @@ const RestaurantSelectionPage: React.FC = () => {
                       Выбрать ресторан
                     </SelectButton>
                   </RestaurantInfo>
+                  {restaurant.is_featured && <RestaurantBadge>Популярный</RestaurantBadge>}
                 </RestaurantCard>
               ))}
             </FoodGrid>
           ) : (
             <NoResults>
-              {searchQuery 
-                ? 'Нет ресторанов, соответствующих вашему запросу' 
-                : 'В этом городе пока нет ресторанов'}
+              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 3h18v18H3zM12 12h.01M8 12h.01M16 12h.01"></path>
+              </svg>
+              <h3>Рестораны не найдены</h3>
+              <p>Попробуйте изменить поисковый запрос или выбрать другой город</p>
             </NoResults>
           )}
         </MainContent>
+        <Navigation />
         <CartButton />
       </Container>
     </PageTransition>

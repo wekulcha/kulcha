@@ -10,19 +10,33 @@ const Container = styled(PageTransition)`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-color) 100%);
+  background-color: var(--background-color);
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(255, 159, 13, 0.1) 0%, transparent 20%),
+    radial-gradient(circle at 90% 80%, rgba(255, 159, 13, 0.08) 0%, transparent 20%);
   padding: var(--spacing-lg);
 `;
 
 const LoginCard = styled.div`
   background-color: var(--card-bg);
   border-radius: var(--border-radius-lg);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
   width: 100%;
   max-width: 450px;
   padding: var(--spacing-xl);
   position: relative;
   overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(to right, var(--primary-color), var(--primary-light));
+  }
 `;
 
 const Title = styled.h1`
@@ -45,30 +59,31 @@ const FormGroup = styled.div`
 `;
 
 const Label = styled.label`
-  color: var(--text-color);
+  color: var(--text-secondary);
   font-size: 0.9rem;
   font-weight: 500;
 `;
 
 const Input = styled.input`
   padding: var(--spacing-md);
-  border: 1px solid var(--border-color);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--border-radius-md);
-  background-color: var(--input-bg);
+  background-color: rgba(255, 255, 255, 0.03);
   color: var(--text-color);
   font-size: 1rem;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: all 0.3s;
 
   &:focus {
     outline: none;
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 2px rgba(var(--primary-color-rgb), 0.1);
+    box-shadow: 0 0 0 2px rgba(255, 159, 13, 0.1);
+    background-color: rgba(255, 255, 255, 0.05);
   }
 `;
 
 const ErrorMessage = styled.div`
-  color: var(--error-color);
-  background-color: var(--error-bg);
+  color: #ff4d4f;
+  background-color: rgba(255, 77, 79, 0.1);
   padding: var(--spacing-sm) var(--spacing-md);
   border-radius: var(--border-radius-md);
   font-size: 0.9rem;
@@ -84,19 +99,19 @@ const ErrorMessage = styled.div`
 
 const SubmitButton = styled.button`
   padding: var(--spacing-md);
-  background-color: var(--primary-color);
+  background: linear-gradient(to right, var(--primary-color), var(--primary-light));
   color: white;
   border: none;
   border-radius: var(--border-radius-md);
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s;
 
   &:hover {
-    background-color: var(--primary-dark);
+    background: linear-gradient(to right, var(--primary-dark), var(--primary-color));
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 6px 12px rgba(255, 159, 13, 0.2);
   }
 
   &:active {
@@ -104,7 +119,7 @@ const SubmitButton = styled.button`
   }
 
   &:disabled {
-    background-color: var(--disabled-color);
+    background: #444;
     cursor: not-allowed;
     transform: none;
     box-shadow: none;
@@ -115,14 +130,14 @@ const BackLink = styled(Link)`
   display: inline-flex;
   align-items: center;
   gap: var(--spacing-xs);
-  color: white;
+  color: var(--text-secondary);
   margin-top: var(--spacing-lg);
   text-decoration: none;
   font-size: 0.9rem;
   transition: color 0.2s;
 
   &:hover {
-    color: var(--text-color);
+    color: var(--primary-color);
   }
 
   svg {
@@ -134,22 +149,25 @@ const BackLink = styled(Link)`
 const Logo = styled.div`
   font-size: 2rem;
   font-weight: 700;
-  color: white;
+  color: var(--primary-color);
   margin-bottom: var(--spacing-xl);
   display: flex;
   align-items: center;
   justify-content: center;
   gap: var(--spacing-sm);
+  text-shadow: 0 2px 10px rgba(255, 159, 13, 0.3);
 
-  svg {
-    width: 36px;
-    height: 36px;
+  span {
+    background: linear-gradient(to right, var(--primary-color), var(--primary-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 1px;
   }
 `;
 
 const AccountInfo = styled.span`
   font-family: monospace;
-  background-color: rgba(0, 0, 0, 0.15);
+  background-color: rgba(255, 255, 255, 0.05);
   padding: 2px 6px;
   border-radius: 3px;
 `;
@@ -224,12 +242,7 @@ const AdminLoginPage: React.FC = () => {
   return (
     <Container>
       <Logo>
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <circle cx="12" cy="12" r="10"></circle>
-          <path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path>
-          <line x1="12" y1="6" x2="12" y2="18"></line>
-        </svg>
-        Кулча
+        <span>KULCHA</span>
       </Logo>
       
       <LoginCard>
