@@ -8,7 +8,6 @@ import {
   PageTransition
 } from '../styles/Components';
 import Header from '../components/Header';
-import Navigation from '../components/Navigation';
 import { useAppContext } from '../contexts/AppContext';
 import useTelegram from '../hooks/useTelegram';
 import CartButton from '../components/CartButton';
@@ -207,7 +206,6 @@ const HomePage: React.FC = () => {
     <HomeContainer>
       <Container>
         <Header />
-        <Navigation />
         <MainContent>
           {!selectedCity || !selectedRestaurant ? (
             <>

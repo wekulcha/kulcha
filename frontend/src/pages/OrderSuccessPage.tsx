@@ -9,7 +9,6 @@ import {
   PageTransition
 } from '../styles/Components';
 import Header from '../components/Header';
-import Navigation from '../components/Navigation';
 import { useAppContext } from '../contexts/AppContext';
 import useTelegram from '../hooks/useTelegram';
 import { addOrder } from '../data/adminDatabase';
@@ -385,7 +384,6 @@ const OrderSuccessPage: React.FC = () => {
     <SuccessContainer>
       <Container>
         <Header />
-        <Navigation />
         <MainContent>
           <SuccessContent>
             <SuccessHeading>

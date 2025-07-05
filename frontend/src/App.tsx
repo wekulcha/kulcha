@@ -1,5 +1,5 @@
-import React, { lazy, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import React, { lazy, useEffect, useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AppProvider } from './contexts/AppContext';
 import GlobalStyles from './styles/GlobalStyles';
 import LazyLoader from './components/LazyLoader';
@@ -7,6 +7,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 import { initializeAdminDatabase } from './data/adminDatabase';
 import RoleRedirect from './components/RoleRedirect';
 import styled from 'styled-components';
+import Navigation from './components/Navigation';
 
 // Создаем контейнер для стабильной структуры приложения
 const AppContainer = styled.div`
@@ -39,6 +40,60 @@ const OwnerStatisticsPage = lazy(() => import('./pages/owner/OwnerStatisticsPage
 const OwnerMenuPage = lazy(() => import('./pages/owner/OwnerMenuPage'));
 const OwnerAnalyticsPage = lazy(() => import('./pages/owner/OwnerAnalyticsPage'));
 const TunnelConfigPage = lazy(() => import('./pages/TunnelConfigPage'));
+
+// Component for navigation visibility control
+const AppRoutes = () => {
+  const location = useLocation();
+  const [showNavigation, setShowNavigation] = useState(false);
+  
+  // Определяем страницы, на которых не нужно отображать навигацию
+  const hideNavigationOnRoutes = [
+    '/role-selection', 
+    '/admin/login', 
+    '/admin/dashboard', 
+    '/admin/menu', 
+    '/owner/statistics', 
+    '/owner/analytics', 
+    '/owner/menu', 
+    '/config/tunnel'
+  ];
+
+  // Update navigation visibility based on route
+  useEffect(() => {
+    const shouldShow = !hideNavigationOnRoutes.some(route => location.pathname.includes(route));
+    setShowNavigation(shouldShow);
+  }, [location.pathname]);
+
+  return (
+    <>
+      <Routes>
+        {/* Всегда перенаправляем с корневого пути на страницу выбора роли */}
+        <Route path="/" element={<Navigate to="/role-selection" replace />} />
+        
+        {/* Специальный путь для перенаправления с role-selection на restaurant-selection */}
+        <Route path="/role-to-city" element={<RoleRedirect fromPath="/role-selection" toPath="/restaurant-selection" />} />
+        
+        <Route path="/home" element={<HomePage />} />
+        <Route path="/city-selection" element={<CitySelectionPage />} />
+        <Route path="/restaurant-selection" element={<RestaurantSelectionPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/cart" element={<CartPage />} />
+        <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/order-success" element={<OrderSuccessPage />} />
+        <Route path="/orders/:orderId" element={<OrderDetailsPage />} />
+        <Route path="/role-selection" element={<RoleSelectionPage />} />
+        <Route path="/admin/login" element={<AdminLoginPage />} />
+        <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
+        <Route path="/admin/menu" element={<AdminMenuManagementPage />} />
+        <Route path="/owner/statistics" element={<OwnerStatisticsPage />} />
+        <Route path="/owner/analytics" element={<OwnerAnalyticsPage />} />
+        <Route path="/owner/menu" element={<OwnerMenuPage />} />
+        <Route path="/config/tunnel" element={<TunnelConfigPage />} />
+      </Routes>
+      {showNavigation && <Navigation />}
+    </>
+  );
+};
 
 function App() {
   // Инициализация базы данных администратора при загрузке приложения
@@ -89,30 +144,7 @@ function App() {
           <AppContainer>
             <ContentContainer>
               <LazyLoader>
-                <Routes>
-                  {/* Всегда перенаправляем с корневого пути на страницу выбора роли */}
-                  <Route path="/" element={<Navigate to="/role-selection" replace />} />
-                  
-                  {/* Специальный путь для перенаправления с role-selection на restaurant-selection */}
-                  <Route path="/role-to-city" element={<RoleRedirect fromPath="/role-selection" toPath="/restaurant-selection" />} />
-                  
-                  <Route path="/home" element={<HomePage />} />
-                  <Route path="/city-selection" element={<CitySelectionPage />} />
-                  <Route path="/restaurant-selection" element={<RestaurantSelectionPage />} />
-                  <Route path="/profile" element={<ProfilePage />} />
-                  <Route path="/cart" element={<CartPage />} />
-                  <Route path="/checkout" element={<CheckoutPage />} />
-                  <Route path="/order-success" element={<OrderSuccessPage />} />
-                  <Route path="/orders/:orderId" element={<OrderDetailsPage />} />
-                  <Route path="/role-selection" element={<RoleSelectionPage />} />
-                  <Route path="/admin/login" element={<AdminLoginPage />} />
-                  <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
-                  <Route path="/admin/menu" element={<AdminMenuManagementPage />} />
-                  <Route path="/owner/statistics" element={<OwnerStatisticsPage />} />
-                  <Route path="/owner/analytics" element={<OwnerAnalyticsPage />} />
-                  <Route path="/owner/menu" element={<OwnerMenuPage />} />
-                  <Route path="/config/tunnel" element={<TunnelConfigPage />} />
-                </Routes>
+                <AppRoutes />
               </LazyLoader>
             </ContentContainer>
           </AppContainer>

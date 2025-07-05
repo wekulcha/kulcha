@@ -10,7 +10,6 @@ import {
   PageTransition
 } from '../styles/Components';
 import Header from '../components/Header';
-import Navigation from '../components/Navigation';
 import CartButton from '../components/CartButton';
 import { useAppContext } from '../contexts/AppContext';
 import useTelegram from '../hooks/useTelegram';
@@ -384,7 +383,6 @@ const CartPage: React.FC = () => {
             )}
           </CartContent>
         </MainContent>
-        <Navigation />
       </Container>
     </CartContainer>
   );

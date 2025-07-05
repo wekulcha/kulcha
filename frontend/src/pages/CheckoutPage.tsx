@@ -12,7 +12,6 @@ import {
   PageTransition
 } from '../styles/Components';
 import Header from '../components/Header';
-import Navigation from '../components/Navigation';
 import { useAppContext } from '../contexts/AppContext';
 import useTelegram from '../hooks/useTelegram';
 
@@ -369,7 +368,6 @@ const CheckoutPage: React.FC = () => {
     <CheckoutContainer>
       <Container>
         <Header />
-        <Navigation />
         <MainContent>
           <CheckoutContent>
             <CheckoutHeading>

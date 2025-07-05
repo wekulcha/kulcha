@@ -11,7 +11,6 @@ import {
   PageTransition
 } from '../styles/Components';
 import Header from '../components/Header';
-import Navigation from '../components/Navigation';
 import CartButton from '../components/CartButton';
 import { useAppContext } from '../contexts/AppContext';
 import useTelegram from '../hooks/useTelegram';
@@ -263,7 +262,6 @@ const RestaurantSelectionPage: React.FC = () => {
               ))}
             </FoodGrid>
           </MainContent>
-          <Navigation />
           <CartButton />
         </Container>
       </PageTransition>
@@ -325,7 +323,6 @@ const RestaurantSelectionPage: React.FC = () => {
             </NoResults>
           )}
         </MainContent>
-        <Navigation />
         <CartButton />
       </Container>
     </PageTransition>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
 import { useAppContext } from '../contexts/AppContext';
@@ -20,8 +20,11 @@ const BottomNavBar = styled.nav`
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
+  will-change: transform;
   transform: translateZ(0);
   backface-visibility: hidden;
+  -webkit-font-smoothing: subpixel-antialiased;
+  transition: transform 0.2s ease;
   
   @media (max-width: 768px) {
     padding: 0 5px;
@@ -48,7 +51,7 @@ const NavItem = styled.button<{ $active?: boolean; $index?: number }>`
   color: ${props => props.$active ? 'var(--primary-color)' : 'rgba(255, 255, 255, 0.7)'};
   padding: 8px 12px;
   position: relative;
-  transition: all 0.2s ease;
+  transition: color 0.2s ease;
   opacity: 1;
   
   &:disabled {
@@ -59,7 +62,7 @@ const NavItem = styled.button<{ $active?: boolean; $index?: number }>`
     width: 24px;
     height: 24px;
     margin-bottom: 5px;
-    transition: transform 0.2s ease, color 0.2s ease;
+    transition: color 0.2s ease;
     
     @media (max-width: 768px) {
       width: 22px;
@@ -69,7 +72,7 @@ const NavItem = styled.button<{ $active?: boolean; $index?: number }>`
   
   span {
     font-size: 12px;
-    transition: all 0.2s ease;
+    transition: color 0.2s ease;
     white-space: nowrap;
     max-width: 80px;
     overflow: hidden;
@@ -97,7 +100,6 @@ const NavItem = styled.button<{ $active?: boolean; $index?: number }>`
     color: white;
     
     svg {
-      transform: translateY(-2px);
       color: white;
     }
     
@@ -141,6 +143,7 @@ const CenterButton = styled.button`
   transform: translateY(-15px);
   transition: all 0.2s ease;
   opacity: 1;
+  will-change: transform;
   
   svg {
     width: 24px;
@@ -201,6 +204,8 @@ export const BackToRolesButton = styled(Link)`
 `;
 
 const Navigation: React.FC = () => {
+  // Use a ref to track whether this component is mounted
+  const isInitialMount = useRef(true);
   const navigate = useNavigate();
   const location = useLocation();
   const { 
@@ -213,6 +218,18 @@ const Navigation: React.FC = () => {
   } = useAppContext();
   
   const [activePage, setActivePage] = useState<string>('home');
+  const [mounted, setMounted] = useState(false);
+
+  // Add mounting state for smooth appearance
+  useEffect(() => {
+    // Small delay to ensure smooth rendering
+    const timer = setTimeout(() => {
+      setMounted(true);
+      isInitialMount.current = false;
+    }, 10);
+    
+    return () => clearTimeout(timer);
+  }, []);
 
   // Update active page based on current route
   useEffect(() => {
@@ -261,6 +278,9 @@ const Navigation: React.FC = () => {
     : null;
 
   const cartItemsCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+
+  // If not mounted yet, return null to prevent layout jumping
+  if (!mounted) return null;
 
   return (
     <BottomNavBar>
@@ -342,4 +362,7 @@ const Navigation: React.FC = () => {
   );
 };
 
-export default Navigation; 
+// Add a display name for easier debugging
+Navigation.displayName = 'Navigation';
+
+export default React.memo(Navigation); 

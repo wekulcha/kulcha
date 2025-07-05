@@ -41,6 +41,7 @@ const GlobalStyles = createGlobalStyle`
   html {
     font-size: 16px;
     height: 100%;
+    overflow-x: hidden;
   }
 
   body {
@@ -52,15 +53,17 @@ const GlobalStyles = createGlobalStyle`
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    padding-bottom: var(--bottom-nav-height);
+    padding-bottom: calc(var(--bottom-nav-height) + 10px); /* Ensure consistent padding */
     overflow-x: hidden;
     position: relative;
+    margin: 0;
   }
 
   #root {
     min-height: 100%;
     position: relative;
     padding-bottom: var(--bottom-nav-height);
+    overflow-x: hidden;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -143,6 +146,7 @@ const GlobalStyles = createGlobalStyle`
     min-height: calc(100vh - var(--bottom-nav-height) - 75px);
     width: 100%;
     padding-bottom: var(--bottom-nav-height);
+    will-change: contents; /* Help browser optimize rendering */
   }
 
   /* Custom scrollbar */

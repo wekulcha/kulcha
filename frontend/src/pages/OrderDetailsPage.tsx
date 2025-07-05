@@ -10,7 +10,6 @@ import {
   PageTransition
 } from '../styles/Components';
 import Header from '../components/Header';
-import Navigation from '../components/Navigation';
 import { useAppContext } from '../contexts/AppContext';
 import useTelegram from '../hooks/useTelegram';
 
@@ -297,7 +296,6 @@ const OrderDetailsPage: React.FC = () => {
     return (
       <Container>
         <Header />
-        <Navigation />
         <MainContent>
           <EmptyState>
             <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -324,7 +322,6 @@ const OrderDetailsPage: React.FC = () => {
     <DetailsContainer>
       <Container>
         <Header />
-        <Navigation />
         <MainContent>
           <DetailsContent>
             <DetailsHeading>
