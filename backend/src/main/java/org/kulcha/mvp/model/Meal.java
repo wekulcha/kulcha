@@ -11,7 +11,6 @@ import java.math.BigDecimal;
 @Table(name = "meal")
 @Data
 public class Meal {
-
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "meal_seq")
     @SequenceGenerator(name = "meal_seq", sequenceName = "meal_seq", allocationSize = 1)

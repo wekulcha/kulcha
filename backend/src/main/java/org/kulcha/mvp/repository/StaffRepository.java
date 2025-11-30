@@ -5,10 +5,12 @@ import org.kulcha.mvp.model.Staff;
 import org.kulcha.mvp.model.enums.Role;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public interface StaffRepository extends JpaRepository<@NonNull Staff, @NonNull Long> {
 
     List<Staff> findByRestaurantId(Long restaurantId);

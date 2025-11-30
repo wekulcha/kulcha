@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 @Table(name = "user")
 @Data
 public class User {
-
     @Id
     @Column(name = "id", nullable = false, updatable = false)
     private Long id;

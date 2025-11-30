@@ -9,7 +9,6 @@ import java.math.BigDecimal;
 @Table(name = "order_position")
 @Data
 public class OrderPosition {
-
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_pos_seq")
     @SequenceGenerator(name = "order_pos_seq", sequenceName = "order_pos_seq", allocationSize = 1)

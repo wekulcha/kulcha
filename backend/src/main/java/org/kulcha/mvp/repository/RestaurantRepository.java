@@ -4,10 +4,12 @@ import lombok.NonNull;
 import org.kulcha.mvp.model.Restaurant;
 import org.kulcha.mvp.model.enums.SubscriptionStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public interface RestaurantRepository extends JpaRepository<@NonNull Restaurant, @NonNull Long> {
     // Найти ресторан по точному имени
     Optional<Restaurant> findByName(String name);
