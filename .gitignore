@@ -1,0 +1,75 @@
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+bun.lockb
+
+# Build output
+dist/
+build/
+.out/
+.next/
+.vercel/
+.netlify/
+tmp/
+temp/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# System files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Logs
+*.log
+logs/
+log/
+
+# Cache
+.cache/
+.eslintcache
+.stylelintcache
+.parcel-cache/
+.next/cache/
+.fusebox/
+snowpack/
+.rspack-cache
+vite-cache/
+tsbuildinfo/
+*.tsbuildinfo
+
+# Testing
+coverage/
+*.lcov
+
+# Misc
+*.local
+*.pid
+*.seed
+*.pid.lock
+
+# Storybook
+storybook-static/
+
+# Yarn Berry
+.yarn/*
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+
+# Svelte / SolidStart / misc tools
+.svelte-kit/
+.solid/
+
+# TypeScript
+*.tsbuildinfo
+
