@@ -1,0 +1,121 @@
+import { BASE_URL } from "./baseUrl";
+import { AdminOrder, AdminOrderStatusCode } from "../types/adminOrder";
+
+export type AdminOrderFilterStatus =
+  | "ALL"
+  | AdminOrderStatusCode;
+
+/** Backend OrderDto (camelCase) */
+interface OrderDto {
+  id: number;
+  status: AdminOrderStatusCode;
+  userId: number;
+  deliveryAddress: string | null;
+  restaurantId: number;
+  createdAt: string;
+  updatedAt: string | null;
+  courierId: number | null;
+  orderType: "DELIVERY" | "DINE_IN";
+  itemsTotal: number;
+  deliveryFee: number;
+  serviceFee: number;
+  total: number;
+}
+
+function toAdminOrder(d: OrderDto): AdminOrder {
+  return {
+    id: d.id,
+    status: d.status,
+    createdAt: d.createdAt,
+    total: Number(d.total),
+    orderType: d.orderType,
+    deliveryAddress: d.deliveryAddress,
+    userId: d.userId,
+    restaurantId: d.restaurantId,
+    itemsTotal: Number(d.itemsTotal),
+    deliveryFee: Number(d.deliveryFee),
+    serviceFee: Number(d.serviceFee),
+    updatedAt: d.updatedAt ?? null,
+    courierId: d.courierId ?? null,
+  };
+}
+
+export async function fetchAdminOrders(
+  restaurantId: number,
+  status: AdminOrderFilterStatus = "ALL"
+): Promise<AdminOrder[]> {
+  const params = new URLSearchParams();
+  params.set("restaurantId", String(restaurantId));
+  if (status && status !== "ALL") {
+    params.set("status", status);
+  }
+  const url = `${BASE_URL}/orders?${params.toString()}`;
+  const resp = await fetch(url);
+  if (!resp.ok) {
+    throw new Error(`Failed to fetch admin orders: ${resp.status}`);
+  }
+  const data = (await resp.json()) as OrderDto[];
+  return data.map(toAdminOrder);
+}
+
+export async function updateAdminOrderStatus(
+  orderId: number,
+  status: AdminOrderStatusCode,
+  currentOrder: AdminOrder
+): Promise<AdminOrder> {
+  const body = {
+    id: currentOrder.id,
+    status,
+    userId: currentOrder.userId,
+    deliveryAddress: currentOrder.deliveryAddress,
+    restaurantId: currentOrder.restaurantId,
+    createdAt: currentOrder.createdAt,
+    updatedAt: currentOrder.updatedAt ?? null,
+    courierId: currentOrder.courierId ?? null,
+    orderType: currentOrder.orderType,
+    itemsTotal: currentOrder.itemsTotal ?? 0,
+    deliveryFee: currentOrder.deliveryFee ?? 0,
+    serviceFee: currentOrder.serviceFee ?? 0,
+    total: currentOrder.total,
+  };
+  const resp = await fetch(`${BASE_URL}/orders/${orderId}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!resp.ok) {
+    throw new Error(`Failed to update order status: ${resp.status}`);
+  }
+  const d = (await resp.json()) as OrderDto;
+  return toAdminOrder(d);
+}
+
+export async function fetchOrderPositions(orderId: number): Promise<{ meal_id: number; name: string; quantity: number }[]> {
+  const resp = await fetch(`${BASE_URL}/order-positions?orderId=${orderId}`);
+  if (!resp.ok) throw new Error(`Failed to fetch order positions: ${resp.status}`);
+  const positions = (await resp.json()) as { id: number; mealId: number; orderId: number; quantity: number; unitPrice: number; totalPrice: number }[];
+  const mealIds = [...new Set(positions.map((p) => p.mealId))];
+  const nameMap = new Map<number, string>();
+  for (const mid of mealIds) {
+    const mResp = await fetch(`${BASE_URL}/meals/${mid}`);
+    if (mResp.ok) {
+      const meal = (await mResp.json()) as { name: string };
+      nameMap.set(mid, meal.name);
+    } else {
+      nameMap.set(mid, `#${mid}`);
+    }
+  }
+  const result: { meal_id: number; name: string; quantity: number }[] = positions.map((p) => ({
+    meal_id: p.mealId,
+    name: nameMap.get(p.mealId) ?? `#${p.mealId}`,
+    quantity: p.quantity,
+  }));
+  return result;
+}
+
+export async function fetchUser(userId: number): Promise<{ username: string; phone: string } | null> {
+  const resp = await fetch(`${BASE_URL}/users/${userId}`);
+  if (!resp.ok) return null;
+  const u = (await resp.json()) as { username: string; phone: string };
+  return u;
+}

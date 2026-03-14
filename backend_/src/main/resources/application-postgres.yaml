@@ -1,0 +1,15 @@
+spring:
+  config:
+    activate:
+      on-profile: postgres
+  datasource:
+    url: ${POSTGRES_URL:jdbc:postgresql://localhost:5432/kulcha}
+    driver-class-name: org.postgresql.Driver
+    username: ${POSTGRES_USER:kulcha}
+    password: ${POSTGRES_PASSWORD:kulcha}
+  jpa:
+    hibernate:
+      ddl-auto: update
+  h2:
+    console:
+      enabled: false
