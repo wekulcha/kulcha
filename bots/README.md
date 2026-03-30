@@ -14,7 +14,7 @@
 ### 1. Бэкенд (обязательно для ботов, которые ходят в API)
 
 ```bash
-cd backend_
+cd backend
 ./mvnw spring-boot:run
 ```
 
