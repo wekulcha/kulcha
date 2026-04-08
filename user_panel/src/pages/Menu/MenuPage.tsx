@@ -148,6 +148,8 @@ export function MenuPage() {
       <div className="space-y-4 pb-24">
         <Header
           title={selectedRestaurant?.name ?? 'Меню'}
+          showBack
+          onBackClick={() => navigate('/cafes')}
           onBurgerClick={() => navigate('/profile')}
           onSearchClick={() => setIsSearchOpen((prev) => !prev)}
         />

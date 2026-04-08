@@ -1,5 +1,6 @@
 package org.kulcha.backend.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class OrderService {
 
     private final OrderRepository orderRepository;
+    private final OrderTelegramNotifier orderTelegramNotifier;
 
     @Transactional
     public Order create(Order order) {
@@ -55,6 +57,7 @@ public class OrderService {
         Order existingOrder = orderRepository.findById(id)
                 .orElseThrow(() -> new OrderNotFoundException(id));
 
+        OrderStatus previousStatus = existingOrder.getStatus();
         existingOrder.setStatus(updatedOrder.getStatus());
         existingOrder.setUser(updatedOrder.getUser());
         existingOrder.setDeliveryAddress(updatedOrder.getDeliveryAddress());
@@ -68,7 +71,11 @@ public class OrderService {
         existingOrder.setServiceFee(updatedOrder.getServiceFee());
         existingOrder.setTotal(updatedOrder.getTotal());
 
-        return orderRepository.save(existingOrder);
+        Order saved = orderRepository.save(existingOrder);
+        if (previousStatus != saved.getStatus()) {
+            orderTelegramNotifier.notifyUserStatusChanged(saved);
+        }
+        return saved;
     }
 
     @Transactional
@@ -78,5 +85,18 @@ public class OrderService {
 
     public boolean existsById(Long id) {
         return orderRepository.existsById(id);
+    }
+
+    @Transactional
+    public Order updateStatus(Long id, OrderStatus newStatus) {
+        Order existing = orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException(id));
+        OrderStatus previous = existing.getStatus();
+        existing.setStatus(newStatus);
+        existing.setUpdatedAt(LocalDateTime.now());
+        Order saved = orderRepository.save(existing);
+        if (previous != saved.getStatus()) {
+            orderTelegramNotifier.notifyUserStatusChanged(saved);
+        }
+        return saved;
     }
 }

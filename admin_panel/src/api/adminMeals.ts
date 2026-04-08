@@ -1,5 +1,6 @@
 import { BASE_URL } from "./baseUrl";
 import { Meal, AdminMealCreate } from "../types/adminMeal";
+import { buildAdminApiJsonHeaders, getTelegramInitData } from "../telegram/initTelegram";
 
 /** Backend MealDto (camelCase) */
 interface MealDto {
@@ -30,9 +31,31 @@ function toMeal(d: MealDto): Meal {
   };
 }
 
+export async function uploadMealImage(restaurantId: number, file: File): Promise<string> {
+  const init = getTelegramInitData();
+  const fd = new FormData();
+  fd.append("file", file);
+  const headers: Record<string, string> = {};
+  if (init) headers["X-Telegram-Init-Data"] = init;
+  const resp = await fetch(
+    `${BASE_URL}/meal-assets/upload?restaurantId=${restaurantId}`,
+    {
+      method: "POST",
+      headers,
+      body: fd,
+    }
+  );
+  if (!resp.ok) {
+    throw new Error(`Failed to upload image: ${resp.status}`);
+  }
+  const j = (await resp.json()) as { path: string };
+  return j.path;
+}
+
 export async function fetchAdminMeals(restaurantId: number): Promise<Meal[]> {
   const resp = await fetch(
-    `${BASE_URL}/restaurants/${restaurantId}/meals?availableOnly=false`
+    `${BASE_URL}/restaurants/${restaurantId}/meals?availableOnly=false`,
+    { headers: buildAdminApiJsonHeaders() }
   );
   if (!resp.ok) {
     throw new Error(`Failed to fetch meals: ${resp.status}`);
@@ -58,7 +81,7 @@ export async function createAdminMeal(
   };
   const resp = await fetch(`${BASE_URL}/meals`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: buildAdminApiJsonHeaders(),
     body: JSON.stringify(body),
   });
   if (!resp.ok) {
@@ -71,7 +94,19 @@ export async function createAdminMeal(
 export async function updateAdminMeal(
   mealId: number,
   meal: Meal,
-  updates: Partial<Pick<Meal, "name" | "description" | "weight" | "calorie" | "image_link" | "category" | "price" | "is_available">>
+  updates: Partial<
+    Pick<
+      Meal,
+      | "name"
+      | "description"
+      | "weight"
+      | "calorie"
+      | "image_link"
+      | "category"
+      | "price"
+      | "is_available"
+    >
+  >
 ): Promise<Meal> {
   const body = {
     id: meal.id,
@@ -87,7 +122,7 @@ export async function updateAdminMeal(
   };
   const resp = await fetch(`${BASE_URL}/meals/${mealId}`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers: buildAdminApiJsonHeaders(),
     body: JSON.stringify(body),
   });
   if (!resp.ok) {
@@ -108,6 +143,7 @@ export async function updateMealAvailability(
 export async function deleteMeal(mealId: number): Promise<void> {
   const resp = await fetch(`${BASE_URL}/meals/${mealId}`, {
     method: "DELETE",
+    headers: buildAdminApiJsonHeaders(),
   });
   if (!resp.ok) {
     throw new Error(`Failed to delete meal: ${resp.status}`);

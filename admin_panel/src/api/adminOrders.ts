@@ -1,4 +1,5 @@
 import { BASE_URL } from "./baseUrl";
+import { buildAdminApiJsonHeaders } from "../telegram/initTelegram";
 import { AdminOrder, AdminOrderStatusCode } from "../types/adminOrder";
 
 export type AdminOrderFilterStatus =
@@ -50,7 +51,7 @@ export async function fetchAdminOrders(
     params.set("status", status);
   }
   const url = `${BASE_URL}/orders?${params.toString()}`;
-  const resp = await fetch(url);
+  const resp = await fetch(url, { headers: buildAdminApiJsonHeaders() });
   if (!resp.ok) {
     throw new Error(`Failed to fetch admin orders: ${resp.status}`);
   }
@@ -80,7 +81,7 @@ export async function updateAdminOrderStatus(
   };
   const resp = await fetch(`${BASE_URL}/orders/${orderId}`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers: buildAdminApiJsonHeaders(),
     body: JSON.stringify(body),
   });
   if (!resp.ok) {
@@ -91,7 +92,9 @@ export async function updateAdminOrderStatus(
 }
 
 export async function fetchOrderPositions(orderId: number): Promise<{ meal_id: number; name: string; quantity: number }[]> {
-  const resp = await fetch(`${BASE_URL}/order-positions?orderId=${orderId}`);
+  const resp = await fetch(`${BASE_URL}/order-positions?orderId=${orderId}`, {
+    headers: buildAdminApiJsonHeaders(),
+  });
   if (!resp.ok) throw new Error(`Failed to fetch order positions: ${resp.status}`);
   const positions = (await resp.json()) as { id: number; mealId: number; orderId: number; quantity: number; unitPrice: number; totalPrice: number }[];
   const mealIds = [...new Set(positions.map((p) => p.mealId))];
@@ -114,7 +117,9 @@ export async function fetchOrderPositions(orderId: number): Promise<{ meal_id: n
 }
 
 export async function fetchUser(userId: number): Promise<{ username: string; phone: string } | null> {
-  const resp = await fetch(`${BASE_URL}/users/${userId}`);
+  const resp = await fetch(`${BASE_URL}/users/${userId}`, {
+    headers: buildAdminApiJsonHeaders(),
+  });
   if (!resp.ok) return null;
   const u = (await resp.json()) as { username: string; phone: string };
   return u;

@@ -1,5 +1,6 @@
 import { useCart } from '../../context/CartContext';
 import type { Meal } from '../../types/meal';
+import { mealImageUrl } from '../../utils/mealImageUrl';
 
 interface MenuItemCardProps {
   meal: Meal;
@@ -15,7 +16,7 @@ export function MenuItemCard({ meal }: MenuItemCardProps) {
       <div className="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0">
         {meal.image_link ? (
           <img
-            src={meal.image_link}
+            src={mealImageUrl(meal.image_link)}
             alt={meal.name}
             className="w-full h-full object-cover"
           />

@@ -39,6 +39,8 @@ export function CafeListPage() {
       <div className="space-y-4 pb-6">
         <Header
           title="Выбор кафе"
+          showBack
+          onBackClick={() => navigate(-1)}
           onBurgerClick={() => navigate('/profile')}
           onSearchClick={() => setIsSearchOpen((prev) => !prev)}
         />

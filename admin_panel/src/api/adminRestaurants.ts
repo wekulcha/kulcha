@@ -1,5 +1,6 @@
 import { BASE_URL } from "./baseUrl";
 import { AdminRestaurant } from "../types/adminRestaurant";
+import { buildAdminApiJsonHeaders } from "../telegram/initTelegram";
 
 /** Backend UserRestaurantDto (camelCase) */
 interface UserRestaurantDto {
@@ -20,7 +21,9 @@ function toAdminRestaurant(d: UserRestaurantDto): AdminRestaurant {
 
 /** Fetch restaurants for current staff user (my restaurants) */
 export async function fetchMyRestaurants(userId: number): Promise<AdminRestaurant[]> {
-  const resp = await fetch(`${BASE_URL}/users/${userId}/my-restaurants`);
+  const resp = await fetch(`${BASE_URL}/users/${userId}/my-restaurants`, {
+    headers: buildAdminApiJsonHeaders(),
+  });
   if (!resp.ok) {
     throw new Error(`Failed to fetch my restaurants: ${resp.status}`);
   }

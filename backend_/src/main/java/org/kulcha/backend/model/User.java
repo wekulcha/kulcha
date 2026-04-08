@@ -27,6 +27,10 @@ public class User {
     @Column(name = "phone", nullable = false, unique = true)
     private String phone;
 
+    /** Telegram user id from WebApp / bot; unique when set. */
+    @Column(name = "telegram_id", unique = true)
+    private Long telegramId;
+
     @Column(name = "email")
     private String email;
 

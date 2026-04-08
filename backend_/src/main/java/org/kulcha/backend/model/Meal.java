@@ -35,7 +35,7 @@ public class Meal {
     @Column(name = "calorie")
     private Integer calorie;
 
-    @Column(name = "image_link", nullable = false)
+    @Column(name = "image_link", nullable = false, length = 2048)
     private String imageLink;
 
     @Enumerated(EnumType.STRING)

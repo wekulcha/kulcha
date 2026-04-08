@@ -4,6 +4,7 @@ import {
   createAdminMeal,
   fetchAdminMeals,
   updateMealAvailability,
+  uploadMealImage,
 } from "../../api/adminMeals";
 
 interface AdminMenuTabProps {
@@ -20,6 +21,7 @@ const CATEGORY_OPTIONS = [
 ];
 
 interface CreateMealModalProps {
+  restaurantId: number;
   onCancel: () => void;
   onSave: (data: AdminMealCreate) => void;
   loading: boolean;
@@ -27,6 +29,7 @@ interface CreateMealModalProps {
 }
 
 const CreateMealModal: React.FC<CreateMealModalProps> = ({
+  restaurantId,
   onCancel,
   onSave,
   loading,
@@ -42,6 +45,8 @@ const CreateMealModal: React.FC<CreateMealModalProps> = ({
     price: 0,
     is_available: true,
   });
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadErr, setUploadErr] = useState<string | null>(null);
 
   const handleChange = (field: keyof AdminMealCreate, value: unknown) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -78,7 +83,9 @@ const CreateMealModal: React.FC<CreateMealModalProps> = ({
           </button>
         </div>
 
-        {error && <div className="text-[11px] text-red-500">{error}</div>}
+        {(error || uploadErr) && (
+          <div className="text-[11px] text-red-500">{uploadErr ?? error}</div>
+        )}
 
         {/* Name */}
         <div className="space-y-1">
@@ -131,29 +138,36 @@ const CreateMealModal: React.FC<CreateMealModalProps> = ({
         {/* Image upload */}
         <div className="space-y-1">
           <label className="text-[11px] text-slate-600">
-            Изображение блюда *
+            Изображение блюда * (JPG, JPEG, PNG)
           </label>
           <input
             type="file"
-            accept="image/*"
+            accept="image/jpeg,image/jpg,image/png,.jpg,.jpeg,.png"
             className="w-full text-[11px]"
-            onChange={(e) => {
+            disabled={uploadingImage}
+            onChange={async (e) => {
               const file = e.target.files?.[0];
               if (!file) return;
-              const reader = new FileReader();
-              reader.onload = () => {
-                const result = reader.result;
-                if (typeof result === "string") {
-                  // For dev: store Data URL as image_link
-                  handleChange("image_link", result);
-                }
-              };
-              reader.readAsDataURL(file);
+              setUploadErr(null);
+              setUploadingImage(true);
+              try {
+                const path = await uploadMealImage(restaurantId, file);
+                handleChange("image_link", path);
+              } catch {
+                setUploadErr("Не удалось загрузить файл. Попробуйте JPG или PNG до 8 МБ.");
+              } finally {
+                setUploadingImage(false);
+                e.target.value = "";
+              }
             }}
             required
           />
           <p className="text-[10px] text-slate-500">
-            Для теста изображение сохраняется как Data URL в поле image_link.
+            {uploadingImage
+              ? "Загрузка..."
+              : form.image_link
+                ? "Фото загружено."
+                : "Выберите файл — он сохранится на сервере."}
           </p>
         </div>
 
@@ -200,7 +214,7 @@ const CreateMealModal: React.FC<CreateMealModalProps> = ({
 
         <button
           type="submit"
-          disabled={loading}
+          disabled={loading || uploadingImage || !form.image_link}
           className="w-full rounded-2xl bg-slate-900 text-white text-xs font-semibold py-2 mt-1 disabled:opacity-60"
         >
           {loading ? "Сохраняем..." : "Создать блюдо"}
@@ -368,6 +382,7 @@ export const AdminMenuTab: React.FC<AdminMenuTabProps> = ({
 
       {isCreateOpen && (
         <CreateMealModal
+          restaurantId={restaurantId}
           onCancel={() => setIsCreateOpen(false)}
           onSave={handleCreateMeal}
           loading={createLoading}

@@ -4,8 +4,9 @@ import { AdminHeader } from "../../layout/AdminHeader";
 import { AdminOrdersTab } from "./AdminOrdersTab";
 import { AdminMenuTab } from "./AdminMenuTab";
 import { AdminAnalyticsTab } from "./AdminAnalyticsTab";
+import { AdminStaffTab } from "./AdminStaffTab";
 
-type TabKey = "orders" | "menu" | "analytics";
+type TabKey = "orders" | "menu" | "team" | "analytics";
 
 interface LocationState {
   restaurantName?: string;
@@ -53,7 +54,7 @@ export const AdminRestaurantPage: React.FC = () => {
 
         {/* Tabs */}
         <section className="mb-4">
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 gap-2">
             <TabButton
               label="Заказы"
               active={activeTab === "orders"}
@@ -65,6 +66,12 @@ export const AdminRestaurantPage: React.FC = () => {
               active={activeTab === "menu"}
               color="sky"
               onClick={() => setActiveTab("menu")}
+            />
+            <TabButton
+              label="Команда"
+              active={activeTab === "team"}
+              color="amber"
+              onClick={() => setActiveTab("team")}
             />
             <TabButton
               label="Аналитика"
@@ -83,6 +90,9 @@ export const AdminRestaurantPage: React.FC = () => {
           {activeTab === "menu" && (
             <AdminMenuTab restaurantId={restaurantId} />
           )}
+          {activeTab === "team" && (
+            <AdminStaffTab restaurantId={restaurantId} />
+          )}
           {activeTab === "analytics" && (
             <AdminAnalyticsTab restaurantId={restaurantId} />
           )}
@@ -95,7 +105,7 @@ export const AdminRestaurantPage: React.FC = () => {
 interface TabButtonProps {
   label: string;
   active: boolean;
-  color: "emerald" | "sky" | "violet";
+  color: "emerald" | "sky" | "violet" | "amber";
   onClick: () => void;
 }
 
@@ -117,6 +127,10 @@ const TabButton: React.FC<TabButtonProps> = ({
     violet: {
       active: "from-violet-500 to-violet-600 text-white",
       inactive: "bg-violet-50 text-violet-700",
+    },
+    amber: {
+      active: "from-amber-500 to-amber-600 text-white",
+      inactive: "bg-amber-50 text-amber-800",
     },
   };
 

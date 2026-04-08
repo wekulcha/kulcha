@@ -3,9 +3,15 @@ from aiogram import Router, F
 from aiogram.types import Message
 from aiogram.filters import CommandStart, Command
 
-from config import API_BASE, ALLOWED_TELEGRAM_IDS
+from config import API_BASE, ALLOWED_TELEGRAM_IDS, INTERNAL_API_SECRET
 
 router = Router()
+
+
+def _internal_headers() -> dict:
+    if not INTERNAL_API_SECRET:
+        return {}
+    return {"X-Kulcha-Internal-Secret": INTERNAL_API_SECRET}
 
 
 def allowed(user_id: int) -> bool:
@@ -73,7 +79,7 @@ async def cmd_order(message: Message):
     try:
         oid = int(parts[1])
         async with httpx.AsyncClient() as client:
-            r = await client.get(f"{API_BASE}/orders/{oid}")
+            r = await client.get(f"{API_BASE}/orders/{oid}", headers=_internal_headers())
         if r.status_code != 200:
             await message.answer("Заказ не найден.")
             return

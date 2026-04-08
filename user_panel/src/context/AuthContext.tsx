@@ -1,39 +1,66 @@
-import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
-
-const STORAGE_KEY = 'kulcha_current_user_id';
+import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from 'react';
+import { BASE_URL } from '../api/baseUrl';
+import { buildUserApiJsonHeaders, getTelegramInitData } from '../telegram/initTelegram';
 
 interface AuthContextValue {
   currentUserId: number | null;
-  setCurrentUserId: (id: number | null) => void;
+  authReady: boolean;
+  authError: string | null;
+  reloadAuth: () => void;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
-function readStoredUserId(): number | null {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw == null) return null;
-    const n = parseInt(raw, 10);
-    return Number.isFinite(n) ? n : null;
-  } catch {
-    return null;
-  }
+interface UserDto {
+  id: number;
+  telegramId?: number | null;
+}
+
+async function resolveSession(): Promise<number | null> {
+  const init = getTelegramInitData();
+  if (!init) return null;
+  const resp = await fetch(`${BASE_URL}/auth/webapp-user`, {
+    method: 'POST',
+    headers: buildUserApiJsonHeaders(),
+    body: JSON.stringify({}),
+  });
+  if (!resp.ok) return null;
+  const data = (await resp.json()) as UserDto;
+  return data.id ?? null;
 }
 
 export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [currentUserId, setState] = useState<number | null>(readStoredUserId);
+  const [currentUserId, setCurrentUserId] = useState<number | null>(null);
+  const [authReady, setAuthReady] = useState(false);
+  const [authError, setAuthError] = useState<string | null>(null);
 
-  const setCurrentUserId = useCallback((id: number | null) => {
-    setState(id);
-    if (id != null) {
-      localStorage.setItem(STORAGE_KEY, String(id));
-    } else {
-      localStorage.removeItem(STORAGE_KEY);
-    }
+  const reloadAuth = useCallback(() => {
+    setAuthReady(false);
+    setAuthError(null);
+    void resolveSession()
+      .then((id) => {
+        setCurrentUserId(id);
+        if (!getTelegramInitData()) {
+          setAuthError('Откройте мини-приложение из бота KULCHA (кнопка в меню).');
+        } else if (id == null) {
+          setAuthError(
+            'Сначала зарегистрируйтесь: откройте бота KULCHA и нажмите /start, поделитесь номером телефона.'
+          );
+        }
+      })
+      .catch(() => {
+        setAuthError('Не удалось подключиться к серверу. Попробуйте позже.');
+        setCurrentUserId(null);
+      })
+      .finally(() => setAuthReady(true));
   }, []);
 
+  useEffect(() => {
+    reloadAuth();
+  }, [reloadAuth]);
+
   return (
-    <AuthContext.Provider value={{ currentUserId, setCurrentUserId }}>
+    <AuthContext.Provider value={{ currentUserId, authReady, authError, reloadAuth }}>
       {children}
     </AuthContext.Provider>
   );

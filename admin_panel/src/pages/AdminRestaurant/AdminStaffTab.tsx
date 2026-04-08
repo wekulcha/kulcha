@@ -1,0 +1,147 @@
+import React, { useEffect, useState } from "react";
+import {
+  addRestaurantStaff,
+  fetchRestaurantStaff,
+  removeRestaurantStaff,
+  type StaffMember,
+  type StaffPermission,
+} from "../../api/staff";
+
+interface AdminStaffTabProps {
+  restaurantId: number;
+}
+
+const PERM_LABEL: Record<StaffPermission, string> = {
+  CAN_EDIT_MENU: "Редактирование меню",
+  CAN_LOOK_ORDERS: "Просмотр заказов",
+};
+
+export const AdminStaffTab: React.FC<AdminStaffTabProps> = ({ restaurantId }) => {
+  const [list, setList] = useState<StaffMember[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [tgInput, setTgInput] = useState("");
+  const [perm, setPerm] = useState<StaffPermission>("CAN_LOOK_ORDERS");
+  const [adding, setAdding] = useState(false);
+
+  const load = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await fetchRestaurantStaff(restaurantId);
+      setList(data);
+    } catch {
+      setError("Не удалось загрузить сотрудников.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!restaurantId || Number.isNaN(restaurantId)) return;
+    void load();
+  }, [restaurantId]);
+
+  const handleAdd = async () => {
+    const tid = parseInt(tgInput.trim(), 10);
+    if (!Number.isFinite(tid) || tid <= 0) {
+      setError("Введите числовой Telegram ID.");
+      return;
+    }
+    try {
+      setAdding(true);
+      setError(null);
+      const created = await addRestaurantStaff(restaurantId, tid, perm);
+      setList((prev) => [...prev, created]);
+      setTgInput("");
+    } catch {
+      setError(
+        "Не удалось добавить. Пользователь должен сначала нажать /start в боте KULCHA и не должен дублировать роль."
+      );
+    } finally {
+      setAdding(false);
+    }
+  };
+
+  const handleRemove = async (m: StaffMember) => {
+    if (!confirm(`Убрать ${m.username} из ресторана?`)) return;
+    try {
+      await removeRestaurantStaff(restaurantId, m.staffId);
+      setList((prev) => prev.filter((x) => x.staffId !== m.staffId));
+    } catch {
+      setError("Не удалось удалить сотрудника.");
+    }
+  };
+
+  return (
+    <div className="bg-white rounded-3xl p-3 shadow-sm border border-slate-100 space-y-3">
+      <div className="text-sm font-semibold text-slate-900">Команда ресторана</div>
+      <p className="text-[11px] text-slate-500">
+        Добавьте Telegram ID сотрудника (число из профиля Telegram). Сначала пусть
+        зарегистрируется в боте KULCHA через /start.
+      </p>
+
+      {error && <div className="text-[11px] text-red-500">{error}</div>}
+
+      <div className="space-y-2 rounded-2xl border border-slate-100 p-2 bg-slate-50/80">
+        <label className="text-[11px] text-slate-600">Telegram ID</label>
+        <input
+          type="number"
+          className="w-full rounded-xl border border-slate-200 px-2 py-1.5 text-[11px]"
+          placeholder="например 123456789"
+          value={tgInput}
+          onChange={(e) => setTgInput(e.target.value)}
+        />
+        <label className="text-[11px] text-slate-600">Права</label>
+        <select
+          className="w-full rounded-xl border border-slate-200 px-2 py-1.5 text-[11px] bg-white"
+          value={perm}
+          onChange={(e) => setPerm(e.target.value as StaffPermission)}
+        >
+          <option value="CAN_LOOK_ORDERS">{PERM_LABEL.CAN_LOOK_ORDERS}</option>
+          <option value="CAN_EDIT_MENU">{PERM_LABEL.CAN_EDIT_MENU}</option>
+        </select>
+        <button
+          type="button"
+          disabled={adding}
+          onClick={() => void handleAdd()}
+          className="w-full rounded-2xl bg-emerald-600 text-white text-xs font-semibold py-2 disabled:opacity-60"
+        >
+          {adding ? "Добавляем..." : "Добавить сотрудника"}
+        </button>
+      </div>
+
+      {loading && <div className="text-xs text-slate-500">Загрузка...</div>}
+
+      {!loading && list.length === 0 && (
+        <div className="text-xs text-slate-500">Пока только вы в команде.</div>
+      )}
+
+      <ul className="space-y-2">
+        {list.map((m) => (
+          <li
+            key={m.staffId}
+            className="flex items-start justify-between gap-2 rounded-2xl border border-slate-100 px-3 py-2"
+          >
+            <div>
+              <div className="text-xs font-semibold text-slate-900">{m.username}</div>
+              <div className="text-[10px] text-slate-500">
+                TG: {m.telegramId ?? "—"} · {m.phone}
+              </div>
+              <div className="text-[10px] text-emerald-700 font-medium mt-0.5">
+                {PERM_LABEL[m.permission]}
+              </div>
+            </div>
+            <button
+              type="button"
+              className="text-[10px] text-red-600 font-semibold shrink-0"
+              onClick={() => void handleRemove(m)}
+            >
+              Удалить
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};

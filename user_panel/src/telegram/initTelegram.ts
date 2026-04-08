@@ -3,6 +3,7 @@ declare global {
     Telegram?: {
       WebApp?: {
         ready: () => void;
+        initData?: string;
         version?: string;
         platform?: string;
         colorScheme?: 'light' | 'dark';
@@ -17,6 +18,19 @@ declare global {
       };
     };
   }
+}
+
+/** Raw initData string for X-Telegram-Init-Data (signed by the user bot). */
+export function getTelegramInitData(): string {
+  if (typeof window === 'undefined') return '';
+  return window.Telegram?.WebApp?.initData ?? '';
+}
+
+export function buildUserApiJsonHeaders(): Record<string, string> {
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  const init = getTelegramInitData();
+  if (init) headers['X-Telegram-Init-Data'] = init;
+  return headers;
 }
 
 export function initTelegramWebApp(): void {

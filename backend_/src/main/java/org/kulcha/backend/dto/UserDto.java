@@ -12,6 +12,7 @@ public class UserDto {
     private Long id;
     private String username;
     private String phone;
+    private Long telegramId;
     private String email;
     private String address;
     private LocalDateTime registeredAt;

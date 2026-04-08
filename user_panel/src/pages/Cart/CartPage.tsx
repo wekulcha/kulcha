@@ -20,6 +20,8 @@ export function CartPage() {
       <div className="space-y-4 pb-24">
         <Header
           title="Корзина"
+          showBack
+          onBackClick={() => navigate(-1)}
           onBurgerClick={() => navigate('/profile')}
           showSearch={false}
         />

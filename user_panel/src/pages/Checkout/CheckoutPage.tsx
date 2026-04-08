@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MiniAppShell } from '../../layout/MiniAppShell';
 import { Header } from '../../layout/Header';
@@ -6,6 +6,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useAppContext } from '../../context/AppContext';
 import { useCart } from '../../context/CartContext';
 import { createOrder } from '../../api/orders';
+import { fetchUser } from '../../api/users';
 import type { PaymentMethod, CreateOrderPayload } from '../../types/order';
 
 export function CheckoutPage() {
@@ -29,12 +30,27 @@ export function CheckoutPage() {
   const [floor, setFloor] = useState<string>('1');
   const [line, setLine] = useState<string>('1');
   const [pavilion, setPavilion] = useState<string>('1');
-  const [username] = useState<string>('');
+  const [username, setUsername] = useState<string>('');
   const [phone, setPhone] = useState<string>('');
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('CASH');
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (currentUserId == null) return;
+    let cancelled = false;
+    fetchUser(currentUserId)
+      .then((u) => {
+        if (cancelled || !u) return;
+        setPhone((p) => (p.trim() ? p : u.phone ?? ''));
+        setUsername(u.username ? (u.username.startsWith('@') ? u.username : `@${u.username}`) : '');
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [currentUserId]);
 
   const handleSubmit = async () => {
     setErrorMessage(null);
@@ -78,7 +94,7 @@ export function CheckoutPage() {
       restaurant_id: selectedRestaurant.id,
       service_type: serviceType,
       delivery_address: deliveryAddress,
-      username: username || null,
+      username: username.replace(/^@/, '') || null,
       phone: phone.trim(),
       payment_method: paymentMethod,
       items: itemsPayload,
@@ -109,6 +125,8 @@ export function CheckoutPage() {
       <div className="space-y-4 pb-28">
         <Header
           title="Оформление"
+          showBack
+          onBackClick={() => navigate('/cart')}
           onBurgerClick={() => navigate('/profile')}
           showSearch={false}
         />
@@ -208,8 +226,8 @@ export function CheckoutPage() {
               <label className="block text-xs text-slate-500 mb-1">Username</label>
               <input
                 type="text"
-                className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm bg-slate-50 text-slate-500"
-                value={username || '@username'}
+                className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm bg-slate-50 text-slate-700"
+                value={username || '—'}
                 readOnly
               />
             </div>
