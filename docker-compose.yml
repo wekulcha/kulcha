@@ -1,0 +1,136 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: kulcha-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-kulcha}
+      POSTGRES_USER: ${POSTGRES_USER:-kulcha}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-kulcha}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-kulcha} -d ${POSTGRES_DB:-kulcha}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  backend:
+    build:
+      context: .
+      dockerfile: deploy/docker/backend.Dockerfile
+    container_name: kulcha-backend
+    restart: unless-stopped
+    environment:
+      SPRING_PROFILES_ACTIVE: postgres
+      POSTGRES_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-kulcha}
+      POSTGRES_USER: ${POSTGRES_USER:-kulcha}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-kulcha}
+      KULCHA_CORS_ALLOWED_ORIGINS: ${KULCHA_CORS_ALLOWED_ORIGINS:-https://app.wekulcha.ru,https://admin.wekulcha.online,https://superadmin.wekulcha.online}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    expose:
+      - "8080"
+
+  user_panel:
+    build:
+      context: .
+      dockerfile: deploy/docker/user_panel.Dockerfile
+      args:
+        VITE_API_URL: ${PUBLIC_API_URL:-https://api.wekulcha.ru/api/v1}
+    container_name: kulcha-user-panel
+    restart: unless-stopped
+    expose:
+      - "80"
+
+  admin_panel:
+    build:
+      context: .
+      dockerfile: deploy/docker/admin_panel.Dockerfile
+      args:
+        VITE_API_URL: ${PUBLIC_API_URL:-https://api.wekulcha.ru/api/v1}
+    container_name: kulcha-admin-panel
+    restart: unless-stopped
+    expose:
+      - "80"
+
+  superadmin_panel:
+    build:
+      context: .
+      dockerfile: deploy/docker/superadmin_panel.Dockerfile
+      args:
+        VITE_API_URL: ${PUBLIC_API_URL:-https://api.wekulcha.ru/api/v1}
+    container_name: kulcha-superadmin-panel
+    restart: unless-stopped
+    expose:
+      - "80"
+
+  user_bot:
+    build:
+      context: .
+      dockerfile: deploy/docker/user_bot.Dockerfile
+    container_name: kulcha-user-bot
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      KULCHA_USER_BOT_TOKEN: ${KULCHA_USER_BOT_TOKEN:-}
+      KULCHA_API_BASE: http://backend:8080/api/v1
+      KULCHA_USER_MINI_APP_URL: https://${USER_DOMAIN:-app.wekulcha.ru}
+      KULCHA_SUPPORT_LINK: ${KULCHA_SUPPORT_LINK:-https://t.me/support}
+
+  admin_bot:
+    build:
+      context: .
+      dockerfile: deploy/docker/admin_bot.Dockerfile
+    container_name: kulcha-admin-bot
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      KULCHA_ADMIN_BOT_TOKEN: ${KULCHA_ADMIN_BOT_TOKEN:-}
+      KULCHA_API_BASE: http://backend:8080/api/v1
+      KULCHA_ADMIN_MINI_APP_URL: https://${ADMIN_DOMAIN:-admin.wekulcha.online}
+      KULCHA_SUPPORT_LINK: ${KULCHA_SUPPORT_LINK:-https://t.me/support}
+
+  superadmin_bot:
+    build:
+      context: .
+      dockerfile: deploy/docker/superadmin_bot.Dockerfile
+    container_name: kulcha-superadmin-bot
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      KULCHA_SUPERADMIN_BOT_TOKEN: ${KULCHA_SUPERADMIN_BOT_TOKEN:-}
+      KULCHA_API_BASE: http://backend:8080/api/v1
+      KULCHA_SUPERADMIN_ALLOWED_IDS: ${KULCHA_SUPERADMIN_ALLOWED_IDS:-}
+
+  gateway:
+    image: caddy:2.8-alpine
+    container_name: kulcha-gateway
+    restart: unless-stopped
+    depends_on:
+      - backend
+      - user_panel
+      - admin_panel
+      - superadmin_panel
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      ACME_EMAIL: ${ACME_EMAIL:-admin@wekulcha.ru}
+      API_DOMAIN: ${API_DOMAIN:-api.wekulcha.ru}
+      USER_DOMAIN: ${USER_DOMAIN:-app.wekulcha.ru}
+      ADMIN_DOMAIN: ${ADMIN_DOMAIN:-admin.wekulcha.online}
+      SUPERADMIN_DOMAIN: ${SUPERADMIN_DOMAIN:-superadmin.wekulcha.online}
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  postgres_data:
+  caddy_data:
+  caddy_config:

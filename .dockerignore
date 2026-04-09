@@ -1,0 +1,13 @@
+.git
+.gitignore
+.idea
+.DS_Store
+**/.DS_Store
+**/.idea
+**/node_modules
+**/dist
+**/__pycache__
+**/*.pyc
+**/.env
+**/.env.*
+!**/.env.example
