@@ -62,7 +62,7 @@ public class RestaurantController {
             }
             var tg = telegramWebAppService.requireUser(initData, kulchaProperties.getTelegram().getAdminBotToken());
             User u = userService
-                    .findByTelegramId(tg.id())
+                    .findById(tg.id())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Unknown user"));
             staffAccessService.requireRestaurantStaff(u.getId(), id);
         }

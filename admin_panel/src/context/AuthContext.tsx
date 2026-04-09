@@ -35,7 +35,6 @@ interface SessionResponse {
     id: number;
     username: string;
     phone: string;
-    telegramId?: number | null;
   };
   restaurants: {
     id: number;
@@ -73,7 +72,7 @@ async function loadSession(): Promise<LoadResult> {
         id: data.user.id,
         username: data.user.username,
         phone: data.user.phone,
-        telegram_id: data.user.telegramId ?? null,
+        telegram_id: data.user.id,
       },
       restaurants: (data.restaurants ?? []).map((r) => ({
         id: r.id,

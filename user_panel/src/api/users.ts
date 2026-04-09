@@ -7,7 +7,6 @@ interface UserDto {
   id: number;
   username: string;
   phone: string;
-  telegramId?: number | null;
   email: string | null;
   address: string | null;
   registeredAt: string;
@@ -18,7 +17,7 @@ function toUser(d: UserDto): User {
     id: d.id,
     username: d.username,
     phone: d.phone,
-    telegram_id: d.telegramId ?? null,
+    telegram_id: d.id,
     email: d.email ?? null,
     address: d.address ?? null,
     registered_at: d.registeredAt,

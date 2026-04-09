@@ -55,7 +55,7 @@ public class RestaurantStaffController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "telegramId and permission required");
         }
         User target = userService
-                .findByTelegramId(body.getTelegramId())
+                .findById(body.getTelegramId())
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.BAD_REQUEST,
                         "Пользователь с таким Telegram ID не найден. Сначала /start в боте KULCHA."));
@@ -98,7 +98,7 @@ public class RestaurantStaffController {
     private long requireAdminActor(String initData, long restaurantId, boolean menu) {
         var tg = telegramWebAppService.requireUser(initData, kulchaProperties.getTelegram().getAdminBotToken());
         User actor = userService
-                .findByTelegramId(tg.id())
+                .findById(tg.id())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Unknown admin user"));
         if (menu) {
             staffAccessService.requireCanEditMenu(actor.getId(), restaurantId);
@@ -110,7 +110,6 @@ public class RestaurantStaffController {
 
     private StaffMemberDto toMember(Staff s) {
         User u = s.getUser();
-        return new StaffMemberDto(
-                s.getId(), u.getId(), u.getTelegramId(), u.getUsername(), u.getPhone(), s.getPermission());
+        return new StaffMemberDto(s.getId(), u.getId(), u.getUsername(), u.getPhone(), s.getPermission());
     }
 }

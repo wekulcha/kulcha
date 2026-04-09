@@ -85,7 +85,7 @@ public class OrderController {
         try {
             var tgAdm = telegramWebAppService.requireUser(initData, kulchaProperties.getTelegram().getAdminBotToken());
             User adminUser = userService
-                    .findByTelegramId(tgAdm.id())
+                    .findById(tgAdm.id())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Unknown user"));
             staffAccessService.requireRestaurantStaff(adminUser.getId(), order.getRestaurant().getId());
             return toDto(order);

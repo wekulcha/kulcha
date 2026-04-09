@@ -34,7 +34,7 @@ public class TelegramAuthController {
         String init = firstNonBlank(headerInit, body != null ? body.get("initData") : null);
         var tg = telegramWebAppService.requireUser(init, kulchaProperties.getTelegram().getUserBotToken());
         User user = userService
-                .findByTelegramId(tg.id())
+                .findById(tg.id())
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Зарегистрируйтесь через бота KULCHA (/start)"));
         return toUserDto(user);
@@ -47,7 +47,7 @@ public class TelegramAuthController {
         String init = firstNonBlank(headerInit, body != null ? body.get("initData") : null);
         var tg = telegramWebAppService.requireUser(init, kulchaProperties.getTelegram().getAdminBotToken());
         User user = userService
-                .findByTelegramId(tg.id())
+                .findById(tg.id())
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.FORBIDDEN, "Пользователь не найден. Добавьте сотрудника в ресторане."));
         List<UserRestaurantDto> restaurants = userService.listRestaurantsForStaffUser(user.getId());
@@ -72,7 +72,6 @@ public class TelegramAuthController {
                 user.getId(),
                 user.getUsername(),
                 user.getPhone(),
-                user.getTelegramId(),
                 user.getEmail(),
                 user.getAddress(),
                 user.getRegisteredAt());

@@ -126,7 +126,7 @@ export const AdminStaffTab: React.FC<AdminStaffTabProps> = ({ restaurantId }) =>
             <div>
               <div className="text-xs font-semibold text-slate-900">{m.username}</div>
               <div className="text-[10px] text-slate-500">
-                TG: {m.telegramId ?? "—"} · {m.phone}
+                TG: {m.userId} · {m.phone}
               </div>
               <div className="text-[10px] text-emerald-700 font-medium mt-0.5">
                 {PERM_LABEL[m.permission]}

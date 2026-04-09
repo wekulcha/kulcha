@@ -37,7 +37,7 @@ public class UserController {
                                 @RequestParam(required = false) String username,
                                 @RequestParam(required = false) Long telegramId) {
         if (telegramId != null) {
-            return userService.findByTelegramId(telegramId).map(this::toDto).stream().toList();
+            return userService.findById(telegramId).map(this::toDto).stream().toList();
         }
         if (phone != null && !phone.isBlank()) {
             return userService.findByPhone(phone).map(this::toDto).stream().toList();
@@ -108,7 +108,6 @@ public class UserController {
                 user.getId(),
                 user.getUsername(),
                 user.getPhone(),
-                user.getTelegramId(),
                 user.getEmail(),
                 user.getAddress(),
                 user.getRegisteredAt());
@@ -119,7 +118,6 @@ public class UserController {
         user.setId(dto.getId());
         user.setUsername(dto.getUsername());
         user.setPhone(dto.getPhone());
-        user.setTelegramId(dto.getTelegramId());
         user.setEmail(dto.getEmail());
         user.setAddress(dto.getAddress());
         user.setRegisteredAt(dto.getRegisteredAt());

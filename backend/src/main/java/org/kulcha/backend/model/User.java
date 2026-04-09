@@ -2,8 +2,6 @@ package org.kulcha.backend.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
@@ -16,8 +14,8 @@ import lombok.Setter;
 @Table(name = "users")
 public class User {
 
+    /** Primary key: Telegram user (peer) id — same everywhere in API and DB. */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, unique = true)
     private Long id;
 
@@ -26,10 +24,6 @@ public class User {
 
     @Column(name = "phone", nullable = false, unique = true)
     private String phone;
-
-    /** Telegram user id from WebApp / bot; unique when set. */
-    @Column(name = "telegram_id", unique = true)
-    private Long telegramId;
 
     @Column(name = "email")
     private String email;

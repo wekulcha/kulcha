@@ -41,9 +41,9 @@ public class OrderTelegramNotifier {
         String userToken = kulchaProperties.getTelegram().getUserBotToken();
         String adminToken = kulchaProperties.getTelegram().getAdminBotToken();
 
-        if (user.getTelegramId() != null && userToken != null && !userToken.isBlank()) {
+        if (userToken != null && !userToken.isBlank()) {
             String html = formatUserNewOrderHtml(order, lines);
-            telegramBotClient.sendMessage(userToken, user.getTelegramId(), html, "HTML", null);
+            telegramBotClient.sendMessage(userToken, user.getId(), html, "HTML", null);
         }
 
         if (adminToken != null && !adminToken.isBlank()) {
@@ -52,10 +52,8 @@ public class OrderTelegramNotifier {
             List<Staff> staffList =
                     staffService.findAllByRestaurantIdDetailed(order.getRestaurant().getId());
             for (Staff s : staffList) {
-                Long tg = s.getUser().getTelegramId();
-                if (tg != null) {
-                    telegramBotClient.sendMessage(adminToken, tg, adminHtml, "HTML", keyboard);
-                }
+                Long tg = s.getUser().getId();
+                telegramBotClient.sendMessage(adminToken, tg, adminHtml, "HTML", keyboard);
             }
         }
     }
@@ -66,15 +64,12 @@ public class OrderTelegramNotifier {
                 .findDetailedById(orderAfterSave.getId())
                 .orElse(orderAfterSave);
         User user = order.getUser();
-        if (user.getTelegramId() == null) {
-            return;
-        }
         String userToken = kulchaProperties.getTelegram().getUserBotToken();
         if (userToken == null || userToken.isBlank()) {
             return;
         }
         String html = formatUserStatusHtml(order);
-        telegramBotClient.sendMessage(userToken, user.getTelegramId(), html, "HTML", null);
+        telegramBotClient.sendMessage(userToken, user.getId(), html, "HTML", null);
     }
 
     private static String escapeHtml(String s) {

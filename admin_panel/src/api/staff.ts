@@ -6,7 +6,6 @@ export type StaffPermission = "CAN_EDIT_MENU" | "CAN_LOOK_ORDERS";
 export interface StaffMember {
   staffId: number;
   userId: number;
-  telegramId: number | null;
   username: string;
   phone: string;
   permission: StaffPermission;
@@ -16,7 +15,6 @@ export interface StaffMember {
 interface StaffMemberDto {
   staffId: number;
   userId: number;
-  telegramId: number | null;
   username: string;
   phone: string;
   permission: StaffPermission;
@@ -26,7 +24,6 @@ function toMember(d: StaffMemberDto): StaffMember {
   return {
     staffId: d.staffId,
     userId: d.userId,
-    telegramId: d.telegramId,
     username: d.username,
     phone: d.phone,
     permission: d.permission,

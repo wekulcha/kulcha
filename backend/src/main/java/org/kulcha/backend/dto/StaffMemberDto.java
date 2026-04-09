@@ -10,8 +10,8 @@ import org.kulcha.backend.model.enums.StaffPermission;
 @AllArgsConstructor
 public class StaffMemberDto {
     private Long staffId;
+    /** Telegram peer id (same as {@code users.id}). */
     private Long userId;
-    private Long telegramId;
     private String username;
     private String phone;
     private StaffPermission permission;

@@ -35,48 +35,62 @@ public class UserService {
     }
 
     /**
-     * Registration from the user bot: upsert by {@code telegram_id}, or attach telegram to existing phone.
+     * Registration from the user bot: upsert by Telegram id ({@code users.id}), or attach Telegram id to
+     * existing phone (migrates FKs from legacy row if needed).
      */
     @Transactional
     public User registerOrUpdateFromBot(UserDto dto) {
-        if (dto.getTelegramId() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "telegramId is required");
+        Long tgId = dto.getId();
+        if (tgId == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "id (Telegram) is required");
         }
-        Optional<User> byTg = userRepository.findByTelegramId(dto.getTelegramId());
+        Optional<User> byTg = userRepository.findById(tgId);
         if (byTg.isPresent()) {
             User u = byTg.get();
-            u.setUsername(dto.getUsername());
-            u.setPhone(dto.getPhone());
-            if (dto.getEmail() != null) {
-                u.setEmail(dto.getEmail());
-            }
-            if (dto.getAddress() != null) {
-                u.setAddress(dto.getAddress());
-            }
+            applyRegistrationDto(u, dto);
             return userRepository.save(u);
         }
         Optional<User> byPhone = userRepository.findByPhone(dto.getPhone());
         if (byPhone.isPresent()) {
-            User u = byPhone.get();
-            if (u.getTelegramId() != null && !u.getTelegramId().equals(dto.getTelegramId())) {
-                throw new ResponseStatusException(HttpStatus.CONFLICT, "Phone already linked to another Telegram account");
+            User legacy = byPhone.get();
+            if (!legacy.getId().equals(tgId)) {
+                migrateUserReferencesAndRemoveLegacy(legacy.getId(), tgId);
             }
-            u.setTelegramId(dto.getTelegramId());
-            u.setUsername(dto.getUsername());
+            User u = new User();
+            u.setId(tgId);
+            fillNewUserFromRegistration(u, dto);
             return userRepository.save(u);
         }
         User user = new User();
-        user.setUsername(dto.getUsername());
-        user.setPhone(dto.getPhone());
-        user.setTelegramId(dto.getTelegramId());
-        user.setEmail(dto.getEmail());
-        user.setAddress(dto.getAddress());
-        user.setRegisteredAt(dto.getRegisteredAt() != null ? dto.getRegisteredAt() : LocalDateTime.now());
+        user.setId(tgId);
+        fillNewUserFromRegistration(user, dto);
         return userRepository.save(user);
     }
 
-    public Optional<User> findByTelegramId(Long telegramId) {
-        return userRepository.findByTelegramId(telegramId);
+    private void migrateUserReferencesAndRemoveLegacy(long oldId, long newTelegramId) {
+        userRepository.reassignOrdersUserId(oldId, newTelegramId);
+        userRepository.reassignStaffUserId(oldId, newTelegramId);
+        userRepository.reassignCourierUserId(oldId, newTelegramId);
+        userRepository.deleteById(oldId);
+    }
+
+    private static void applyRegistrationDto(User u, UserDto dto) {
+        u.setUsername(dto.getUsername());
+        u.setPhone(dto.getPhone());
+        if (dto.getEmail() != null) {
+            u.setEmail(dto.getEmail());
+        }
+        if (dto.getAddress() != null) {
+            u.setAddress(dto.getAddress());
+        }
+    }
+
+    private static void fillNewUserFromRegistration(User u, UserDto dto) {
+        u.setUsername(dto.getUsername());
+        u.setPhone(dto.getPhone());
+        u.setEmail(dto.getEmail());
+        u.setAddress(dto.getAddress());
+        u.setRegisteredAt(dto.getRegisteredAt() != null ? dto.getRegisteredAt() : LocalDateTime.now());
     }
 
     public List<UserRestaurantDto> listRestaurantsForStaffUser(long userId) {
@@ -116,14 +130,10 @@ public class UserService {
 
     @Transactional
     public User update(Long id, User updatedUser) {
-        User existingUser = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(id));
+        User existingUser = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
 
         existingUser.setUsername(updatedUser.getUsername());
         existingUser.setPhone(updatedUser.getPhone());
-        if (updatedUser.getTelegramId() != null) {
-            existingUser.setTelegramId(updatedUser.getTelegramId());
-        }
         existingUser.setEmail(updatedUser.getEmail());
         existingUser.setAddress(updatedUser.getAddress());
         if (updatedUser.getRegisteredAt() != null) {

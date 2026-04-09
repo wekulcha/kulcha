@@ -48,7 +48,7 @@ public class MealAssetController {
             throws IOException {
         var tg = telegramWebAppService.requireUser(initData, kulchaProperties.getTelegram().getAdminBotToken());
         User actor = userService
-                .findByTelegramId(tg.id())
+                .findById(tg.id())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Unknown user"));
         staffAccessService.requireCanEditMenu(actor.getId(), restaurantId);
 

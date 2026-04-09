@@ -19,7 +19,7 @@ public class MiniAppAuthHelper {
     public long requireCustomerDbUserId(String initData) {
         var tg = telegramWebAppService.requireUser(initData, kulchaProperties.getTelegram().getUserBotToken());
         return userService
-                .findByTelegramId(tg.id())
+                .findById(tg.id())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not registered"))
                 .getId();
     }
@@ -27,7 +27,7 @@ public class MiniAppAuthHelper {
     public User requireAdminUser(String initData) {
         var tg = telegramWebAppService.requireUser(initData, kulchaProperties.getTelegram().getAdminBotToken());
         return userService
-                .findByTelegramId(tg.id())
+                .findById(tg.id())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Unknown user"));
     }
 }

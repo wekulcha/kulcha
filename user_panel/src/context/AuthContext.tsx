@@ -13,7 +13,6 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 interface UserDto {
   id: number;
-  telegramId?: number | null;
 }
 
 type ResolveResult =

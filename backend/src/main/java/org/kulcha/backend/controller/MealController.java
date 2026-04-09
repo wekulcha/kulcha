@@ -94,7 +94,7 @@ public class MealController {
     private void requireMenuEditor(String initData, long restaurantId) {
         var tg = telegramWebAppService.requireUser(initData, kulchaProperties.getTelegram().getAdminBotToken());
         User u = userService
-                .findByTelegramId(tg.id())
+                .findById(tg.id())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Unknown user"));
         staffAccessService.requireCanEditMenu(u.getId(), restaurantId);
     }
