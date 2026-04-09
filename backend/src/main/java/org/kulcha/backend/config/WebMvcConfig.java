@@ -24,7 +24,11 @@ public class WebMvcConfig {
                         "http://127.0.0.1:5174",
                         "http://127.0.0.1:5175"));
         if (kulchaProperties.getCors().getAdditionalOrigins() != null) {
-            origins.addAll(kulchaProperties.getCors().getAdditionalOrigins());
+            for (String origin : kulchaProperties.getCors().getAdditionalOrigins()) {
+                if (origin != null && !origin.isBlank()) {
+                    origins.add(origin.trim());
+                }
+            }
         }
         config.setAllowedOrigins(origins);
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
