@@ -1,3 +1,27 @@
 spring:
   application:
-    name: mvp
+    name: backend
+  profiles:
+    default: h2
+  servlet:
+    multipart:
+      max-file-size: 8MB
+      max-request-size: 10MB
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: true
+
+kulcha:
+  telegram:
+    user-bot-token: ${KULCHA_USER_BOT_TOKEN:}
+    admin-bot-token: ${KULCHA_ADMIN_BOT_TOKEN:}
+  security:
+    internal-api-secret: ${KULCHA_INTERNAL_API_SECRET:}
+    bot-api-secret: ${KULCHA_BOT_API_SECRET:}
+  uploads:
+    dir: ${KULCHA_UPLOADS_DIR:./uploads}
+  cors:
+    additional-origins: []

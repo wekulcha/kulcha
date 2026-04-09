@@ -65,7 +65,7 @@ public class UserController {
             }
         }
         long dbId = miniAppAuthHelper.requireCustomerDbUserId(initData);
-        if (!dbId.equals(id)) {
+        if (dbId != id) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cannot access another user");
         }
         return userService.findById(id)

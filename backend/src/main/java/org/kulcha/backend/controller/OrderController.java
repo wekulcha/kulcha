@@ -54,7 +54,7 @@ public class OrderController {
             @RequestHeader(value = "X-Telegram-Init-Data", required = false) String initData) {
         if (userId != null) {
             long dbId = miniAppAuthHelper.requireCustomerDbUserId(initData);
-            if (!dbId.equals(userId)) {
+            if (dbId != userId) {
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cannot read other users orders");
             }
             return orderService.findAllByUserIdDetailed(userId).stream().map(this::toDto).toList();

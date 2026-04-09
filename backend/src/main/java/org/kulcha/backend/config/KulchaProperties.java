@@ -32,6 +32,7 @@ public class KulchaProperties {
         private String botApiSecret = "";
     }
 
+    // нужно не в директорию сохранять, а в Object Storage Yandex Cloud: restaurant_name/menu/{first, second, salads}/{meal_name}.{png, jpg}
     @Data
     public static class Uploads {
         /** Directory for meal images (created on startup if possible). */
