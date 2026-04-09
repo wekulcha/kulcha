@@ -6,7 +6,10 @@ import React, {
   useEffect,
 } from "react";
 import { BASE_URL } from "../api/baseUrl";
-import { buildAdminApiJsonHeaders, getTelegramInitData } from "../telegram/initTelegram";
+import {
+  buildAdminApiJsonHeaders,
+  waitForTelegramInitData,
+} from "../telegram/initTelegram";
 import type { AdminRestaurant } from "../types/adminRestaurant";
 
 interface AdminUser {
@@ -42,33 +45,46 @@ interface SessionResponse {
   }[];
 }
 
-async function loadSession(): Promise<{
-  user: AdminUser;
-  restaurants: AdminRestaurant[];
-} | null> {
-  const init = getTelegramInitData();
-  if (!init) return null;
-  const resp = await fetch(`${BASE_URL}/auth/webapp-admin`, {
-    method: "POST",
-    headers: buildAdminApiJsonHeaders(),
-    body: JSON.stringify({}),
-  });
-  if (!resp.ok) return null;
-  const data = (await resp.json()) as SessionResponse;
-  return {
-    user: {
-      id: data.user.id,
-      username: data.user.username,
-      phone: data.user.phone,
-      telegram_id: data.user.telegramId ?? null,
-    },
-    restaurants: (data.restaurants ?? []).map((r) => ({
-      id: r.id,
-      name: r.name,
-      address: r.address,
-      permissions: r.permissions ?? [],
-    })),
-  };
+type LoadResult =
+  | { ok: true; user: AdminUser; restaurants: AdminRestaurant[] }
+  | {
+      ok: false;
+      reason: "no_telegram_context" | "no_access" | "network";
+    };
+
+async function loadSession(): Promise<LoadResult> {
+  const init = await waitForTelegramInitData();
+  if (!init) {
+    return { ok: false, reason: "no_telegram_context" };
+  }
+  try {
+    const resp = await fetch(`${BASE_URL}/auth/webapp-admin`, {
+      method: "POST",
+      headers: buildAdminApiJsonHeaders(),
+      body: JSON.stringify({}),
+    });
+    if (!resp.ok) {
+      return { ok: false, reason: "no_access" };
+    }
+    const data = (await resp.json()) as SessionResponse;
+    return {
+      ok: true,
+      user: {
+        id: data.user.id,
+        username: data.user.username,
+        phone: data.user.phone,
+        telegram_id: data.user.telegramId ?? null,
+      },
+      restaurants: (data.restaurants ?? []).map((r) => ({
+        id: r.id,
+        name: r.name,
+        address: r.address,
+        permissions: r.permissions ?? [],
+      })),
+    };
+  } catch {
+    return { ok: false, reason: "network" };
+  }
 }
 
 export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({
@@ -83,25 +99,26 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({
     setAuthReady(false);
     setAuthError(null);
     void loadSession()
-      .then((session) => {
-        if (!getTelegramInitData()) {
-          setUser(null);
-          setRestaurants([]);
-          setAuthError(
-            "Откройте панель из Telegram-бота администратора (кнопка «Открыть панель»)."
-          );
+      .then((result) => {
+        if (result.ok) {
+          setUser(result.user);
+          setRestaurants(result.restaurants);
+          setAuthError(null);
           return;
         }
-        if (session == null) {
-          setUser(null);
-          setRestaurants([]);
+        setUser(null);
+        setRestaurants([]);
+        if (result.reason === "no_telegram_context") {
+          setAuthError(
+            "Откройте панель из Telegram-бота администратора (кнопка «Открыть панель» или меню «ПАНЕЛЬ»)."
+          );
+        } else if (result.reason === "no_access") {
           setAuthError(
             "Нет доступа. Убедитесь, что вы добавлены как сотрудник ресторана, и откройте панель из бота."
           );
-          return;
+        } else {
+          setAuthError("Не удалось подключиться к серверу.");
         }
-        setUser(session.user);
-        setRestaurants(session.restaurants);
       })
       .catch(() => {
         setAuthError("Не удалось подключиться к серверу.");

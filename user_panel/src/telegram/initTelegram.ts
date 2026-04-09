@@ -26,6 +26,22 @@ export function getTelegramInitData(): string {
   return window.Telegram?.WebApp?.initData ?? '';
 }
 
+/**
+ * Telegram sometimes fills initData shortly after load; wait before treating session as absent.
+ */
+export async function waitForTelegramInitData(
+  maxWaitMs = 2500,
+  stepMs = 50
+): Promise<string> {
+  const deadline = Date.now() + maxWaitMs;
+  while (Date.now() < deadline) {
+    const d = getTelegramInitData();
+    if (d) return d;
+    await new Promise((r) => setTimeout(r, stepMs));
+  }
+  return getTelegramInitData();
+}
+
 export function buildUserApiJsonHeaders(): Record<string, string> {
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
   const init = getTelegramInitData();
