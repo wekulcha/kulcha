@@ -31,11 +31,11 @@ export function getTelegramInitData(): string {
     if (hash) {
       const qp = new URLSearchParams(hash);
       const fromHash = qp.get('tgWebAppData');
-      if (fromHash) return decodeURIComponent(fromHash);
+      if (fromHash) return fromHash;
     }
     const sp = new URLSearchParams(window.location.search);
     const fromSearch = sp.get('tgWebAppData');
-    if (fromSearch) return decodeURIComponent(fromSearch);
+    if (fromSearch) return fromSearch;
   } catch {
     /* ignore */
   }

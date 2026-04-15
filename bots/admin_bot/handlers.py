@@ -36,7 +36,7 @@ async def cmd_start(message: Message):
         "━━━━━━━━━━━━━━\n"
         "Здесь приходят <b>новые заказы</b> и кнопки смены статуса. "
         "Управление меню и аналитика — в мини-приложении.",
-        reply_markup=main_menu_keyboard(),
+        reply_markup=main_menu_keyboard(message.from_user.id),
     )
 
 

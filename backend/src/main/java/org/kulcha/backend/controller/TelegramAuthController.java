@@ -13,6 +13,7 @@ import org.kulcha.backend.telegram.TelegramWebAppService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
@@ -27,9 +28,37 @@ public class TelegramAuthController {
     private final UserService userService;
 
     /**
-     * WebApp initData login is handled by {@code auth_gateway} (Python). It calls
-     * {@code POST /api/v1/internal/auth/webapp-user|webapp-admin} on this backend.
+     * Public Telegram WebApp initData login (used directly by mini-app frontends).
+     * Kept alongside internal/auth endpoints for compatibility with auth-gateway flows.
      */
+    @PostMapping("/webapp-user")
+    public UserDto authUser(
+            @RequestBody(required = false) Map<String, String> body,
+            @RequestHeader(value = "X-Telegram-Init-Data", required = false) String headerInit,
+            @RequestHeader(value = "X-Init-Data", required = false) String headerInitAlias) {
+        String init = firstNonBlank(headerInit, headerInitAlias, body != null ? body.get("initData") : null);
+        var tg = telegramWebAppService.requireUser(init, kulchaProperties.getTelegram().getUserBotToken());
+        User user = userService.ensureCustomerFromTelegram(tg.id(), tg.username());
+        return toUserDto(user);
+    }
+
+    @PostMapping("/webapp-admin")
+    public AdminWebAppSessionDto authAdmin(
+            @RequestBody(required = false) Map<String, String> body,
+            @RequestHeader(value = "X-Telegram-Init-Data", required = false) String headerInit,
+            @RequestHeader(value = "X-Init-Data", required = false) String headerInitAlias) {
+        String init = firstNonBlank(headerInit, headerInitAlias, body != null ? body.get("initData") : null);
+        var tg = telegramWebAppService.requireUser(init, kulchaProperties.getTelegram().getAdminBotToken());
+        User user = userService
+                .findById(tg.id())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.FORBIDDEN, "Пользователь не найден. Добавьте сотрудника в ресторане."));
+        List<UserRestaurantDto> restaurants = userService.listRestaurantsForStaffUser(user.getId());
+        if (restaurants.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Нет доступа к ресторанам");
+        }
+        return new AdminWebAppSessionDto(toUserDto(user), restaurants);
+    }
 
     /**
      * Verifies a bot-generated HMAC token for the user mini-app.
@@ -63,6 +92,15 @@ public class TelegramAuthController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Нет доступа к ресторанам");
         }
         return new AdminWebAppSessionDto(toUserDto(user), restaurants);
+    }
+
+    private static String firstNonBlank(String... values) {
+        for (String value : values) {
+            if (value != null && !value.isBlank()) {
+                return value;
+            }
+        }
+        return "";
     }
 
     private static UserDto toUserDto(User user) {

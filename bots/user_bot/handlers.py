@@ -59,7 +59,7 @@ async def cmd_start(message: Message):
                     "<b>Добро пожаловать в KULCHA!</b>\n"
                     "━━━━━━━━━━━━━━\n"
                     "Рады снова вас видеть. Выберите действие:",
-                    reply_markup=main_menu_keyboard(),
+                    reply_markup=main_menu_keyboard(user_id),
                 )
                 return
         except Exception:
@@ -99,17 +99,17 @@ async def on_contact(message: Message):
                     "━━━━━━━━━━━━━━\n"
                     "Регистрация прошла успешно. Теперь можно заказывать через "
                     "<b>«Заказать»</b> — откроется мини-приложение с вашим профилем.",
-                    reply_markup=main_menu_keyboard(),
+                    reply_markup=main_menu_keyboard(user_id),
                 )
             else:
                 await message.answer(
                     "Не удалось сохранить профиль. Попробуйте позже или напишите в поддержку.",
-                    reply_markup=main_menu_keyboard(),
+                    reply_markup=main_menu_keyboard(user_id),
                 )
         except Exception as e:
             await message.answer(
                 f"Ошибка сети: <code>{e}</code>",
-                reply_markup=main_menu_keyboard(),
+                reply_markup=main_menu_keyboard(user_id),
             )
 
 
