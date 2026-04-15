@@ -1,0 +1,83 @@
+from __future__ import annotations
+
+import os
+from contextlib import asynccontextmanager
+from pathlib import Path
+
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+
+from app.config import get_settings
+from app.routers import (
+    admin,
+    auth,
+    courier_panel,
+    couriers,
+    meal_assets,
+    meals,
+    order_positions,
+    orders,
+    restaurant_staff,
+    restaurants,
+    staff,
+    subscription_logs,
+    users,
+)
+
+
+@asynccontextmanager
+async def lifespan(application: FastAPI):  # noqa: ARG001
+    settings = get_settings()
+    uploads = Path(settings.uploads_dir)
+    uploads.mkdir(parents=True, exist_ok=True)
+    yield
+
+
+app = FastAPI(title="Kulcha backend", version="2.0.0", lifespan=lifespan)
+
+settings = get_settings()
+
+origins = [
+    "http://localhost:5173",
+    "http://localhost:5174",
+    "http://127.0.0.1:5173",
+    "http://127.0.0.1:5174",
+    "https://app.wekulcha.ru",
+    "https://admin.wekulcha.online",
+    "https://superadmin.wekulcha.online",
+    *settings.cors_additional_origins,
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_origin_regex=r"https://.*\.ngrok-free\.app",
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+    expose_headers=["Content-Type"],
+)
+
+app.include_router(auth.router)
+app.include_router(users.router)
+app.include_router(restaurants.router)
+app.include_router(meals.router)
+app.include_router(meal_assets.router)
+app.include_router(orders.router)
+app.include_router(order_positions.router)
+app.include_router(staff.router)
+app.include_router(restaurant_staff.router)
+app.include_router(couriers.router)
+app.include_router(courier_panel.router)
+app.include_router(subscription_logs.router)
+app.include_router(admin.router)
+
+uploads_path = Path(settings.uploads_dir)
+if uploads_path.exists():
+    app.mount("/uploads", StaticFiles(directory=str(uploads_path)), name="uploads")
+
+
+@app.get("/health")
+async def health():
+    return {"status": "ok"}

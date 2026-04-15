@@ -1,0 +1,152 @@
+from __future__ import annotations
+
+from fastapi import APIRouter, Depends, Header, HTTPException
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload
+
+from app.config import get_settings
+from app.database import get_db
+from app.models.enums import MealCategory
+from app.models.meal import Meal
+from app.models.user import User
+from app.schemas.meal import MealDto
+from app.services import staff_access
+from app.services.telegram_auth import verify_telegram_init_data
+
+router = APIRouter(prefix="/api/v1/meals", tags=["meals"])
+
+
+def _to_dto(m: Meal) -> MealDto:
+    return MealDto(
+        id=m.id, restaurantId=m.restaurant_id, name=m.name,
+        description=m.description, weight=m.weight, calorie=m.calorie,
+        imageLink=m.image_link, category=m.category.value if m.category else None,
+        price=m.price, available=m.is_available,
+    )
+
+
+async def _require_menu_editor(db: AsyncSession, init_data: str, restaurant_id: int) -> None:
+    settings = get_settings()
+    tg = verify_telegram_init_data(init_data, settings.admin_bot_token)
+    if not tg:
+        raise HTTPException(401, "Invalid Telegram init data")
+    result = await db.execute(select(User).where(User.id == tg["id"]))
+    u = result.scalars().first()
+    if not u:
+        raise HTTPException(403, "Unknown user")
+    await staff_access.require_can_edit_menu(db, u.id, restaurant_id)
+
+
+@router.get("")
+async def get_all(
+    restaurantId: int | None = None,
+    category: str | None = None,
+    db: AsyncSession = Depends(get_db),
+):
+    if restaurantId is not None and category is not None:
+        try:
+            cat = MealCategory(category)
+        except ValueError:
+            raise HTTPException(400, f"Invalid category: {category}")
+        result = await db.execute(
+            select(Meal).where(
+                Meal.restaurant_id == restaurantId,
+                Meal.is_available == True,  # noqa: E712
+                Meal.category == cat,
+            )
+        )
+        return [_to_dto(m) for m in result.scalars().all()]
+
+    if restaurantId is not None:
+        result = await db.execute(
+            select(Meal).where(Meal.restaurant_id == restaurantId, Meal.is_available == True)  # noqa: E712
+        )
+        return [_to_dto(m) for m in result.scalars().all()]
+
+    result = await db.execute(select(Meal))
+    return [_to_dto(m) for m in result.scalars().all()]
+
+
+@router.get("/{meal_id}")
+async def get_by_id(meal_id: int, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(
+        select(Meal).options(joinedload(Meal.restaurant)).where(Meal.id == meal_id)
+    )
+    m = result.unique().scalars().first()
+    if not m:
+        raise HTTPException(404, "Meal not found")
+    return _to_dto(m)
+
+
+@router.post("", status_code=201)
+async def create_meal(
+    dto: MealDto,
+    db: AsyncSession = Depends(get_db),
+    x_telegram_init_data: str = Header(..., alias="X-Telegram-Init-Data"),
+):
+    await _require_menu_editor(db, x_telegram_init_data, dto.restaurantId)
+    meal = Meal(
+        restaurant_id=dto.restaurantId, name=dto.name,
+        description=dto.description, weight=dto.weight, calorie=dto.calorie,
+        image_link=dto.imageLink,
+        category=MealCategory(dto.category) if dto.category else None,
+        price=dto.price, is_available=dto.available if dto.available is not None else True,
+    )
+    db.add(meal)
+    await db.flush()
+    return _to_dto(meal)
+
+
+@router.put("/{meal_id}")
+async def update_meal(
+    meal_id: int,
+    dto: MealDto,
+    db: AsyncSession = Depends(get_db),
+    x_telegram_init_data: str = Header(..., alias="X-Telegram-Init-Data"),
+):
+    result = await db.execute(
+        select(Meal).options(joinedload(Meal.restaurant)).where(Meal.id == meal_id)
+    )
+    existing = result.unique().scalars().first()
+    if not existing:
+        raise HTTPException(404, "Meal not found")
+    await _require_menu_editor(db, x_telegram_init_data, existing.restaurant_id)
+
+    if dto.name is not None:
+        existing.name = dto.name
+    if dto.description is not None:
+        existing.description = dto.description
+    if dto.weight is not None:
+        existing.weight = dto.weight
+    if dto.calorie is not None:
+        existing.calorie = dto.calorie
+    if dto.imageLink is not None:
+        existing.image_link = dto.imageLink
+    if dto.category is not None:
+        existing.category = MealCategory(dto.category)
+    if dto.price is not None:
+        existing.price = dto.price
+    if dto.available is not None:
+        existing.is_available = dto.available
+    if dto.restaurantId is not None:
+        existing.restaurant_id = dto.restaurantId
+
+    await db.flush()
+    return _to_dto(existing)
+
+
+@router.delete("/{meal_id}", status_code=204)
+async def delete_meal(
+    meal_id: int,
+    db: AsyncSession = Depends(get_db),
+    x_telegram_init_data: str = Header(..., alias="X-Telegram-Init-Data"),
+):
+    result = await db.execute(
+        select(Meal).options(joinedload(Meal.restaurant)).where(Meal.id == meal_id)
+    )
+    existing = result.unique().scalars().first()
+    if not existing:
+        raise HTTPException(404, "Meal not found")
+    await _require_menu_editor(db, x_telegram_init_data, existing.restaurant_id)
+    await db.delete(existing)

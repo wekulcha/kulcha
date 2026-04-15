@@ -1,1 +1,0 @@
-# Kulcha auth-gateway

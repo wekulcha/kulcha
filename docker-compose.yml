@@ -22,16 +22,16 @@ services:
     container_name: kulcha-backend
     restart: unless-stopped
     environment:
-      SPRING_PROFILES_ACTIVE: postgres
-      POSTGRES_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-kulcha}
-      POSTGRES_USER: ${POSTGRES_USER:-kulcha}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-kulcha}
-      KULCHA_CORS_ALLOWED_ORIGINS: ${KULCHA_CORS_ALLOWED_ORIGINS:-https://app.wekulcha.ru,https://admin.wekulcha.online,https://superadmin.wekulcha.online}
+      KULCHA_DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-kulcha}:${POSTGRES_PASSWORD:-kulcha}@postgres:5432/${POSTGRES_DB:-kulcha}
+      KULCHA_USER_BOT_TOKEN: ${KULCHA_USER_BOT_TOKEN:-}
+      KULCHA_ADMIN_BOT_TOKEN: ${KULCHA_ADMIN_BOT_TOKEN:-}
+      KULCHA_INTERNAL_API_SECRET: ${KULCHA_INTERNAL_API_SECRET:-}
+      KULCHA_BOT_API_SECRET: ${KULCHA_BOT_API_SECRET:-}
     depends_on:
       postgres:
         condition: service_healthy
     expose:
-      - "8080"
+      - "8000"
 
   user_panel:
     build:
@@ -76,7 +76,7 @@ services:
       - backend
     environment:
       KULCHA_USER_BOT_TOKEN: ${KULCHA_USER_BOT_TOKEN:-}
-      KULCHA_API_BASE: http://backend:8080/api/v1
+      KULCHA_API_BASE: http://backend:8000/api/v1
       KULCHA_USER_MINI_APP_URL: https://${USER_DOMAIN:-app.wekulcha.ru}
       KULCHA_SUPPORT_LINK: ${KULCHA_SUPPORT_LINK:-https://t.me/support}
 
@@ -90,7 +90,7 @@ services:
       - backend
     environment:
       KULCHA_ADMIN_BOT_TOKEN: ${KULCHA_ADMIN_BOT_TOKEN:-}
-      KULCHA_API_BASE: http://backend:8080/api/v1
+      KULCHA_API_BASE: http://backend:8000/api/v1
       KULCHA_ADMIN_MINI_APP_URL: https://${ADMIN_DOMAIN:-admin.wekulcha.online}
       KULCHA_SUPPORT_LINK: ${KULCHA_SUPPORT_LINK:-https://t.me/support}
 
@@ -104,7 +104,7 @@ services:
       - backend
     environment:
       KULCHA_SUPERADMIN_BOT_TOKEN: ${KULCHA_SUPERADMIN_BOT_TOKEN:-}
-      KULCHA_API_BASE: http://backend:8080/api/v1
+      KULCHA_API_BASE: http://backend:8000/api/v1
       KULCHA_SUPERADMIN_ALLOWED_IDS: ${KULCHA_SUPERADMIN_ALLOWED_IDS:-}
 
   gateway:

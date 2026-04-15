@@ -1,7 +1,7 @@
 import os
 
 BOT_TOKEN = os.environ.get("KULCHA_ADMIN_BOT_TOKEN", "")
-API_BASE = os.environ.get("KULCHA_API_BASE", "http://localhost:8080/api/v1")
+API_BASE = os.environ.get("KULCHA_API_BASE", "http://localhost:8000/api/v1")
 # Совпадает с kulcha.security.internal-api-secret (для callback-кнопок статуса заказа)
 INTERNAL_API_SECRET = os.environ.get("KULCHA_INTERNAL_API_SECRET", "")
 # URL мини-приложения админки (полный URL, без слэша в конце). Пример: https://your-domain.com/admin

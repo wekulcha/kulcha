@@ -14,7 +14,7 @@ export function UsersPage() {
       {isLoading && <p className="text-sm text-slate-500">Загрузка…</p>}
       {isError && (
         <p className="text-sm text-red-600">
-          Не удалось загрузить список. Проверьте, что бэкенд запущен (порт 8080) и CORS разрешён. Ошибка: {String(error)}
+          Не удалось загрузить список. Проверьте, что бэкенд запущен (порт 8000) и CORS разрешён. Ошибка: {String(error)}
         </p>
       )}
       <div className="grid gap-3">

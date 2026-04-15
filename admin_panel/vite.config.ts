@@ -9,19 +9,10 @@ export default defineConfig({
     strictPort: true,
     allowedHosts: true,
     proxy: {
-      '/api/v1/auth/webapp-user': {
-        target: 'http://127.0.0.1:8090',
-        changeOrigin: true,
-      },
-      '/api/v1/auth/webapp-admin': {
-        target: 'http://127.0.0.1:8090',
-        changeOrigin: true,
-      },
       '/api': {
-        target: 'http://127.0.0.1:8080',
+        target: 'http://127.0.0.1:8000',
         changeOrigin: true,
       },
     },
   },
 })
-
