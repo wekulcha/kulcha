@@ -1,6 +1,11 @@
 interface HeaderProps {
   title?: string;
+  /** Слева: три полоски (главная/меню), если нет showBack */
   onBurgerClick?: () => void;
+  /** Справа: иконка профиля (нужна вместе с showBack — иначе «бургер» скрыт) */
+  onProfileClick?: () => void;
+  /** Справа: «домой» / список кафе (например на экране профиля) */
+  onHomeClick?: () => void;
   onSearchClick?: () => void;
   showSearch?: boolean;
   showBack?: boolean;
@@ -10,6 +15,8 @@ interface HeaderProps {
 export function Header({
   title = 'KULCHA',
   onBurgerClick,
+  onProfileClick,
+  onHomeClick,
   onSearchClick,
   showSearch = true,
   showBack = false,
@@ -29,12 +36,16 @@ export function Header({
     }
   };
 
+  const rightHasSearch = Boolean(showSearch && onSearchClick);
+  const rightHasProfile = Boolean(onProfileClick);
+  const rightHasHome = Boolean(onHomeClick);
+
   return (
     <header className="h-14 flex items-center justify-between px-2 border-b border-slate-200 bg-white rounded-t-lg">
       <button
         type="button"
         onClick={handleLeftClick}
-        className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+        className="p-2 hover:bg-slate-100 rounded-lg transition-colors shrink-0"
         aria-label={showBack ? 'Назад' : 'Меню'}
       >
         {showBack ? (
@@ -48,27 +59,63 @@ export function Header({
         )}
       </button>
 
-      <h1 className="text-base font-semibold text-slate-900">{title}</h1>
+      <h1 className="text-base font-semibold text-slate-900 truncate text-center flex-1 min-w-0 px-2">{title}</h1>
 
-      {showSearch ? (
-        <button
-          type="button"
-          onClick={handleSearchClick}
-          className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
-          aria-label="Поиск"
-        >
-          <svg className="w-6 h-6 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-          </svg>
-        </button>
-      ) : (
-        <div className="w-10" />
-      )}
+      <div className="flex items-center justify-end shrink-0">
+        {rightHasHome && (
+          <button
+            type="button"
+            onClick={onHomeClick}
+            className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+            aria-label="К списку кафе"
+          >
+            <svg className="w-6 h-6 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+              />
+            </svg>
+          </button>
+        )}
+        {rightHasProfile && (
+          <button
+            type="button"
+            onClick={onProfileClick}
+            className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+            aria-label="Профиль"
+          >
+            <svg className="w-6 h-6 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+              />
+            </svg>
+          </button>
+        )}
+        {rightHasSearch ? (
+          <button
+            type="button"
+            onClick={handleSearchClick}
+            className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+            aria-label="Поиск"
+          >
+            <svg className="w-6 h-6 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+          </button>
+        ) : !rightHasProfile && !rightHasHome ? (
+          <div className="w-10" />
+        ) : null}
+      </div>
     </header>
   );
 }

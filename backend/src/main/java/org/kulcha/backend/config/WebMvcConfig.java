@@ -15,14 +15,17 @@ public class WebMvcConfig {
     public CorsFilter corsFilter(KulchaProperties kulchaProperties) {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        List<String> origins = new ArrayList<>(
-                List.of(
-                        "http://localhost:5173",
-                        "http://localhost:5174",
-                        "http://localhost:5175",
-                        "http://127.0.0.1:5173",
-                        "http://127.0.0.1:5174",
-                        "http://127.0.0.1:5175"));
+        // Local dev + ngrok HTTPS (wildcard); production URLs stay exact below.
+        config.setAllowedOriginPatterns(
+                new ArrayList<>(
+                        List.of(
+                                "http://localhost:*",
+                                "http://127.0.0.1:*",
+                                "https://*.ngrok-free.app",
+                                "https://*.ngrok.io",
+                                "https://*.ngrok.app",
+                                "https://*.ngrok-free.dev")));
+        List<String> origins = new ArrayList<>();
         if (kulchaProperties.getCors().getAdditionalOrigins() != null) {
             for (String origin : kulchaProperties.getCors().getAdditionalOrigins()) {
                 if (origin != null && !origin.isBlank()) {
@@ -30,7 +33,9 @@ public class WebMvcConfig {
                 }
             }
         }
-        config.setAllowedOrigins(origins);
+        if (!origins.isEmpty()) {
+            config.setAllowedOrigins(origins);
+        }
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setExposedHeaders(List.of("Content-Type"));

@@ -127,7 +127,7 @@ export function CheckoutPage() {
           title="Оформление"
           showBack
           onBackClick={() => navigate('/cart')}
-          onBurgerClick={() => navigate('/profile')}
+          onProfileClick={() => navigate('/profile')}
           showSearch={false}
         />
 

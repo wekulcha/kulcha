@@ -41,7 +41,7 @@ export function CafeListPage() {
           title="Выбор кафе"
           showBack
           onBackClick={() => navigate(-1)}
-          onBurgerClick={() => navigate('/profile')}
+          onProfileClick={() => navigate('/profile')}
           onSearchClick={() => setIsSearchOpen((prev) => !prev)}
         />
 

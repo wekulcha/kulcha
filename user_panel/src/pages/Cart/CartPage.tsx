@@ -22,7 +22,7 @@ export function CartPage() {
           title="Корзина"
           showBack
           onBackClick={() => navigate(-1)}
-          onBurgerClick={() => navigate('/profile')}
+          onProfileClick={() => navigate('/profile')}
           showSearch={false}
         />
 

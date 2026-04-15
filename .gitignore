@@ -50,6 +50,15 @@ tsbuildinfo/
 coverage/
 *.lcov
 
+# Python venv (auth_gateway)
+auth_gateway/venv/
+
+# Local dev script state (PIDs, logs)
+.kulcha-dev/
+
+# Local secrets (tokens); example stays in repo
+scripts/kulcha-dev.env
+
 # Misc
 *.local
 *.pid

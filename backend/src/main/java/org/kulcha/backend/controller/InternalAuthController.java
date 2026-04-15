@@ -1,61 +1,49 @@
 package org.kulcha.backend.controller;
 
 import java.util.List;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.kulcha.backend.config.KulchaProperties;
 import org.kulcha.backend.dto.AdminWebAppSessionDto;
 import org.kulcha.backend.dto.UserDto;
 import org.kulcha.backend.dto.UserRestaurantDto;
+import org.kulcha.backend.dto.internal.InternalWebappUserRequest;
 import org.kulcha.backend.model.User;
 import org.kulcha.backend.service.UserService;
-import org.kulcha.backend.telegram.TelegramWebAppService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+/**
+ * Server-to-server auth: only the Python auth-gateway should call these after validating initData.
+ */
 @RestController
-@RequestMapping("/api/v1/auth")
+@RequestMapping("/api/v1/internal/auth")
 @RequiredArgsConstructor
-public class TelegramAuthController {
+public class InternalAuthController {
 
-    private final TelegramWebAppService telegramWebAppService;
     private final KulchaProperties kulchaProperties;
     private final UserService userService;
 
-    /**
-     * WebApp initData login is handled by {@code auth_gateway} (Python). It calls
-     * {@code POST /api/v1/internal/auth/webapp-user|webapp-admin} on this backend.
-     */
-
-    /**
-     * Verifies a bot-generated HMAC token for the user mini-app.
-     * Works in any browser (no Telegram WebView required).
-     * Body: { "token": "{telegramId}_{expiry}_{hmac}" }
-     */
-    @PostMapping("/verify-user-bot-token")
-    public UserDto verifyUserBotToken(@RequestBody Map<String, String> body) {
-        String token = body != null ? body.get("token") : null;
-        long telegramId = telegramWebAppService.verifyBotAuthToken(
-                token, kulchaProperties.getTelegram().getUserBotToken());
-        User user = userService.ensureCustomerFromTelegram(telegramId, null);
+    @PostMapping("/webapp-user")
+    public UserDto webappUser(
+            @RequestHeader(value = "X-Kulcha-Internal-Secret", required = false) String secret,
+            @RequestBody InternalWebappUserRequest body) {
+        kulchaProperties.requireInternalSecret(secret);
+        User user = userService.ensureCustomerFromTelegram(body.telegramId(), body.username());
         return toUserDto(user);
     }
 
-    /**
-     * Verifies a bot-generated HMAC token for the admin mini-app.
-     * Body: { "token": "{telegramId}_{expiry}_{hmac}" }
-     */
-    @PostMapping("/verify-admin-bot-token")
-    public AdminWebAppSessionDto verifyAdminBotToken(@RequestBody Map<String, String> body) {
-        String token = body != null ? body.get("token") : null;
-        long telegramId = telegramWebAppService.verifyBotAuthToken(
-                token, kulchaProperties.getTelegram().getAdminBotToken());
+    @PostMapping("/webapp-admin")
+    public AdminWebAppSessionDto webappAdmin(
+            @RequestHeader(value = "X-Kulcha-Internal-Secret", required = false) String secret,
+            @RequestBody InternalWebappUserRequest body) {
+        kulchaProperties.requireInternalSecret(secret);
         User user = userService
-                .findById(telegramId)
+                .findById(body.telegramId())
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.FORBIDDEN, "Пользователь не найден. Добавьте сотрудника в ресторане."));
         List<UserRestaurantDto> restaurants = userService.listRestaurantsForStaffUser(user.getId());

@@ -8,6 +8,7 @@ import React, {
 import { BASE_URL } from "../api/baseUrl";
 import {
   buildAdminApiJsonHeaders,
+  getBotAuthToken,
   waitForTelegramInitData,
 } from "../telegram/initTelegram";
 import type { AdminRestaurant } from "../types/adminRestaurant";
@@ -52,7 +53,48 @@ type LoadResult =
     };
 
 async function loadSession(): Promise<LoadResult> {
-  const init = await waitForTelegramInitData();
+  // 1. Bot-generated HMAC token в URL — работает в любом браузере
+  const botToken = getBotAuthToken();
+  if (botToken) {
+    try {
+      const resp = await fetch(`${BASE_URL}/auth/verify-admin-bot-token`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: botToken }),
+      });
+      if (resp.ok) {
+        const data = (await resp.json()) as SessionResponse;
+        return {
+          ok: true,
+          user: {
+            id: data.user.id,
+            username: data.user.username,
+            phone: data.user.phone,
+            telegram_id: data.user.id,
+          },
+          restaurants: (data.restaurants ?? []).map((r) => ({
+            id: r.id,
+            name: r.name,
+            address: r.address,
+            permissions: r.permissions ?? [],
+          })),
+        };
+      } else if (resp.status === 403) {
+        return { ok: false, reason: "no_access" };
+      }
+      // 401/expired — fall through to initData
+    } catch {
+      // network error — fall through
+    }
+  }
+
+  // 2. Telegram WebApp initData
+  let init = await waitForTelegramInitData();
+  // Telegram Desktop иногда заполняет initData с задержкой после первого кадра
+  if (!init) {
+    await new Promise((r) => setTimeout(r, 400));
+    init = await waitForTelegramInitData(8000, 50);
+  }
   if (!init) {
     return { ok: false, reason: "no_telegram_context" };
   }

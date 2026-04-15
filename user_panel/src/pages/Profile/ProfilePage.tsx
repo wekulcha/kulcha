@@ -8,7 +8,7 @@ import type { User } from '../../types/user';
 
 export function ProfilePage() {
   const navigate = useNavigate();
-  const { currentUserId, authError } = useAuth();
+  const { currentUserId, authError, authReady } = useAuth();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -42,10 +42,16 @@ export function ProfilePage() {
         showSearch={false}
         showBack
         onBackClick={() => navigate(-1)}
-        onBurgerClick={() => navigate('/cafes')}
+        onHomeClick={() => navigate('/cafes')}
       />
       <main className="mt-4 space-y-4 pb-20">
-        {(authError || currentUserId == null) && (
+        {!authReady && (
+          <section className="bg-slate-50 rounded-2xl p-3 shadow-sm border border-slate-100">
+            <div className="text-sm text-slate-600">Проверяем вход в Telegram…</div>
+          </section>
+        )}
+
+        {authReady && (authError != null || currentUserId == null) && (
           <section className="bg-amber-50 rounded-2xl p-3 shadow-sm border border-amber-100 space-y-2">
             <div className="text-sm font-semibold text-amber-900">Вход в аккаунт</div>
             <div className="text-xs text-amber-700">

@@ -18,10 +18,7 @@ public class MiniAppAuthHelper {
 
     public long requireCustomerDbUserId(String initData) {
         var tg = telegramWebAppService.requireUser(initData, kulchaProperties.getTelegram().getUserBotToken());
-        return userService
-                .findById(tg.id())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not registered"))
-                .getId();
+        return userService.ensureCustomerFromTelegram(tg.id(), tg.username()).getId();
     }
 
     public User requireAdminUser(String initData) {

@@ -150,7 +150,7 @@ export function MenuPage() {
           title={selectedRestaurant?.name ?? 'Меню'}
           showBack
           onBackClick={() => navigate('/cafes')}
-          onBurgerClick={() => navigate('/profile')}
+          onProfileClick={() => navigate('/profile')}
           onSearchClick={() => setIsSearchOpen((prev) => !prev)}
         />
 

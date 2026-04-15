@@ -2,7 +2,7 @@ package org.kulcha.backend.telegram;
 
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
-import java.net.URLDecoder;
+import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,7 +31,11 @@ public class TelegramWebAppService {
         if (initData == null || initData.isBlank()) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Missing Telegram WebApp data");
         }
-        return validateAndParse(initData, botToken);
+        String normalized = initData.trim();
+        if (normalized.startsWith("?")) {
+            normalized = normalized.substring(1);
+        }
+        return validateAndParse(normalized, botToken);
     }
 
     public record TelegramUserData(long id, String username, String firstName) {}
@@ -39,6 +43,8 @@ public class TelegramWebAppService {
     private TelegramUserData validateAndParse(String initData, String botToken) {
         Map<String, String> map = parseQuery(initData);
         String hash = map.remove("hash");
+        // Third-party Ed25519 field; must not participate in classic HMAC data_check_string (Telegram docs).
+        map.remove("signature");
         if (hash == null || hash.isBlank()) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid init data: no hash");
         }
@@ -56,6 +62,8 @@ public class TelegramWebAppService {
             }
         }
 
+        // Same as kickoff: urllib.parse.unquote (NOT unquote_plus): %XX → UTF-8 bytes, '+' stays '+'.
+        // java.net.URLDecoder treats '+' as space and breaks the HMAC vs Python/Telegram clients.
         List<String> keys = new ArrayList<>(map.keySet());
         Collections.sort(keys);
         StringBuilder dataCheck = new StringBuilder();
@@ -64,7 +72,7 @@ public class TelegramWebAppService {
                 dataCheck.append('\n');
             }
             String k = keys.get(i);
-            dataCheck.append(k).append('=').append(map.get(k));
+            dataCheck.append(k).append('=').append(percentDecodeLikePythonUnquote(map.get(k)));
         }
 
         byte[] secretKey = hmacSha256("WebAppData".getBytes(StandardCharsets.UTF_8), botToken.getBytes(StandardCharsets.UTF_8));
@@ -79,7 +87,7 @@ public class TelegramWebAppService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "No user in init data");
         }
         try {
-            String decoded = URLDecoder.decode(userJson, StandardCharsets.UTF_8);
+            String decoded = percentDecodeLikePythonUnquote(userJson);
             JsonNode node = objectMapper.readTree(decoded);
             long id = node.path("id").asLong(0);
             if (id == 0) {
@@ -93,6 +101,84 @@ public class TelegramWebAppService {
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Cannot parse Telegram user");
         }
+    }
+
+    /**
+     * Verifies a bot-generated auth token of the form "{telegramId}_{expiryUnix}_{hmacHex}".
+     * The HMAC is computed as HMAC-SHA256(key=botToken, data="{telegramId}_{expiryUnix}").
+     * Token TTL is enforced by the expiry field.
+     */
+    public long verifyBotAuthToken(String token, String botToken) {
+        if (token == null || token.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Missing bot auth token");
+        }
+        if (botToken == null || botToken.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Bot token not configured");
+        }
+        String[] parts = token.split("_", 3);
+        if (parts.length != 3) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Malformed bot auth token");
+        }
+        long telegramId;
+        long expiry;
+        try {
+            telegramId = Long.parseLong(parts[0]);
+            expiry = Long.parseLong(parts[1]);
+        } catch (NumberFormatException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Malformed bot auth token");
+        }
+        long now = System.currentTimeMillis() / 1000;
+        if (now > expiry) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Bot auth token expired");
+        }
+        String data = parts[0] + "_" + parts[1];
+        byte[] expectedHmac = hmacSha256(botToken.getBytes(StandardCharsets.UTF_8), data.getBytes(StandardCharsets.UTF_8));
+        String expectedHex = bytesToHex(expectedHmac);
+        if (!expectedHex.equalsIgnoreCase(parts[2])) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid bot auth token signature");
+        }
+        return telegramId;
+    }
+
+    /**
+     * Python 3 {@code urllib.parse.unquote}: decode {@code %XX} to bytes, decode as UTF-8;
+     * literal {@code +} is unchanged (unlike {@link java.net.URLDecoder} for form-urlencoded).
+     */
+    private static String percentDecodeLikePythonUnquote(String raw) {
+        if (raw == null || raw.isEmpty()) {
+            return "";
+        }
+        ByteArrayOutputStream out = new ByteArrayOutputStream(raw.length());
+        int i = 0;
+        while (i < raw.length()) {
+            if (raw.charAt(i) == '%' && i + 2 < raw.length()) {
+                int d1 = hexDigit(raw.charAt(i + 1));
+                int d2 = hexDigit(raw.charAt(i + 2));
+                if (d1 >= 0 && d2 >= 0) {
+                    out.write((d1 << 4) | d2);
+                    i += 3;
+                    continue;
+                }
+            }
+            int cp = raw.codePointAt(i);
+            byte[] utf8 = new String(Character.toChars(cp)).getBytes(StandardCharsets.UTF_8);
+            out.write(utf8, 0, utf8.length);
+            i += Character.charCount(cp);
+        }
+        return new String(out.toByteArray(), StandardCharsets.UTF_8);
+    }
+
+    private static int hexDigit(char c) {
+        if (c >= '0' && c <= '9') {
+            return c - '0';
+        }
+        if (c >= 'a' && c <= 'f') {
+            return 10 + (c - 'a');
+        }
+        if (c >= 'A' && c <= 'F') {
+            return 10 + (c - 'A');
+        }
+        return -1;
     }
 
     private static Map<String, String> parseQuery(String initData) {

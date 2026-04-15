@@ -35,6 +35,27 @@ public class UserService {
     }
 
     /**
+     * Mini App first open (like kickoff POST /auth/telegram): create a row if valid initData but no user yet.
+     * Placeholder phone until the user shares a real number via the bot.
+     */
+    @Transactional
+    public User ensureCustomerFromTelegram(long telegramId, String telegramUsername) {
+        Optional<User> existing = userRepository.findById(telegramId);
+        if (existing.isPresent()) {
+            return existing.get();
+        }
+        User u = new User();
+        u.setId(telegramId);
+        u.setUsername(
+                telegramUsername != null && !telegramUsername.isBlank()
+                        ? telegramUsername
+                        : "tg_" + telegramId);
+        u.setPhone("tg-" + telegramId);
+        u.setRegisteredAt(LocalDateTime.now());
+        return userRepository.save(u);
+    }
+
+    /**
      * Registration from the user bot: upsert by Telegram id ({@code users.id}), or attach Telegram id to
      * existing phone (migrates FKs from legacy row if needed).
      */

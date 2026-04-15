@@ -1,10 +1,22 @@
+import hashlib
+import hmac as _hmac
+import time
+
 import httpx
 from aiogram import Router, F
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
 from aiogram.filters import CommandStart
 
-from config import ADMIN_MINI_APP_URL, API_BASE, INTERNAL_API_SECRET, SUPPORT_LINK
+from config import ADMIN_MINI_APP_URL, API_BASE, BOT_TOKEN, INTERNAL_API_SECRET, SUPPORT_LINK
 from keyboards import main_menu_keyboard
+
+
+def _generate_bot_auth_token(telegram_id: int, ttl: int = 600) -> str:
+    """Генерирует stateless HMAC-токен для верификации через POST /auth/verify-admin-bot-token."""
+    expiry = int(time.time()) + ttl
+    data = f"{telegram_id}_{expiry}"
+    sig = _hmac.new(BOT_TOKEN.encode(), data.encode(), hashlib.sha256).hexdigest()
+    return f"{telegram_id}_{expiry}_{sig}"
 
 router = Router()
 
@@ -30,7 +42,17 @@ async def cmd_start(message: Message):
 
 @router.message(F.text == "🍽 Открыть панель")
 async def open_panel(message: Message):
-    if not ADMIN_MINI_APP_URL.startswith("https://"):
+    if ADMIN_MINI_APP_URL.startswith("https://"):
+        uid = message.from_user.id
+        token = _generate_bot_auth_token(uid) if BOT_TOKEN else None
+        url = f"{ADMIN_MINI_APP_URL}?tg_auth={token}" if token else ADMIN_MINI_APP_URL
+        await message.answer(
+            "Нажмите кнопку, чтобы открыть панель управления:",
+            reply_markup=InlineKeyboardMarkup(inline_keyboard=[[
+                InlineKeyboardButton(text="🍽 Открыть панель", web_app=WebAppInfo(url=url))
+            ]]),
+        )
+    else:
         await message.answer(
             f"<b>Локальная панель</b>\nОткройте в браузере:\n<code>{ADMIN_MINI_APP_URL}</code>"
         )
