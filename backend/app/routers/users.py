@@ -14,7 +14,7 @@ from app.models.order import Order
 from app.models.staff import Staff
 from app.models.user import User
 from app.schemas.user import UserDto, UserRestaurantDto
-from app.services.telegram_auth import verify_telegram_init_data
+from app.services.telegram_auth import verify_bot_link_token, verify_telegram_init_data
 
 router = APIRouter(prefix="/api/v1/users", tags=["users"])
 
@@ -38,19 +38,34 @@ async def _require_admin_user(db: AsyncSession, init_data: str) -> User:
     return user
 
 
-async def _require_customer_id(db: AsyncSession, init_data: str) -> int:
+async def _require_customer_id(
+    db: AsyncSession,
+    init_data: str,
+    bot_auth_token: str | None = None,
+) -> int:
     settings = get_settings()
-    tg = verify_telegram_init_data(init_data, settings.user_bot_token)
-    if not tg:
+    tid: int | None = None
+    username: str | None = None
+
+    if init_data:
+        tg = verify_telegram_init_data(init_data, settings.user_bot_token)
+        if tg and tg.get("id") is not None:
+            tid = int(tg["id"])
+            username = tg.get("username")
+
+    if tid is None and bot_auth_token:
+        tid = verify_bot_link_token(bot_auth_token, settings.user_bot_token)
+
+    if tid is None:
         raise HTTPException(401, "Invalid Telegram init data")
-    tid = tg["id"]
+
     result = await db.execute(select(User).where(User.id == tid))
     user = result.scalars().first()
     if user:
         return user.id
     user = User(
         id=tid,
-        username=tg.get("username") or f"tg_{tid}",
+        username=username or f"tg_{tid}",
         phone=f"tg-{tid}",
         registered_at=datetime.now(),
     )
@@ -106,10 +121,13 @@ async def get_all(
 async def get_by_id(
     user_id: int,
     db: AsyncSession = Depends(get_db),
-    x_telegram_init_data: str = Header(..., alias="X-Telegram-Init-Data"),
+    x_telegram_init_data: str | None = Header(None, alias="X-Telegram-Init-Data"),
+    x_init_data: str | None = Header(None, alias="X-Init-Data"),
+    x_kulcha_bot_auth: str | None = Header(None, alias="X-Kulcha-Bot-Auth"),
 ):
+    init_data = (x_telegram_init_data or x_init_data or "").strip()
     try:
-        admin = await _require_admin_user(db, x_telegram_init_data)
+        admin = await _require_admin_user(db, init_data)
         rests = await _list_restaurants_for_staff(db, admin.id)
         if not rests:
             raise HTTPException(403, "Not a staff member")
@@ -122,7 +140,7 @@ async def get_by_id(
         if ex.status_code != 401:
             raise
 
-    db_id = await _require_customer_id(db, x_telegram_init_data)
+    db_id = await _require_customer_id(db, init_data, x_kulcha_bot_auth)
     if db_id != user_id:
         raise HTTPException(403, "Cannot access another user")
     result = await db.execute(select(User).where(User.id == user_id))

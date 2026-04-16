@@ -11,7 +11,6 @@ from __future__ import annotations
 import hashlib
 import hmac
 import json
-import logging
 from typing import Any
 from urllib.parse import unquote
 
@@ -85,5 +84,37 @@ def verify_bot_auth_token(token: str, bot_token: str) -> dict[str, Any] | None:
             return None
 
         return {"id": int(telegram_id_str)}
+    except Exception:
+        return None
+
+
+def verify_bot_link_token(token: str, bot_token: str) -> int | None:
+    """
+    Verify bot-generated HMAC token used in mini-app URL:
+    {telegramId}_{expiry}_{hmac}.
+    """
+    if not token or not bot_token:
+        return None
+    try:
+        parts = token.split("_", 2)
+        if len(parts) != 3:
+            return None
+
+        telegram_id_str, expiry_str, received_sig = parts
+        expiry = int(expiry_str)
+        if int(time.time()) > expiry:
+            return None
+
+        data = f"{telegram_id_str}_{expiry_str}"
+        expected_sig = hmac.new(
+            bot_token.encode(),
+            data.encode(),
+            hashlib.sha256,
+        ).hexdigest()
+
+        if not hmac.compare_digest(expected_sig.lower(), received_sig.lower()):
+            return None
+
+        return int(telegram_id_str)
     except Exception:
         return None

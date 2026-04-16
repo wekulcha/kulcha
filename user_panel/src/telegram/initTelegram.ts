@@ -21,6 +21,8 @@ declare global {
   }
 }
 
+const BOT_AUTH_STORAGE_KEY = 'kulcha_tg_auth';
+
 /**
  * Raw initData string for X-Telegram-Init-Data (signed by the user bot).
  * Some clients/ngrok flows fill `initData` late; others pass `tgWebAppData` in the URL hash.
@@ -66,14 +68,23 @@ export async function waitForTelegramInitData(
  * The bot puts ?tg_auth=... in the mini-app URL so auth works in any browser.
  */
 export function getBotAuthToken(): string | null {
+  if (typeof window === 'undefined') return null;
   try {
     const sp = new URLSearchParams(window.location.search);
     const t = sp.get('tg_auth');
-    if (t) return t;
+    if (t) {
+      window.sessionStorage.setItem(BOT_AUTH_STORAGE_KEY, t);
+      return t;
+    }
     // Also check hash (Telegram appends tgWebAppData to hash alongside bot's params)
     const hp = new URLSearchParams(window.location.hash.slice(1));
     const ht = hp.get('tg_auth');
-    if (ht) return ht;
+    if (ht) {
+      window.sessionStorage.setItem(BOT_AUTH_STORAGE_KEY, ht);
+      return ht;
+    }
+    const cached = window.sessionStorage.getItem(BOT_AUTH_STORAGE_KEY);
+    if (cached) return cached;
   } catch {
     /* ignore */
   }
@@ -87,6 +98,10 @@ export function buildUserApiJsonHeaders(): Record<string, string> {
     headers['X-Telegram-Init-Data'] = init;
     // Alias used by many Mini App backends (e.g. kickoff X-Init-Data)
     headers['X-Init-Data'] = init;
+  }
+  const botAuth = getBotAuthToken();
+  if (botAuth) {
+    headers['X-Kulcha-Bot-Auth'] = botAuth;
   }
   return headers;
 }
@@ -132,4 +147,3 @@ export function initTelegramWebApp(): void {
     }
   }
 }
-
