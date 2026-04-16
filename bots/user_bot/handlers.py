@@ -3,7 +3,13 @@ from aiogram import Router, F
 from aiogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
 from aiogram.filters import CommandStart
 
-from config import API_BASE, BOT_API_SECRET, SUPPORT_LINK, USER_MINI_APP_BASE
+from config import (
+    API_BASE,
+    BOT_API_SECRET,
+    SUPPORT_LINK,
+    USER_MINI_APP_BASE,
+    USER_MINI_APP_VERSION,
+)
 from keyboards import main_menu_keyboard, request_phone_keyboard
 
 router = Router()
@@ -17,6 +23,9 @@ def _bot_headers() -> dict:
 
 
 def _webapp_inline(text: str, url: str) -> InlineKeyboardMarkup:
+    if USER_MINI_APP_VERSION:
+        sep = "&" if "?" in url else "?"
+        url = f"{url}{sep}v={USER_MINI_APP_VERSION}"
     return InlineKeyboardMarkup(
         inline_keyboard=[[InlineKeyboardButton(text=text, web_app=WebAppInfo(url=url))]]
     )

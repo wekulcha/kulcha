@@ -44,6 +44,18 @@ def _to_user_dto(u: User) -> UserDto:
     )
 
 
+def _to_legacy_user_payload(u: User) -> dict[str, object]:
+    return {
+        "id": u.id,
+        "telegramId": u.id,
+        "username": u.username,
+        "phone": u.phone,
+        "email": u.email,
+        "address": u.address,
+        "registeredAt": u.registered_at,
+    }
+
+
 def _to_auth_user_dto(u: User) -> AuthUserDto:
     return AuthUserDto(
         id=u.id,
@@ -234,7 +246,7 @@ async def webapp_user(
 
     logger.info("webapp-user: authenticated telegram_id=%s", tid)
     user = await ensure_customer(db, int(tid), tg_user.get("username"))
-    return _to_user_dto(user)
+    return _to_legacy_user_payload(user)
 
 
 @router.post("/webapp-admin")
@@ -288,7 +300,7 @@ async def verify_user_bot_token(
     settings = get_settings()
     telegram_id = _verify_bot_token(body.token, settings.user_bot_token)
     user = await ensure_customer(db, telegram_id, None)
-    return _to_user_dto(user)
+    return _to_legacy_user_payload(user)
 
 
 @router.post("/verify-admin-bot-token")
