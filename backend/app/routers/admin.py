@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, Header, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
+from app.config import get_settings
 from app.database import get_db
 from app.models.courier import Courier
 from app.models.enums import StaffPermission
@@ -27,8 +28,22 @@ from app.schemas.admin import (
 from app.schemas.meal import MealDto
 from app.schemas.order import OrderDto
 from app.schemas.staff import StaffDto
+from app.services.session_auth import get_user_from_bearer
 
 router = APIRouter(prefix="/api/v1/admin", tags=["admin"])
+
+
+async def _require_superadmin(
+    db: AsyncSession = Depends(get_db),
+    authorization: str | None = Header(None, alias="Authorization"),
+) -> User:
+    user = await get_user_from_bearer(db, authorization)
+    if not user:
+        raise HTTPException(401, "Authorization bearer token is required")
+    settings = get_settings()
+    if settings.superadmin_allowed_ids and user.id not in settings.superadmin_allowed_ids:
+        raise HTTPException(403, "Нет доступа. Ваш ID не в списке разработчиков.")
+    return user
 
 
 def _meal_dto(m: Meal) -> MealDto:
@@ -59,7 +74,10 @@ def _staff_dto(s: Staff) -> StaffDto:
 
 
 @router.get("/users")
-async def get_all_users(db: AsyncSession = Depends(get_db)):
+async def get_all_users(
+    db: AsyncSession = Depends(get_db),
+    _caller: User = Depends(_require_superadmin),
+):
     users_result = await db.execute(select(User))
     users = users_result.scalars().all()
 
@@ -106,7 +124,10 @@ async def get_all_users(db: AsyncSession = Depends(get_db)):
 
 
 @router.get("/couriers")
-async def get_all_couriers(db: AsyncSession = Depends(get_db)):
+async def get_all_couriers(
+    db: AsyncSession = Depends(get_db),
+    _caller: User = Depends(_require_superadmin),
+):
     result = await db.execute(select(Courier).options(joinedload(Courier.user)))
     return [
         AdminCourierDto(
@@ -118,7 +139,10 @@ async def get_all_couriers(db: AsyncSession = Depends(get_db)):
 
 
 @router.get("/restaurants")
-async def get_all_restaurants(db: AsyncSession = Depends(get_db)):
+async def get_all_restaurants(
+    db: AsyncSession = Depends(get_db),
+    _caller: User = Depends(_require_superadmin),
+):
     restaurants_result = await db.execute(select(Restaurant))
     restaurants = restaurants_result.scalars().all()
 
@@ -148,7 +172,11 @@ async def get_all_restaurants(db: AsyncSession = Depends(get_db)):
 
 
 @router.get("/users/{user_id}/restaurants")
-async def get_user_restaurants(user_id: int, db: AsyncSession = Depends(get_db)):
+async def get_user_restaurants(
+    user_id: int,
+    db: AsyncSession = Depends(get_db),
+    _caller: User = Depends(_require_superadmin),
+):
     result = await db.execute(select(User).where(User.id == user_id))
     if not result.scalars().first():
         raise HTTPException(404, "User not found")
@@ -180,6 +208,7 @@ async def get_user_restaurants(user_id: int, db: AsyncSession = Depends(get_db))
 async def create_restaurant(
     request: AdminCreateRestaurantRequestDto,
     db: AsyncSession = Depends(get_db),
+    _caller: User = Depends(_require_superadmin),
 ):
     if not request.name or not request.name.strip():
         raise HTTPException(400, "Restaurant name is required")
@@ -223,6 +252,7 @@ async def create_restaurant(
 async def assign_courier(
     request: AdminAssignCourierRequestDto,
     db: AsyncSession = Depends(get_db),
+    _caller: User = Depends(_require_superadmin),
 ):
     result = await db.execute(select(User).where(User.id == request.userId))
     user = result.scalars().first()
@@ -248,6 +278,7 @@ async def assign_staff(
     restaurant_id: int,
     request: AdminAssignStaffRequestDto,
     db: AsyncSession = Depends(get_db),
+    _caller: User = Depends(_require_superadmin),
 ):
     if not request.permission:
         raise HTTPException(400, "permission is required")
@@ -284,7 +315,11 @@ async def assign_staff(
 
 
 @router.delete("/couriers/{courier_id}", status_code=204)
-async def remove_courier(courier_id: int, db: AsyncSession = Depends(get_db)):
+async def remove_courier(
+    courier_id: int,
+    db: AsyncSession = Depends(get_db),
+    _caller: User = Depends(_require_superadmin),
+):
     result = await db.execute(select(Courier).where(Courier.id == courier_id))
     c = result.scalars().first()
     if not c:

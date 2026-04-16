@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from functools import lru_cache
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings
 
 
@@ -10,6 +11,8 @@ class Settings(BaseSettings):
 
     user_bot_token: str = ""
     admin_bot_token: str = ""
+    superadmin_bot_token: str = ""
+    superadmin_allowed_ids: list[int] = []
 
     auth_access_secret: str = ""
     auth_access_ttl_minutes: int = 15
@@ -23,6 +26,15 @@ class Settings(BaseSettings):
     uploads_dir: str = "./uploads"
 
     cors_additional_origins: list[str] = []
+
+    @field_validator("superadmin_allowed_ids", mode="before")
+    @classmethod
+    def _parse_ids(cls, v: object) -> list[int]:
+        if isinstance(v, list):
+            return [int(x) for x in v]
+        if isinstance(v, str):
+            return [int(x) for x in v.split(",") if x.strip().isdigit()]
+        return []
 
     model_config = {
         "env_prefix": "KULCHA_",

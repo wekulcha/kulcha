@@ -1,9 +1,9 @@
 import httpx
 from aiogram import Router, F
-from aiogram.types import Message
+from aiogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
 from aiogram.filters import CommandStart, Command
 
-from config import API_BASE, ALLOWED_TELEGRAM_IDS, INTERNAL_API_SECRET
+from config import API_BASE, ALLOWED_TELEGRAM_IDS, INTERNAL_API_SECRET, SUPERADMIN_MINI_APP_BASE
 
 router = Router()
 
@@ -23,9 +23,17 @@ async def cmd_start(message: Message):
     if not allowed(message.from_user.id):
         await message.answer("Нет доступа.")
         return
+
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(
+            text="Открыть панель",
+            web_app=WebAppInfo(url=SUPERADMIN_MINI_APP_BASE),
+        )],
+    ])
     await message.answer(
         "Бот суперадмина KULCHA.\n"
-        "Команды: /health, /stats, /order <id>, /restaurant <id>, /user <telegram_id>"
+        "Команды: /health, /stats, /order <id>, /restaurant <id>, /user <telegram_id>",
+        reply_markup=keyboard,
     )
 
 

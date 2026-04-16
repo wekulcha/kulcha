@@ -1,30 +1,26 @@
-import { BASE_URL } from "./baseUrl";
 import type { AdminRestaurantOverview, AdminUserOverview, CreateRestaurantRequest } from "../types/admin";
+import { apiFetchJson } from "./client";
 
 export async function fetchAdminRestaurants(): Promise<AdminRestaurantOverview[]> {
-  const resp = await fetch(`${BASE_URL}/admin/restaurants`);
-  if (!resp.ok) throw new Error(`Ошибка загрузки ресторанов: ${resp.status}`);
-  return resp.json();
+  return apiFetchJson<AdminRestaurantOverview[]>("/admin/restaurants", {}, { auth: true });
 }
 
 export async function createRestaurant(body: CreateRestaurantRequest): Promise<{ id: number; name: string; address: string }> {
-  const resp = await fetch(`${BASE_URL}/admin/restaurants`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
-  if (!resp.ok) throw new Error(`Ошибка создания ресторана: ${resp.status}`);
-  return resp.json();
+  return apiFetchJson<{ id: number; name: string; address: string }>(
+    "/admin/restaurants",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    },
+    { auth: true }
+  );
 }
 
 export async function fetchAdminUsers(): Promise<AdminUserOverview[]> {
-  const resp = await fetch(`${BASE_URL}/admin/users`);
-  if (!resp.ok) throw new Error(`Ошибка загрузки пользователей: ${resp.status}`);
-  return resp.json();
+  return apiFetchJson<AdminUserOverview[]>("/admin/users", {}, { auth: true });
 }
 
 export async function fetchOrders(): Promise<unknown[]> {
-  const resp = await fetch(`${BASE_URL}/orders`);
-  if (!resp.ok) throw new Error(`Ошибка загрузки заказов: ${resp.status}`);
-  return resp.json();
+  return apiFetchJson<unknown[]>("/orders", {}, { auth: true });
 }

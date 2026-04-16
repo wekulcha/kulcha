@@ -172,6 +172,40 @@ async def login_telegram_user(
     return await _issue_auth_session(db, response, user)
 
 
+@router.post("/telegram/superadmin", response_model=AuthSessionDto)
+async def login_telegram_superadmin(
+    body: TelegramLoginRequest,
+    response: Response,
+    db: AsyncSession = Depends(get_db),
+):
+    init_data = body.initDataRaw.strip()
+    if not init_data:
+        raise HTTPException(400, "initDataRaw is required")
+
+    from app.config import get_settings
+
+    settings = get_settings()
+    if not settings.superadmin_bot_token:
+        raise HTTPException(503, "KULCHA_SUPERADMIN_BOT_TOKEN is not configured")
+
+    tg_user = verify_telegram_init_data(init_data, settings.superadmin_bot_token)
+    if not tg_user:
+        raise HTTPException(401, "Invalid Telegram init data")
+
+    tid = tg_user.get("id")
+    if tid is None:
+        raise HTTPException(401, "No user id in init data")
+
+    telegram_id = int(tid)
+    if settings.superadmin_allowed_ids and telegram_id not in settings.superadmin_allowed_ids:
+        logger.warning("telegram/superadmin: access denied for telegram_id=%s", telegram_id)
+        raise HTTPException(403, "Нет доступа. Ваш Telegram ID не в списке разработчиков.")
+
+    logger.info("telegram/superadmin: authenticated telegram_id=%s", telegram_id)
+    user = await ensure_customer(db, telegram_id, tg_user.get("username"))
+    return await _issue_auth_session(db, response, user)
+
+
 @router.post("/refresh", response_model=AuthSessionDto)
 async def refresh_user_session(
     response: Response,
