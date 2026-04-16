@@ -17,57 +17,65 @@ from app.models.order_position import OrderPosition
 from app.models.user import User
 from app.schemas.order import OrderCheckoutRequest, OrderDto, OrderStatusPatchDto
 from app.services import staff_access
+from app.services.session_auth import ensure_customer, get_user_from_bearer
 from app.services.telegram_auth import verify_bot_link_token, verify_telegram_init_data
 from app.services.telegram_notifier import notify_order_placed, notify_user_status_changed
 
 router = APIRouter(prefix="/api/v1/orders", tags=["orders"])
 
 
-def _to_dto(o: Order) -> OrderDto:
+def _to_dto(order: Order) -> OrderDto:
     return OrderDto(
-        id=o.id, status=o.status.value, userId=o.user_id,
-        deliveryAddress=o.delivery_address, restaurantId=o.restaurant_id,
-        createdAt=o.created_at, updatedAt=o.updated_at,
-        courierId=o.courier_id, orderType=o.order_type.value,
-        itemsTotal=o.items_total, deliveryFee=o.delivery_fee,
-        serviceFee=o.service_fee, total=o.total,
+        id=order.id,
+        status=order.status.value,
+        userId=order.user_id,
+        deliveryAddress=order.delivery_address,
+        restaurantId=order.restaurant_id,
+        createdAt=order.created_at,
+        updatedAt=order.updated_at,
+        courierId=order.courier_id,
+        orderType=order.order_type.value,
+        itemsTotal=order.items_total,
+        deliveryFee=order.delivery_fee,
+        serviceFee=order.service_fee,
+        total=order.total,
     )
 
 
-async def _require_customer_id(
+async def _require_legacy_customer_user(
     db: AsyncSession,
     init_data: str,
     bot_auth_token: str | None = None,
-) -> int:
+) -> User:
     settings = get_settings()
-    tid: int | None = None
+    telegram_id: int | None = None
     username: str | None = None
 
     if init_data:
         tg = verify_telegram_init_data(init_data, settings.user_bot_token)
         if tg and tg.get("id") is not None:
-            tid = int(tg["id"])
+            telegram_id = int(tg["id"])
             username = tg.get("username")
 
-    if tid is None and bot_auth_token:
-        tid = verify_bot_link_token(bot_auth_token, settings.user_bot_token)
+    if telegram_id is None and bot_auth_token:
+        telegram_id = verify_bot_link_token(bot_auth_token, settings.user_bot_token)
 
-    if tid is None:
+    if telegram_id is None:
         raise HTTPException(401, "Invalid Telegram init data")
 
-    result = await db.execute(select(User).where(User.id == tid))
-    user = result.scalars().first()
-    if user:
-        return user.id
-    user = User(
-        id=tid,
-        username=username or f"tg_{tid}",
-        phone=f"tg-{tid}",
-        registered_at=datetime.now(),
-    )
-    db.add(user)
-    await db.flush()
-    return user.id
+    return await ensure_customer(db, telegram_id, username)
+
+
+async def _require_customer_user(
+    db: AsyncSession,
+    authorization: str | None = None,
+    init_data: str = "",
+    bot_auth_token: str | None = None,
+) -> User:
+    bearer_user = await get_user_from_bearer(db, authorization)
+    if bearer_user:
+        return bearer_user
+    return await _require_legacy_customer_user(db, init_data, bot_auth_token)
 
 
 async def _require_admin_user(db: AsyncSession, init_data: str) -> User:
@@ -88,21 +96,23 @@ async def get_all(
     restaurantId: int | None = None,
     status: str | None = None,
     db: AsyncSession = Depends(get_db),
+    authorization: str | None = Header(None, alias="Authorization"),
     x_telegram_init_data: str | None = Header(None, alias="X-Telegram-Init-Data"),
     x_init_data: str | None = Header(None, alias="X-Init-Data"),
     x_kulcha_bot_auth: str | None = Header(None, alias="X-Kulcha-Bot-Auth"),
 ):
     init_data = (x_telegram_init_data or x_init_data or "").strip()
     if userId is not None:
-        db_id = await _require_customer_id(db, init_data, x_kulcha_bot_auth)
-        if db_id != userId:
+        user = await _require_customer_user(db, authorization, init_data, x_kulcha_bot_auth)
+        if user.id != userId:
             raise HTTPException(403, "Cannot read other users orders")
         result = await db.execute(
             select(Order)
             .options(joinedload(Order.user), joinedload(Order.restaurant), joinedload(Order.courier))
             .where(Order.user_id == userId)
+            .order_by(Order.created_at.desc())
         )
-        return [_to_dto(o) for o in result.unique().scalars().all()]
+        return [_to_dto(order) for order in result.unique().scalars().all()]
 
     if restaurantId is not None:
         admin = await _require_admin_user(db, init_data)
@@ -111,31 +121,54 @@ async def get_all(
             select(Order)
             .options(joinedload(Order.user), joinedload(Order.restaurant), joinedload(Order.courier))
             .where(Order.restaurant_id == restaurantId)
+            .order_by(Order.created_at.desc())
         )
-        return [_to_dto(o) for o in result.unique().scalars().all()]
+        return [_to_dto(order) for order in result.unique().scalars().all()]
 
     if status is not None:
         try:
-            s = OrderStatus(status)
-        except ValueError:
-            raise HTTPException(400, f"Invalid status: {status}")
+            parsed_status = OrderStatus(status)
+        except ValueError as exc:
+            raise HTTPException(400, f"Invalid status: {status}") from exc
         result = await db.execute(
             select(Order)
             .options(joinedload(Order.user), joinedload(Order.restaurant), joinedload(Order.courier))
-            .where(Order.status == s)
+            .where(Order.status == parsed_status)
+            .order_by(Order.created_at.desc())
         )
-        return [_to_dto(o) for o in result.unique().scalars().all()]
+        return [_to_dto(order) for order in result.unique().scalars().all()]
 
     result = await db.execute(
-        select(Order).options(joinedload(Order.user), joinedload(Order.restaurant), joinedload(Order.courier))
+        select(Order)
+        .options(joinedload(Order.user), joinedload(Order.restaurant), joinedload(Order.courier))
+        .order_by(Order.created_at.desc())
     )
-    return [_to_dto(o) for o in result.unique().scalars().all()]
+    return [_to_dto(order) for order in result.unique().scalars().all()]
+
+
+@router.get("/my")
+async def get_my_orders(
+    db: AsyncSession = Depends(get_db),
+    authorization: str | None = Header(None, alias="Authorization"),
+):
+    user = await get_user_from_bearer(db, authorization)
+    if not user:
+        raise HTTPException(401, "Authorization bearer token is required")
+
+    result = await db.execute(
+        select(Order)
+        .options(joinedload(Order.user), joinedload(Order.restaurant), joinedload(Order.courier))
+        .where(Order.user_id == user.id)
+        .order_by(Order.created_at.desc())
+    )
+    return [_to_dto(order) for order in result.unique().scalars().all()]
 
 
 @router.get("/{order_id}")
 async def get_by_id(
     order_id: int,
     db: AsyncSession = Depends(get_db),
+    authorization: str | None = Header(None, alias="Authorization"),
     x_telegram_init_data: str | None = Header(None, alias="X-Telegram-Init-Data"),
     x_init_data: str | None = Header(None, alias="X-Init-Data"),
     x_kulcha_bot_auth: str | None = Header(None, alias="X-Kulcha-Bot-Auth"),
@@ -154,6 +187,12 @@ async def get_by_id(
     if settings.internal_api_secret and x_kulcha_internal_secret == settings.internal_api_secret:
         return _to_dto(order)
 
+    bearer_user = await get_user_from_bearer(db, authorization)
+    if bearer_user:
+        if order.user_id != bearer_user.id:
+            raise HTTPException(403, "Forbidden")
+        return _to_dto(order)
+
     init_data = (x_telegram_init_data or x_init_data or "").strip()
     if not init_data and not x_kulcha_bot_auth:
         raise HTTPException(401, "Telegram init data required")
@@ -162,12 +201,12 @@ async def get_by_id(
         admin = await _require_admin_user(db, init_data)
         await staff_access.require_restaurant_staff(db, admin.id, order.restaurant_id)
         return _to_dto(order)
-    except HTTPException as ex:
-        if ex.status_code != 401:
+    except HTTPException as exc:
+        if exc.status_code != 401:
             raise
 
-    db_id = await _require_customer_id(db, init_data, x_kulcha_bot_auth)
-    if order.user_id != db_id:
+    customer = await _require_legacy_customer_user(db, init_data, x_kulcha_bot_auth)
+    if order.user_id != customer.id:
         raise HTTPException(403, "Forbidden")
     return _to_dto(order)
 
@@ -176,19 +215,20 @@ async def get_by_id(
 async def checkout(
     body: OrderCheckoutRequest,
     db: AsyncSession = Depends(get_db),
+    authorization: str | None = Header(None, alias="Authorization"),
     x_telegram_init_data: str | None = Header(None, alias="X-Telegram-Init-Data"),
     x_init_data: str | None = Header(None, alias="X-Init-Data"),
     x_kulcha_bot_auth: str | None = Header(None, alias="X-Kulcha-Bot-Auth"),
 ):
     init_data = (x_telegram_init_data or x_init_data or "").strip()
-    db_user_id = await _require_customer_id(db, init_data, x_kulcha_bot_auth)
+    customer = await _require_customer_user(db, authorization, init_data, x_kulcha_bot_auth)
 
     if not body.items:
         raise HTTPException(400, "Invalid checkout payload")
 
     order = Order(
         status=OrderStatus.CREATED,
-        user_id=db_user_id,
+        user_id=customer.id,
         delivery_address=body.deliveryAddress,
         restaurant_id=body.restaurantId,
         created_at=datetime.now(),
@@ -213,17 +253,19 @@ async def checkout(
             raise HTTPException(400, "Unknown meal")
         if meal.restaurant_id != body.restaurantId:
             raise HTTPException(400, "Meal does not belong to restaurant")
-        unit = line.unitPrice if line.unitPrice is not None else meal.price
-        line_total = unit * line.quantity
+        unit_price = line.unitPrice if line.unitPrice is not None else meal.price
+        line_total = unit_price * line.quantity
 
-        pos = OrderPosition(
-            meal_id=meal.id, order_id=order.id,
-            quantity=line.quantity, unit_price=unit, total_price=line_total,
+        position = OrderPosition(
+            meal_id=meal.id,
+            order_id=order.id,
+            quantity=line.quantity,
+            unit_price=unit_price,
+            total_price=line_total,
         )
-        db.add(pos)
+        db.add(position)
 
     await db.flush()
-
     await notify_order_placed(db, order.id)
 
     result = await db.execute(
@@ -273,7 +315,6 @@ async def update_order(
     existing.updated_at = datetime.now()
 
     await db.flush()
-
     await notify_user_status_changed(db, order_id)
 
     return _to_dto(existing)

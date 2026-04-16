@@ -1,11 +1,12 @@
 import type { ServiceType } from '../context/AppContext';
 
 export type PaymentMethod = 'CASH' | 'TRANSFER';
+export type OrderStatus = 'CREATED' | 'ACCEPTED' | 'COOKING' | 'DELIVERY' | 'DONE' | 'CANCELLED';
 
 export interface OrderItemPayload {
   meal_id: number;
   quantity: number;
-  price: number; // price per unit at time of order
+  price: number;
 }
 
 export interface CreateOrderPayload {
@@ -22,10 +23,24 @@ export interface CreateOrderPayload {
   total: number;
 }
 
-/** Response after creating order (backend camelCase) */
 export interface OrderResponse {
   id: number;
   total: number;
   createdAt: string;
 }
 
+export interface UserOrder {
+  id: number;
+  status: OrderStatus;
+  user_id: number | null;
+  delivery_address: string | null;
+  restaurant_id: number | null;
+  created_at: string | null;
+  updated_at: string | null;
+  courier_id: number | null;
+  order_type: ServiceType | null;
+  items_total: number | null;
+  delivery_fee: number | null;
+  service_fee: number | null;
+  total: number | null;
+}

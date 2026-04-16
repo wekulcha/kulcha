@@ -1,8 +1,6 @@
 import type { User } from '../types/user';
-import { BASE_URL } from './baseUrl';
-import { buildUserApiJsonHeaders } from '../telegram/initTelegram';
+import { apiFetchJson } from './client';
 
-/** Backend UserDto (camelCase) */
 interface UserDto {
   id: number;
   username: string;
@@ -12,27 +10,19 @@ interface UserDto {
   registeredAt: string;
 }
 
-function toUser(d: UserDto): User {
+export function toUser(dto: UserDto): User {
   return {
-    id: d.id,
-    username: d.username,
-    phone: d.phone,
-    telegram_id: d.id,
-    email: d.email ?? null,
-    address: d.address ?? null,
-    registered_at: d.registeredAt,
+    id: dto.id,
+    username: dto.username,
+    phone: dto.phone,
+    telegram_id: dto.id,
+    email: dto.email ?? null,
+    address: dto.address ?? null,
+    registered_at: dto.registeredAt,
   };
 }
 
-export async function fetchUser(id: number): Promise<User | null> {
-  const resp = await fetch(`${BASE_URL}/users/${id}`, {
-    headers: buildUserApiJsonHeaders(),
-  });
-  if (!resp.ok) {
-    if (resp.status === 404) return null;
-    throw new Error(`Failed to fetch user: ${resp.status}`);
-  }
-  const d = (await resp.json()) as UserDto;
-  return toUser(d);
+export async function fetchCurrentUser(): Promise<User> {
+  const dto = await apiFetchJson<UserDto>('/auth/me', {}, { auth: true });
+  return toUser(dto);
 }
-

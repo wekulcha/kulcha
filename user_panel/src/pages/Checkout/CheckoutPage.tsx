@@ -1,31 +1,35 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MiniAppShell } from '../../layout/MiniAppShell';
-import { Header } from '../../layout/Header';
-import { useAuth } from '../../context/AuthContext';
-import { useAppContext } from '../../context/AppContext';
-import { useCart } from '../../context/CartContext';
 import { createOrder } from '../../api/orders';
-import { fetchUser } from '../../api/users';
-import type { PaymentMethod, CreateOrderPayload } from '../../types/order';
+import { useAppContext } from '../../context/AppContext';
+import { useAuth } from '../../context/AuthContext';
+import { useCart } from '../../context/CartContext';
+import { Header } from '../../layout/Header';
+import { MiniAppShell } from '../../layout/MiniAppShell';
+import type { CreateOrderPayload, PaymentMethod } from '../../types/order';
+
+function sanitizePhone(phone: string | null): string {
+  if (!phone || phone.startsWith('tg-')) return '';
+  return phone;
+}
+
+function sanitizeUsername(username: string | null): string {
+  if (!username) return '';
+  return username.startsWith('@') ? username : `@${username}`;
+}
 
 export function CheckoutPage() {
-  const { currentUserId } = useAuth();
+  const { currentUser, authReady, authError, reloadAuth } = useAuth();
   const { serviceType, selectedRestaurant } = useAppContext();
   const { items, clearCart } = useCart();
   const navigate = useNavigate();
 
-  // Derived values
-  const itemsTotal = items.reduce(
-    (sum, it) => sum + it.meal.price * it.quantity,
-    0
-  );
+  const itemsTotal = items.reduce((sum, item) => sum + item.meal.price * item.quantity, 0);
 
   const [deliveryFee] = useState<number>(serviceType === 'DELIVERY' ? 0 : 0);
   const [serviceFee] = useState<number>(0);
   const total = itemsTotal + deliveryFee + serviceFee;
 
-  // Form state
   const [pickupPoint] = useState('Москва, ОРПЦ Фуд Сити');
   const [floor, setFloor] = useState<string>('1');
   const [line, setLine] = useState<string>('1');
@@ -38,19 +42,10 @@ export function CheckoutPage() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    if (currentUserId == null) return;
-    let cancelled = false;
-    fetchUser(currentUserId)
-      .then((u) => {
-        if (cancelled || !u) return;
-        setPhone((p) => (p.trim() ? p : u.phone ?? ''));
-        setUsername(u.username ? (u.username.startsWith('@') ? u.username : `@${u.username}`) : '');
-      })
-      .catch(() => {});
-    return () => {
-      cancelled = true;
-    };
-  }, [currentUserId]);
+    if (!currentUser) return;
+    setPhone((value) => (value.trim() ? value : sanitizePhone(currentUser.phone)));
+    setUsername(sanitizeUsername(currentUser.username));
+  }, [currentUser]);
 
   const handleSubmit = async () => {
     setErrorMessage(null);
@@ -66,8 +61,13 @@ export function CheckoutPage() {
       return;
     }
 
-    if (currentUserId == null) {
-      setErrorMessage('Сначала зарегистрируйтесь через бота KULCHA (команда /start).');
+    if (!authReady) {
+      setErrorMessage('Подождите немного, мы еще проверяем вход в mini app.');
+      return;
+    }
+
+    if (!currentUser) {
+      setErrorMessage(authError ?? 'Откройте мини-приложение из Telegram через кнопку в боте KULCHA.');
       return;
     }
 
@@ -81,14 +81,7 @@ export function CheckoutPage() {
       return;
     }
 
-    const deliveryAddress =
-      serviceType === 'DELIVERY' ? `${floor}-${line}-${pavilion}` : null;
-
-    const itemsPayload = items.map((item) => ({
-      meal_id: item.meal.id,
-      quantity: item.quantity,
-      price: item.meal.price,
-    }));
+    const deliveryAddress = serviceType === 'DELIVERY' ? `${floor}-${line}-${pavilion}` : null;
 
     const payload: CreateOrderPayload = {
       restaurant_id: selectedRestaurant.id,
@@ -97,7 +90,11 @@ export function CheckoutPage() {
       username: username.replace(/^@/, '') || null,
       phone: phone.trim(),
       payment_method: paymentMethod,
-      items: itemsPayload,
+      items: items.map((item) => ({
+        meal_id: item.meal.id,
+        quantity: item.quantity,
+        price: item.meal.price,
+      })),
       items_total: itemsTotal,
       delivery_fee: deliveryFee,
       service_fee: serviceFee,
@@ -106,19 +103,21 @@ export function CheckoutPage() {
 
     try {
       setSubmitting(true);
-      const response = await createOrder(currentUserId, payload);
+      const response = await createOrder(payload);
       clearCart();
       setSuccessMessage(`Заказ №${response.id} успешно создан.`);
       setTimeout(() => {
         navigate('/cafes');
       }, 1500);
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error(error);
       setErrorMessage('Не удалось оформить заказ. Попробуйте позже.');
     } finally {
       setSubmitting(false);
     }
   };
+
+  const submitDisabled = submitting || total <= 0 || !selectedRestaurant || !authReady || !currentUser;
 
   return (
     <MiniAppShell>
@@ -131,22 +130,31 @@ export function CheckoutPage() {
           showSearch={false}
         />
 
-        {/* Restaurant summary */}
+        {authReady && !currentUser && (
+          <div className="bg-amber-50 rounded-2xl p-3 shadow-sm border border-amber-100 space-y-3">
+            <div className="text-sm font-semibold text-amber-900">Нужно подтвердить вход</div>
+            <div className="text-xs text-amber-700">
+              {authError ?? 'Откройте mini app из Telegram через кнопку в боте KULCHA.'}
+            </div>
+            <button
+              type="button"
+              onClick={reloadAuth}
+              className="rounded-xl bg-amber-600 px-3 py-2 text-xs font-semibold text-white hover:bg-amber-700 transition-colors"
+            >
+              Повторить вход
+            </button>
+          </div>
+        )}
+
         {selectedRestaurant ? (
           <div className="bg-white rounded-2xl p-3 shadow-sm">
             <div className="text-xs text-slate-500">Заказ из</div>
-            <div className="text-sm font-semibold text-slate-900">
-              {selectedRestaurant.name}
-            </div>
-            <div className="text-xs text-slate-500 mt-1">
-              {selectedRestaurant.address}
-            </div>
+            <div className="text-sm font-semibold text-slate-900">{selectedRestaurant.name}</div>
+            <div className="text-xs text-slate-500 mt-1">{selectedRestaurant.address}</div>
           </div>
         ) : (
           <div className="bg-white rounded-2xl p-3 shadow-sm">
-            <div className="text-sm font-semibold text-slate-900 text-red-600">
-              Ресторан не выбран
-            </div>
+            <div className="text-sm font-semibold text-red-600">Ресторан не выбран</div>
             <button
               onClick={() => navigate('/cafes')}
               className="mt-2 text-xs text-slate-600 underline hover:text-slate-900"
@@ -156,7 +164,6 @@ export function CheckoutPage() {
           </div>
         )}
 
-        {/* Address block */}
         {serviceType === 'DELIVERY' ? (
           <div className="bg-white rounded-2xl p-3 shadow-sm space-y-3">
             <div className="text-sm font-semibold text-slate-900">Адрес доставки</div>
@@ -173,7 +180,7 @@ export function CheckoutPage() {
                 <select
                   className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
                   value={floor}
-                  onChange={(e) => setFloor(e.target.value)}
+                  onChange={(event) => setFloor(event.target.value)}
                 >
                   <option value="1">1</option>
                   <option value="2">2</option>
@@ -184,11 +191,11 @@ export function CheckoutPage() {
                 <select
                   className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
                   value={line}
-                  onChange={(e) => setLine(e.target.value)}
+                  onChange={(event) => setLine(event.target.value)}
                 >
-                  {Array.from({ length: 30 }, (_, i) => (
-                    <option key={i + 1} value={String(i + 1)}>
-                      {i + 1}
+                  {Array.from({ length: 30 }, (_, index) => (
+                    <option key={index + 1} value={String(index + 1)}>
+                      {index + 1}
                     </option>
                   ))}
                 </select>
@@ -198,11 +205,11 @@ export function CheckoutPage() {
                 <select
                   className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
                   value={pavilion}
-                  onChange={(e) => setPavilion(e.target.value)}
+                  onChange={(event) => setPavilion(event.target.value)}
                 >
-                  {Array.from({ length: 70 }, (_, i) => (
-                    <option key={i + 1} value={String(i + 1)}>
-                      {i + 1}
+                  {Array.from({ length: 70 }, (_, index) => (
+                    <option key={index + 1} value={String(index + 1)}>
+                      {index + 1}
                     </option>
                   ))}
                 </select>
@@ -218,7 +225,6 @@ export function CheckoutPage() {
           </div>
         )}
 
-        {/* Contacts section */}
         <div className="bg-white rounded-2xl p-3 shadow-sm space-y-3">
           <div className="text-sm font-semibold text-slate-900">Контакты</div>
           <div className="grid grid-cols-2 gap-3">
@@ -238,7 +244,7 @@ export function CheckoutPage() {
                 className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
                 placeholder="+7..."
                 value={phone}
-                onChange={(e) => setPhone(e.target.value)}
+                onChange={(event) => setPhone(event.target.value)}
               />
             </div>
           </div>
@@ -247,7 +253,6 @@ export function CheckoutPage() {
           </p>
         </div>
 
-        {/* Payment method */}
         <div className="bg-white rounded-2xl p-3 shadow-sm space-y-2">
           <div className="text-sm font-semibold text-slate-900">Оплата</div>
           <div className="flex gap-2">
@@ -278,7 +283,6 @@ export function CheckoutPage() {
           </div>
         </div>
 
-        {/* Summary block */}
         <div className="bg-white rounded-2xl p-3 shadow-sm space-y-1 text-sm text-slate-800">
           <div className="flex justify-between">
             <span>Товары в заказе</span>
@@ -298,37 +302,26 @@ export function CheckoutPage() {
           </div>
         </div>
 
-        {/* Error / success messages */}
-        {errorMessage && (
-          <div className="text-xs text-red-500 bg-red-50 rounded-xl p-3">
-            {errorMessage}
-          </div>
-        )}
-
+        {errorMessage && <div className="text-xs text-red-500 bg-red-50 rounded-xl p-3">{errorMessage}</div>}
         {successMessage && (
-          <div className="text-xs text-emerald-600 bg-emerald-50 rounded-xl p-3">
-            {successMessage}
-          </div>
+          <div className="text-xs text-emerald-600 bg-emerald-50 rounded-xl p-3">{successMessage}</div>
         )}
       </div>
 
-      {/* Bottom bar: Total + "ЗАКАЗАТЬ" */}
       {items.length > 0 && (
         <div className="fixed bottom-4 left-1/2 -translate-x-1/2 w-full max-w-[430px] px-4 z-20">
           <div className="bg-white rounded-2xl shadow-lg flex items-center px-3 py-2 gap-3">
             <div className="flex-1">
               <div className="text-[11px] text-slate-500 uppercase">Итого</div>
-              <div className="text-sm font-semibold text-slate-900">
-                {total.toFixed(0)} ₽
-              </div>
+              <div className="text-sm font-semibold text-slate-900">{total.toFixed(0)} ₽</div>
             </div>
             <button
               type="button"
-              disabled={submitting || total <= 0 || !selectedRestaurant || currentUserId == null}
+              disabled={submitDisabled}
               onClick={handleSubmit}
               className={
                 'flex-[2] text-sm font-semibold py-2 rounded-xl text-center transition-colors ' +
-                (submitting || total <= 0 || !selectedRestaurant || currentUserId == null
+                (submitDisabled
                   ? 'bg-slate-300 text-slate-500 cursor-not-allowed'
                   : 'bg-slate-900 text-white hover:bg-slate-800')
               }

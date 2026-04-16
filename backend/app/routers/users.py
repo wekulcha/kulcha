@@ -14,6 +14,7 @@ from app.models.order import Order
 from app.models.staff import Staff
 from app.models.user import User
 from app.schemas.user import UserDto, UserRestaurantDto
+from app.services.session_auth import ensure_customer, get_user_from_bearer
 from app.services.telegram_auth import verify_bot_link_token, verify_telegram_init_data
 
 router = APIRouter(prefix="/api/v1/users", tags=["users"])
@@ -59,18 +60,7 @@ async def _require_customer_id(
     if tid is None:
         raise HTTPException(401, "Invalid Telegram init data")
 
-    result = await db.execute(select(User).where(User.id == tid))
-    user = result.scalars().first()
-    if user:
-        return user.id
-    user = User(
-        id=tid,
-        username=username or f"tg_{tid}",
-        phone=f"tg-{tid}",
-        registered_at=datetime.now(),
-    )
-    db.add(user)
-    await db.flush()
+    user = await ensure_customer(db, tid, username)
     return user.id
 
 
@@ -121,10 +111,17 @@ async def get_all(
 async def get_by_id(
     user_id: int,
     db: AsyncSession = Depends(get_db),
+    authorization: str | None = Header(None, alias="Authorization"),
     x_telegram_init_data: str | None = Header(None, alias="X-Telegram-Init-Data"),
     x_init_data: str | None = Header(None, alias="X-Init-Data"),
     x_kulcha_bot_auth: str | None = Header(None, alias="X-Kulcha-Bot-Auth"),
 ):
+    bearer_user = await get_user_from_bearer(db, authorization)
+    if bearer_user:
+        if bearer_user.id != user_id:
+            raise HTTPException(403, "Cannot access another user")
+        return _to_dto(bearer_user)
+
     init_data = (x_telegram_init_data or x_init_data or "").strip()
     try:
         admin = await _require_admin_user(db, init_data)

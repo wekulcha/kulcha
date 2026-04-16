@@ -21,129 +21,85 @@ declare global {
   }
 }
 
-const BOT_AUTH_STORAGE_KEY = 'kulcha_tg_auth';
-
-/**
- * Raw initData string for X-Telegram-Init-Data (signed by the user bot).
- * Some clients/ngrok flows fill `initData` late; others pass `tgWebAppData` in the URL hash.
- */
 export function getTelegramInitData(): string {
   if (typeof window === 'undefined') return '';
-  const api = window.Telegram?.WebApp?.initData;
-  if (api && api.length > 0) return api;
+
+  const directInitData = window.Telegram?.WebApp?.initData;
+  if (directInitData && directInitData.length > 0) {
+    return directInitData;
+  }
+
   try {
     const hash = window.location.hash.slice(1);
     if (hash) {
-      const qp = new URLSearchParams(hash);
-      const fromHash = qp.get('tgWebAppData');
+      const params = new URLSearchParams(hash);
+      const fromHash = params.get('tgWebAppData');
       if (fromHash) return decodeURIComponent(fromHash);
     }
-    const sp = new URLSearchParams(window.location.search);
-    const fromSearch = sp.get('tgWebAppData');
+
+    const searchParams = new URLSearchParams(window.location.search);
+    const fromSearch = searchParams.get('tgWebAppData');
     if (fromSearch) return decodeURIComponent(fromSearch);
   } catch {
-    /* ignore */
+    return '';
   }
+
   return '';
 }
 
-/**
- * Telegram sometimes fills initData shortly after load; wait before treating session as absent.
- */
 export async function waitForTelegramInitData(
-  maxWaitMs = 12000,
+  maxWaitMs = 12_000,
   stepMs = 50
 ): Promise<string> {
   const deadline = Date.now() + maxWaitMs;
   while (Date.now() < deadline) {
-    const d = getTelegramInitData();
-    if (d) return d;
-    await new Promise((r) => setTimeout(r, stepMs));
+    const data = getTelegramInitData();
+    if (data) return data;
+    await new Promise((resolve) => setTimeout(resolve, stepMs));
   }
   return getTelegramInitData();
 }
 
-/**
- * Reads the bot-generated HMAC auth token from the URL.
- * The bot puts ?tg_auth=... in the mini-app URL so auth works in any browser.
- */
-export function getBotAuthToken(): string | null {
-  if (typeof window === 'undefined') return null;
-  try {
-    const sp = new URLSearchParams(window.location.search);
-    const t = sp.get('tg_auth');
-    if (t) {
-      window.sessionStorage.setItem(BOT_AUTH_STORAGE_KEY, t);
-      return t;
-    }
-    // Also check hash (Telegram appends tgWebAppData to hash alongside bot's params)
-    const hp = new URLSearchParams(window.location.hash.slice(1));
-    const ht = hp.get('tg_auth');
-    if (ht) {
-      window.sessionStorage.setItem(BOT_AUTH_STORAGE_KEY, ht);
-      return ht;
-    }
-    const cached = window.sessionStorage.getItem(BOT_AUTH_STORAGE_KEY);
-    if (cached) return cached;
-  } catch {
-    /* ignore */
-  }
-  return null;
-}
-
-export function buildUserApiJsonHeaders(): Record<string, string> {
-  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-  const init = getTelegramInitData();
-  if (init) {
-    headers['X-Telegram-Init-Data'] = init;
-    // Alias used by many Mini App backends (e.g. kickoff X-Init-Data)
-    headers['X-Init-Data'] = init;
-  }
-  const botAuth = getBotAuthToken();
-  if (botAuth) {
-    headers['X-Kulcha-Bot-Auth'] = botAuth;
-  }
-  return headers;
-}
-
 export function initTelegramWebApp(): void {
-  if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
-    const webApp = window.Telegram.WebApp;
+  if (typeof window === 'undefined' || !window.Telegram?.WebApp) {
+    return;
+  }
 
-    webApp.ready();
-    try {
-      if (typeof webApp.expand === 'function') webApp.expand();
-    } catch {
-      /* ignore */
+  const webApp = window.Telegram.WebApp;
+  webApp.ready();
+
+  try {
+    if (typeof webApp.expand === 'function') {
+      webApp.expand();
     }
-    
-    // Set theme-related CSS variables if themeParams are available
-    if (webApp.themeParams) {
-      const theme = webApp.themeParams;
-      
-      if (theme.bg_color) {
-        document.documentElement.style.setProperty('--tg-theme-bg-color', theme.bg_color);
-      }
-      
-      if (theme.text_color) {
-        document.documentElement.style.setProperty('--tg-theme-text-color', theme.text_color);
-      }
-      
-      if (theme.hint_color) {
-        document.documentElement.style.setProperty('--tg-theme-hint-color', theme.hint_color);
-      }
-      
-      if (theme.link_color) {
-        document.documentElement.style.setProperty('--tg-theme-link-color', theme.link_color);
-      }
-      
-      if (theme.button_color) {
-        document.documentElement.style.setProperty('--tg-theme-button-color', theme.button_color);
-      }
-      
-      if (theme.button_text_color) {
-        document.documentElement.style.setProperty('--tg-theme-button-text-color', theme.button_text_color);
-      }
-    }
+  } catch {
+    // ignore Telegram client quirks
+  }
+
+  if (!webApp.themeParams) {
+    return;
+  }
+
+  const theme = webApp.themeParams;
+  if (theme.bg_color) {
+    document.documentElement.style.setProperty('--tg-theme-bg-color', theme.bg_color);
+  }
+  if (theme.text_color) {
+    document.documentElement.style.setProperty('--tg-theme-text-color', theme.text_color);
+  }
+  if (theme.hint_color) {
+    document.documentElement.style.setProperty('--tg-theme-hint-color', theme.hint_color);
+  }
+  if (theme.link_color) {
+    document.documentElement.style.setProperty('--tg-theme-link-color', theme.link_color);
+  }
+  if (theme.button_color) {
+    document.documentElement.style.setProperty('--tg-theme-button-color', theme.button_color);
+  }
+  if (theme.button_text_color) {
+    document.documentElement.style.setProperty(
+      '--tg-theme-button-text-color',
+      theme.button_text_color
+    );
   }
 }

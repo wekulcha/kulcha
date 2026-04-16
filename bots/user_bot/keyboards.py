@@ -1,26 +1,9 @@
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, WebAppInfo
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
-from config import USER_MINI_APP_BASE, SUPPORT_LINK
-
-# Telegram принимает только HTTPS для Web App. Для localhost (http) используем обычные кнопки.
-_USE_WEB_APP = USER_MINI_APP_BASE.startswith("https://")
+from config import SUPPORT_LINK
 
 
 def main_menu_keyboard() -> ReplyKeyboardMarkup:
-    if _USE_WEB_APP:
-        return ReplyKeyboardMarkup(
-            keyboard=[
-                [KeyboardButton(text="🍽 Заказать", web_app=WebAppInfo(url=f"{USER_MINI_APP_BASE}/cafes"))],
-                [
-                    KeyboardButton(text="🧺 Корзина", web_app=WebAppInfo(url=f"{USER_MINI_APP_BASE}/cart")),
-                    KeyboardButton(text="👤 Профиль", web_app=WebAppInfo(url=f"{USER_MINI_APP_BASE}/profile")),
-                ],
-                [KeyboardButton(text="📦 Статус заказа")],
-                [KeyboardButton(text="💬 Поддержка", url=SUPPORT_LINK)],
-            ],
-            resize_keyboard=True,
-            input_field_placeholder="Выберите действие",
-        )
     return ReplyKeyboardMarkup(
         keyboard=[
             [KeyboardButton(text="🍽 Заказать")],

@@ -11,6 +11,12 @@ class Settings(BaseSettings):
     user_bot_token: str = ""
     admin_bot_token: str = ""
 
+    auth_access_secret: str = ""
+    auth_access_ttl_minutes: int = 15
+    auth_refresh_ttl_days: int = 30
+    auth_cookie_domain: str = ""
+    auth_cookie_secure: bool = True
+
     internal_api_secret: str = ""
     bot_api_secret: str = ""
 

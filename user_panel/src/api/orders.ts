@@ -1,8 +1,6 @@
-import type { CreateOrderPayload, OrderResponse } from '../types/order';
-import { BASE_URL } from './baseUrl';
-import { buildUserApiJsonHeaders } from '../telegram/initTelegram';
+import type { CreateOrderPayload, OrderResponse, UserOrder } from '../types/order';
+import { apiFetchJson } from './client';
 
-/** Backend checkout body (camelCase) */
 interface OrderCheckoutBody {
   restaurantId: number;
   deliveryAddress: string | null;
@@ -14,10 +12,47 @@ interface OrderCheckoutBody {
   items: { mealId: number; quantity: number; unitPrice: number }[];
 }
 
-export async function createOrder(
-  _userId: number,
-  payload: CreateOrderPayload
-): Promise<OrderResponse> {
+interface OrderDto {
+  id: number;
+  status: UserOrder['status'];
+  userId: number | null;
+  deliveryAddress: string | null;
+  restaurantId: number | null;
+  createdAt: string | null;
+  updatedAt: string | null;
+  courierId: number | null;
+  orderType: UserOrder['order_type'];
+  itemsTotal: number | string | null;
+  deliveryFee: number | string | null;
+  serviceFee: number | string | null;
+  total: number | string | null;
+}
+
+function toNumber(value: number | string | null | undefined): number | null {
+  if (value == null) return null;
+  const parsed = typeof value === 'number' ? value : Number(value);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function toUserOrder(dto: OrderDto): UserOrder {
+  return {
+    id: dto.id,
+    status: dto.status,
+    user_id: dto.userId,
+    delivery_address: dto.deliveryAddress,
+    restaurant_id: dto.restaurantId,
+    created_at: dto.createdAt,
+    updated_at: dto.updatedAt,
+    courier_id: dto.courierId,
+    order_type: dto.orderType,
+    items_total: toNumber(dto.itemsTotal),
+    delivery_fee: toNumber(dto.deliveryFee),
+    service_fee: toNumber(dto.serviceFee),
+    total: toNumber(dto.total),
+  };
+}
+
+export async function createOrder(payload: CreateOrderPayload): Promise<OrderResponse> {
   const body: OrderCheckoutBody = {
     restaurantId: payload.restaurant_id,
     deliveryAddress: payload.delivery_address ?? null,
@@ -26,25 +61,31 @@ export async function createOrder(
     deliveryFee: payload.delivery_fee,
     serviceFee: payload.service_fee,
     total: payload.total,
-    items: payload.items.map((it) => ({
-      mealId: it.meal_id,
-      quantity: it.quantity,
-      unitPrice: it.price,
+    items: payload.items.map((item) => ({
+      mealId: item.meal_id,
+      quantity: item.quantity,
+      unitPrice: item.price,
     })),
   };
 
-  const orderResp = await fetch(`${BASE_URL}/orders/checkout`, {
-    method: 'POST',
-    headers: buildUserApiJsonHeaders(),
-    body: JSON.stringify(body),
-  });
-  if (!orderResp.ok) {
-    throw new Error(`Failed to create order: ${orderResp.status}`);
-  }
-  const order = (await orderResp.json()) as OrderResponse & { id: number; total: number; createdAt?: string };
+  const dto = await apiFetchJson<OrderDto>(
+    '/orders/checkout',
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    },
+    { auth: true }
+  );
+
   return {
-    id: order.id,
-    total: order.total,
-    createdAt: order.createdAt ?? new Date().toISOString(),
+    id: dto.id,
+    total: toNumber(dto.total) ?? 0,
+    createdAt: dto.createdAt ?? new Date().toISOString(),
   };
+}
+
+export async function fetchMyOrders(): Promise<UserOrder[]> {
+  const dto = await apiFetchJson<OrderDto[]>('/orders/my', {}, { auth: true });
+  return dto.map(toUserOrder);
 }
