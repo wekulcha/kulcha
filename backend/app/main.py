@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import os
+import logging
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -25,12 +25,17 @@ from app.routers import (
     users,
 )
 
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 
 @asynccontextmanager
 async def lifespan(application: FastAPI):  # noqa: ARG001
     settings = get_settings()
     uploads = Path(settings.uploads_dir)
     uploads.mkdir(parents=True, exist_ok=True)
+    logger.info("Kulcha backend started (user_bot_token configured: %s, admin_bot_token configured: %s)",
+                bool(settings.user_bot_token), bool(settings.admin_bot_token))
     yield
 
 

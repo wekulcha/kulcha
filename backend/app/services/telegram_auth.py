@@ -1,22 +1,32 @@
-"""Telegram WebApp initData validation (same rules as kickoff / EtherDaler)."""
+"""Telegram WebApp initData HMAC-SHA256 validation.
+
+Per Telegram docs (https://docs.telegram-mini-apps.com/platform/init-data):
+- For HMAC validation, exclude ONLY the ``hash`` key from the data-check string.
+- All other keys (including ``signature``, added in newer Bot API versions) MUST
+  stay in the data-check string, otherwise the computed hash won't match.
+"""
 
 from __future__ import annotations
 
 import hashlib
 import hmac
 import json
+import logging
 from typing import Any
 from urllib.parse import unquote
+
+logger = logging.getLogger(__name__)
 
 
 def verify_telegram_init_data(init_data: str, bot_token: str) -> dict[str, Any] | None:
     if not init_data or not bot_token:
+        logger.warning("verify_telegram_init_data: empty init_data or bot_token")
         return None
     try:
         parsed = dict(item.split("=", 1) for item in init_data.split("&") if "=" in item)
         received_hash = parsed.pop("hash", None)
-        parsed.pop("signature", None)
         if not received_hash:
+            logger.warning("verify_telegram_init_data: no hash in init_data")
             return None
 
         data_check_string = "\n".join(f"{k}={unquote(v)}" for k, v in sorted(parsed.items()))
@@ -32,13 +42,19 @@ def verify_telegram_init_data(init_data: str, bot_token: str) -> dict[str, Any] 
         ).hexdigest()
 
         if not hmac.compare_digest(expected_hash, received_hash):
+            logger.warning(
+                "verify_telegram_init_data: hash mismatch (keys in data: %s)",
+                sorted(parsed.keys()),
+            )
             return None
 
         user_raw = parsed.get("user")
         if not user_raw:
+            logger.warning("verify_telegram_init_data: no 'user' field in init_data")
             return None
         return json.loads(unquote(user_raw))
     except Exception:
+        logger.exception("verify_telegram_init_data: unexpected error")
         return None
 
 
