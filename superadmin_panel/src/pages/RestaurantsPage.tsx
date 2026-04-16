@@ -6,7 +6,11 @@ import type { CreateRestaurantRequest } from "../types/admin";
 export function RestaurantsPage() {
   const queryClient = useQueryClient();
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState<CreateRestaurantRequest>({ name: "", address: "", adminUserId: 1 });
+  const [form, setForm] = useState<CreateRestaurantRequest>({
+    name: "",
+    address: "",
+    ownerUserId: 0,
+  });
 
   const { data: restaurants = [], isLoading, error } = useQuery({
     queryKey: ["admin", "restaurants"],
@@ -18,7 +22,7 @@ export function RestaurantsPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "restaurants"] });
       setShowForm(false);
-      setForm({ name: "", address: "", adminUserId: 1 });
+      setForm({ name: "", address: "", ownerUserId: 0 });
     },
   });
 
@@ -54,16 +58,21 @@ export function RestaurantsPage() {
           />
           <input
             type="number"
-            placeholder="ID администратора (userId)"
+            placeholder="Telegram ID владельца (users.id)"
             className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
-            value={form.adminUserId || ""}
-            onChange={(e) => setForm((p) => ({ ...p, adminUserId: Number(e.target.value) || 0 }))}
+            value={form.ownerUserId || ""}
+            onChange={(e) => setForm((p) => ({ ...p, ownerUserId: Number(e.target.value) || 0 }))}
           />
           <div className="flex gap-2">
             <button
               type="button"
               onClick={() => createMutation.mutate(form)}
-              disabled={!form.name || !form.address || createMutation.isPending}
+              disabled={
+                !form.name ||
+                !form.address ||
+                !form.ownerUserId ||
+                createMutation.isPending
+              }
               className="px-4 py-2 bg-emerald-600 text-white rounded-xl text-sm disabled:opacity-50"
             >
               {createMutation.isPending ? "Создание…" : "Создать"}

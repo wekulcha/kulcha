@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from decimal import Decimal
 
-from pydantic import BaseModel
+from pydantic import AliasChoices, BaseModel, Field
 
 from app.schemas.meal import MealDto
 from app.schemas.order import OrderDto
@@ -56,14 +56,19 @@ class AdminRestaurantDto(BaseModel):
     id: int
     name: str
     address: str
-    adminUserId: int
-    adminPermissions: list[str] = []
+    ownerUserId: int
+    ownerPermissions: list[str] = []
 
 
 class AdminCreateRestaurantRequestDto(BaseModel):
+    """Создание ресторана и привязка владельца по Telegram user id (users.id)."""
+
     name: str
     address: str
-    adminUserId: int
+    ownerUserId: int = Field(
+        ...,
+        validation_alias=AliasChoices("ownerUserId", "adminUserId"),
+    )
 
 
 class AdminAssignCourierRequestDto(BaseModel):

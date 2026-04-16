@@ -21,5 +21,6 @@ export interface AdminUserOverview {
 export interface CreateRestaurantRequest {
   name: string;
   address: string;
-  adminUserId: number;
+  /** Telegram user id (users.id) — владелец ресторана */
+  ownerUserId: number;
 }

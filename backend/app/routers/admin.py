@@ -73,6 +73,33 @@ def _staff_dto(s: Staff) -> StaffDto:
     )
 
 
+async def _grant_owner_full_staff_access(
+    db: AsyncSession,
+    *,
+    restaurant_id: int,
+    owner_user_id: int,
+) -> None:
+    """Владелец = все права staff для этого ресторана (меню + заказы)."""
+    for perm in StaffPermission:
+        existing = await db.execute(
+            select(Staff).where(
+                Staff.user_id == owner_user_id,
+                Staff.restaurant_id == restaurant_id,
+                Staff.permission == perm,
+            )
+        )
+        if existing.scalars().first():
+            continue
+        db.add(
+            Staff(
+                user_id=owner_user_id,
+                restaurant_id=restaurant_id,
+                permission=perm,
+            )
+        )
+    await db.flush()
+
+
 @router.get("/users")
 async def get_all_users(
     db: AsyncSession = Depends(get_db),
@@ -197,8 +224,8 @@ async def get_user_restaurants(
         first = assignments[0]
         restaurants.append(AdminRestaurantDto(
             id=first.restaurant.id, name=first.restaurant.name,
-            address=first.restaurant.address, adminUserId=first.user_id,
-            adminPermissions=list({s.permission.value for s in assignments}),
+            address=first.restaurant.address, ownerUserId=first.user_id,
+            ownerPermissions=list({s.permission.value for s in assignments}),
         ))
     restaurants.sort(key=lambda r: r.name)
     return restaurants
@@ -211,40 +238,32 @@ async def create_restaurant(
     _caller: User = Depends(_require_superadmin),
 ):
     if not request.name or not request.name.strip():
-        raise HTTPException(400, "Restaurant name is required")
+        raise HTTPException(400, "Нужно указать название ресторана")
     if not request.address or not request.address.strip():
-        raise HTTPException(400, "Restaurant address is required")
+        raise HTTPException(400, "Нужно указать адрес ресторана")
 
-    result = await db.execute(select(User).where(User.id == request.adminUserId))
-    admin_user = result.scalars().first()
-    if not admin_user:
-        raise HTTPException(404, "User not found")
+    result = await db.execute(select(User).where(User.id == request.ownerUserId))
+    owner = result.scalars().first()
+    if not owner:
+        raise HTTPException(
+            404,
+            "Пользователь с таким ID не найден. Сначала создайте пользователя (например, /start в боте).",
+        )
 
     restaurant = Restaurant(name=request.name.strip(), address=request.address.strip())
     db.add(restaurant)
     await db.flush()
 
-    permissions = []
-    for perm in StaffPermission:
-        existing = await db.execute(
-            select(Staff).where(
-                Staff.user_id == admin_user.id,
-                Staff.restaurant_id == restaurant.id,
-                Staff.permission == perm,
-            )
-        )
-        if existing.scalars().first():
-            continue
-        s = Staff(user_id=admin_user.id, restaurant_id=restaurant.id, permission=perm)
-        db.add(s)
-        permissions.append(perm.value)
-
-    await db.flush()
+    await _grant_owner_full_staff_access(
+        db, restaurant_id=restaurant.id, owner_user_id=owner.id
+    )
 
     return AdminRestaurantDto(
-        id=restaurant.id, name=restaurant.name, address=restaurant.address,
-        adminUserId=admin_user.id,
-        adminPermissions=permissions or [p.value for p in StaffPermission],
+        id=restaurant.id,
+        name=restaurant.name,
+        address=restaurant.address,
+        ownerUserId=owner.id,
+        ownerPermissions=[p.value for p in StaffPermission],
     )
 
 
