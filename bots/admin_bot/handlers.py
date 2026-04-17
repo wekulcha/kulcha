@@ -60,12 +60,27 @@ async def open_panel(message: Message):
 
 @router.message(F.text == "📥 Активные заказы")
 async def active_orders(message: Message):
-    await message.answer(
-        "<b>Активные заказы</b>\n"
-        "━━━━━━━━━━━━━━\n"
-        "Список заказов — в мини-приложении (кнопка «Открыть панель»). "
-        "О новых заказах мы пришлём сообщение сюда."
-    )
+    if ADMIN_MINI_APP_URL.startswith("https://"):
+        await message.answer(
+            "<b>Активные заказы</b>\n"
+            "━━━━━━━━━━━━━━\n"
+            "Откройте вкладку «Заказы» в панели:",
+            reply_markup=InlineKeyboardMarkup(
+                inline_keyboard=[
+                    [
+                        InlineKeyboardButton(
+                            text="📋 Открыть заказы",
+                            web_app=WebAppInfo(url=ADMIN_MINI_APP_URL),
+                        )
+                    ]
+                ]
+            ),
+        )
+    else:
+        await message.answer(
+            "<b>Активные заказы</b>\n━━━━━━━━━━━━━━\n"
+            f"Откройте в браузере:\n<code>{ADMIN_MINI_APP_URL}</code>"
+        )
 
 
 @router.message(F.text == "📊 Итоги за сегодня")

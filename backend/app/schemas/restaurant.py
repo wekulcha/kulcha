@@ -7,3 +7,10 @@ class RestaurantDto(BaseModel):
     id: int | None = None
     name: str | None = None
     address: str | None = None
+    imageLink: str | None = None
+
+
+class RestaurantPatchDto(BaseModel):
+    name: str | None = None
+    address: str | None = None
+    imageLink: str | None = None

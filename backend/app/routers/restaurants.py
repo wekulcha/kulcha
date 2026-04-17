@@ -12,7 +12,7 @@ from app.models.meal import Meal
 from app.models.restaurant import Restaurant
 from app.models.user import User
 from app.schemas.meal import MealDto
-from app.schemas.restaurant import RestaurantDto
+from app.schemas.restaurant import RestaurantDto, RestaurantPatchDto
 from app.services import staff_access
 from app.services.telegram_auth import verify_telegram_init_data
 
@@ -20,7 +20,12 @@ router = APIRouter(prefix="/api/v1/restaurants", tags=["restaurants"])
 
 
 def _to_dto(r: Restaurant) -> RestaurantDto:
-    return RestaurantDto(id=r.id, name=r.name, address=r.address)
+    return RestaurantDto(
+        id=r.id,
+        name=r.name,
+        address=r.address,
+        imageLink=r.image_link,
+    )
 
 
 def _meal_dto(m: Meal) -> MealDto:
@@ -44,6 +49,38 @@ async def get_by_id(restaurant_id: int, db: AsyncSession = Depends(get_db)):
     r = result.scalars().first()
     if not r:
         raise HTTPException(404, "Restaurant not found")
+    return _to_dto(r)
+
+
+@router.patch("/{restaurant_id}")
+async def patch_restaurant(
+    restaurant_id: int,
+    body: RestaurantPatchDto,
+    db: AsyncSession = Depends(get_db),
+    x_telegram_init_data: str = Header(..., alias="X-Telegram-Init-Data"),
+):
+    settings = get_settings()
+    tg = verify_telegram_init_data(x_telegram_init_data, settings.admin_bot_token)
+    if not tg:
+        raise HTTPException(401, "Invalid Telegram init data")
+    result = await db.execute(select(User).where(User.id == tg["id"]))
+    u = result.scalars().first()
+    if not u:
+        raise HTTPException(403, "Unknown user")
+    await staff_access.require_can_edit_menu(db, u.id, restaurant_id)
+
+    result = await db.execute(select(Restaurant).where(Restaurant.id == restaurant_id))
+    r = result.scalars().first()
+    if not r:
+        raise HTTPException(404, "Restaurant not found")
+
+    if body.name is not None:
+        r.name = body.name.strip()
+    if body.address is not None:
+        r.address = body.address.strip()
+    if body.imageLink is not None:
+        r.image_link = body.imageLink.strip() or None
+    await db.flush()
     return _to_dto(r)
 
 

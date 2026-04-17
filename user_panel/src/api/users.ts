@@ -2,7 +2,8 @@ import type { User } from '../types/user';
 import { apiFetchJson } from './client';
 
 interface UserDto {
-  id: number;
+  id?: number;
+  telegramId?: number;
   username: string;
   phone: string;
   email: string | null;
@@ -11,8 +12,9 @@ interface UserDto {
 }
 
 export function toUser(dto: UserDto): User {
+  const id = dto.id ?? dto.telegramId ?? 0;
   return {
-    id: dto.id,
+    id,
     username: dto.username,
     phone: dto.phone,
     telegram_id: dto.id,
@@ -24,5 +26,25 @@ export function toUser(dto: UserDto): User {
 
 export async function fetchCurrentUser(): Promise<User> {
   const dto = await apiFetchJson<UserDto>('/auth/me', {}, { auth: true });
+  return toUser(dto);
+}
+
+export async function updateUserProfile(
+  userId: number,
+  patch: Partial<Pick<User, 'address' | 'phone'>>
+): Promise<User> {
+  const dto = await apiFetchJson<UserDto>(
+    `/users/${userId}`,
+    {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        telegramId: userId,
+        address: patch.address ?? undefined,
+        phone: patch.phone ?? undefined,
+      }),
+    },
+    { auth: true }
+  );
   return toUser(dto);
 }

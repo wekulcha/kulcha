@@ -18,6 +18,7 @@ from app.routers import (
     couriers,
     meal_assets,
     meals,
+    restaurant_assets,
     order_positions,
     orders,
     restaurant_staff,
@@ -95,6 +96,7 @@ app.include_router(users.router)
 app.include_router(restaurants.router)
 app.include_router(meals.router)
 app.include_router(meal_assets.router)
+app.include_router(restaurant_assets.router)
 app.include_router(orders.router)
 app.include_router(order_positions.router)
 app.include_router(staff.router)

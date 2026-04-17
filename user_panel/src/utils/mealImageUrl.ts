@@ -6,12 +6,11 @@ export function mealImageUrl(link: string | null | undefined): string {
   if (link.startsWith('http://') || link.startsWith('https://') || link.startsWith('data:')) {
     return link;
   }
-  if (link.startsWith('/')) {
-    try {
-      return new URL(BASE_URL).origin + link;
-    } catch {
-      return link;
-    }
+  const path = link.startsWith('/') ? link : `/${link}`;
+  try {
+    const origin = new URL(BASE_URL, typeof window !== 'undefined' ? window.location.href : 'http://localhost').origin;
+    return origin + path;
+  } catch {
+    return path;
   }
-  return link;
 }

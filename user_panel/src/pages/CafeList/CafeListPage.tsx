@@ -6,6 +6,7 @@ import { Header } from '../../layout/Header';
 import { useAppContext } from '../../context/AppContext';
 import { fetchRestaurants } from '../../api/restaurants';
 import type { Restaurant } from '../../types/restaurant';
+import { mealImageUrl } from '../../utils/mealImageUrl';
 
 export function CafeListPage() {
   const navigate = useNavigate();
@@ -131,8 +132,15 @@ export function CafeListPage() {
                 onClick={() => handleSelectRestaurant(restaurant)}
                 className="bg-white rounded-2xl shadow-sm p-3 text-left hover:shadow-md transition-shadow"
               >
-                {/* Image placeholder */}
-                <div className="aspect-[4/3] bg-slate-100 rounded-xl mb-2"></div>
+                <div className="aspect-[4/3] bg-slate-100 rounded-xl mb-2 overflow-hidden">
+                  {restaurant.imageLink ? (
+                    <img
+                      src={mealImageUrl(restaurant.imageLink)}
+                      alt=""
+                      className="w-full h-full object-cover"
+                    />
+                  ) : null}
+                </div>
                 
                 {/* Cafe name */}
                 <h3 className="text-sm font-semibold text-slate-900 mb-1 line-clamp-2">

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createOrder } from '../../api/orders';
+import { updateUserProfile } from '../../api/users';
 import { useAppContext } from '../../context/AppContext';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
@@ -30,10 +31,7 @@ export function CheckoutPage() {
   const [serviceFee] = useState<number>(0);
   const total = itemsTotal + deliveryFee + serviceFee;
 
-  const [pickupPoint] = useState('Москва, ОРПЦ Фуд Сити');
-  const [floor, setFloor] = useState<string>('1');
-  const [line, setLine] = useState<string>('1');
-  const [pavilion, setPavilion] = useState<string>('1');
+  const [deliveryAddress, setDeliveryAddress] = useState('');
   const [username, setUsername] = useState<string>('');
   const [phone, setPhone] = useState<string>('');
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('CASH');
@@ -46,6 +44,11 @@ export function CheckoutPage() {
     setPhone((value) => (value.trim() ? value : sanitizePhone(currentUser.phone)));
     setUsername(sanitizeUsername(currentUser.username));
   }, [currentUser]);
+
+  useEffect(() => {
+    if (!currentUser?.address?.trim()) return;
+    setDeliveryAddress((prev) => (prev.trim() ? prev : currentUser.address!.trim()));
+  }, [currentUser?.address]);
 
   const handleSubmit = async () => {
     setErrorMessage(null);
@@ -76,17 +79,17 @@ export function CheckoutPage() {
       return;
     }
 
-    if (serviceType === 'DELIVERY' && (!floor || !line || !pavilion)) {
-      setErrorMessage('Пожалуйста, укажите этаж, линию и павильон.');
+    if (serviceType === 'DELIVERY' && !deliveryAddress.trim()) {
+      setErrorMessage('Укажите адрес доставки.');
       return;
     }
 
-    const deliveryAddress = serviceType === 'DELIVERY' ? `${floor}-${line}-${pavilion}` : null;
+    const deliveryAddr = serviceType === 'DELIVERY' ? deliveryAddress.trim() : null;
 
     const payload: CreateOrderPayload = {
       restaurant_id: selectedRestaurant.id,
       service_type: serviceType,
-      delivery_address: deliveryAddress,
+      delivery_address: deliveryAddr,
       username: username.replace(/^@/, '') || null,
       phone: phone.trim(),
       payment_method: paymentMethod,
@@ -104,6 +107,9 @@ export function CheckoutPage() {
     try {
       setSubmitting(true);
       const response = await createOrder(payload);
+      if (serviceType === 'DELIVERY' && currentUser && deliveryAddr) {
+        void updateUserProfile(currentUser.id, { address: deliveryAddr }).catch(() => {});
+      }
       clearCart();
       setSuccessMessage(`Заказ №${response.id} успешно создан.`);
       setTimeout(() => {
@@ -165,56 +171,18 @@ export function CheckoutPage() {
         )}
 
         {serviceType === 'DELIVERY' ? (
-          <div className="bg-white rounded-2xl p-3 shadow-sm space-y-3">
+          <div className="bg-white rounded-2xl p-3 shadow-sm space-y-2">
             <div className="text-sm font-semibold text-slate-900">Адрес доставки</div>
-            <div>
-              <label className="block text-xs text-slate-500 mb-1">Пункт заказа</label>
-              <div className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-800 bg-slate-50">
-                {pickupPoint}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="block text-xs text-slate-500 mb-1">Этаж</label>
-                <select
-                  className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
-                  value={floor}
-                  onChange={(event) => setFloor(event.target.value)}
-                >
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-xs text-slate-500 mb-1">Линия</label>
-                <select
-                  className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
-                  value={line}
-                  onChange={(event) => setLine(event.target.value)}
-                >
-                  {Array.from({ length: 30 }, (_, index) => (
-                    <option key={index + 1} value={String(index + 1)}>
-                      {index + 1}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="col-span-2">
-                <label className="block text-xs text-slate-500 mb-1">Павильон</label>
-                <select
-                  className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
-                  value={pavilion}
-                  onChange={(event) => setPavilion(event.target.value)}
-                >
-                  {Array.from({ length: 70 }, (_, index) => (
-                    <option key={index + 1} value={String(index + 1)}>
-                      {index + 1}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
+            <label className="block text-xs text-slate-500 mb-1">Введите адрес вручную</label>
+            <textarea
+              className="w-full min-h-[88px] rounded-xl border border-slate-200 px-3 py-2 text-sm"
+              placeholder="Например: улица, дом, подъезд, квартира"
+              value={deliveryAddress}
+              onChange={(e) => setDeliveryAddress(e.target.value)}
+            />
+            <p className="text-[11px] text-slate-400">
+              Если адрес сохранён в профиле, он подставится автоматически — при необходимости измените.
+            </p>
           </div>
         ) : (
           <div className="bg-white rounded-2xl p-3 shadow-sm">

@@ -100,9 +100,28 @@ async def get_all(
     x_telegram_init_data: str | None = Header(None, alias="X-Telegram-Init-Data"),
     x_init_data: str | None = Header(None, alias="X-Init-Data"),
     x_kulcha_bot_auth: str | None = Header(None, alias="X-Kulcha-Bot-Auth"),
+    x_kulcha_bot_secret: str | None = Header(None, alias="X-Kulcha-Bot-Secret"),
 ):
+    settings = get_settings()
     init_data = (x_telegram_init_data or x_init_data or "").strip()
     if userId is not None:
+        if (
+            x_kulcha_bot_secret
+            and settings.bot_api_secret
+            and x_kulcha_bot_secret == settings.bot_api_secret
+        ):
+            result = await db.execute(
+                select(Order)
+                .options(
+                    joinedload(Order.user),
+                    joinedload(Order.restaurant),
+                    joinedload(Order.courier),
+                )
+                .where(Order.user_id == userId)
+                .order_by(Order.created_at.desc())
+            )
+            return [_to_dto(order) for order in result.unique().scalars().all()]
+
         user = await _require_customer_user(db, authorization, init_data, x_kulcha_bot_auth)
         if user.id != userId:
             raise HTTPException(403, "Cannot read other users orders")

@@ -12,3 +12,4 @@ class Restaurant(Base):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String, nullable=False)
     address: Mapped[str] = mapped_column(String, nullable=False)
+    image_link: Mapped[str | None] = mapped_column(String(2048), nullable=True)

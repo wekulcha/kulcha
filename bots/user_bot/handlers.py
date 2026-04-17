@@ -10,6 +10,20 @@ from config import (
     USER_MINI_APP_BASE,
     USER_MINI_APP_VERSION,
 )
+
+STATUS_RU = {
+    "CREATED": "Создан",
+    "ACCEPTED": "Принят",
+    "COOKING": "Готовится",
+    "DELIVERY": "В доставке",
+    "DONE": "Завершён",
+    "CANCELLED": "Отменён",
+}
+
+ORDER_TYPE_RU = {
+    "DELIVERY": "Доставка",
+    "DINE_IN": "В зале",
+}
 from keyboards import main_menu_keyboard, request_phone_keyboard
 
 router = Router()
@@ -132,12 +146,43 @@ async def profile(message: Message):
 
 @router.message(F.text == "📦 Статус заказа")
 async def order_status(message: Message):
-    await message.answer(
-        "<b>Статус заказа</b>\n"
-        "━━━━━━━━━━━━━━\n"
-        "Мы присылаем обновления в этот чат после оформления. "
-        "Также загляните в мини-приложение → «Профиль»."
-    )
+    if not BOT_API_SECRET:
+        await message.answer(
+            "<b>Статус заказа</b>\n━━━━━━━━━━━━━━\n"
+            "Сервис временно недоступен (не задан <code>KULCHA_BOT_API_SECRET</code> на сервере бота)."
+        )
+        return
+    uid = message.from_user.id
+    async with httpx.AsyncClient(timeout=15.0) as client:
+        r = await client.get(
+            f"{API_BASE}/orders",
+            params={"userId": uid},
+            headers={"X-Kulcha-Bot-Secret": BOT_API_SECRET},
+        )
+    if r.status_code != 200:
+        await message.answer("Не удалось загрузить заказы. Попробуйте позже.")
+        return
+    orders = r.json()
+    if not orders:
+        await message.answer("У вас пока нет заказов. Оформите заказ в мини-приложении.")
+        return
+    active_statuses = {"CREATED", "ACCEPTED", "COOKING", "DELIVERY"}
+    active = [o for o in orders if o.get("status") in active_statuses]
+    o = active[0] if active else orders[0]
+    st = o.get("status") or ""
+    ot = o.get("orderType") or ""
+    total = o.get("total")
+    lines = [
+        "<b>📦 Ваш заказ</b>",
+        "━━━━━━━━━━━━━━",
+        f"№ <code>{o.get('id')}</code>",
+        f"📌 Статус: <b>{STATUS_RU.get(st, st)}</b>",
+        f"🧾 {ORDER_TYPE_RU.get(ot, ot)}",
+        f"💰 <b>{total} ₽</b>" if total is not None else "",
+        "",
+        "<i>Подробности — в мини-приложении → «Профиль».</i>",
+    ]
+    await message.answer("\n".join(x for x in lines if x != ""))
 
 
 @router.message(F.text == "💬 Поддержка")

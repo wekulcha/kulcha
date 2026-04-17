@@ -3,6 +3,7 @@ import { AdminMealCreate, Meal } from "../../types/adminMeal";
 import {
   createAdminMeal,
   fetchAdminMeals,
+  updateAdminMeal,
   updateMealAvailability,
   uploadMealImage,
 } from "../../api/adminMeals";
@@ -17,7 +18,6 @@ const CATEGORY_OPTIONS = [
   { value: "SALAD", label: "Салаты" },
   { value: "DESSERT", label: "Десерты" },
   { value: "DRINK", label: "Напитки" },
-  { value: "SNACK", label: "Закуски" },
 ];
 
 interface CreateMealModalProps {
@@ -26,6 +26,8 @@ interface CreateMealModalProps {
   onSave: (data: AdminMealCreate) => void;
   loading: boolean;
   error: string | null;
+  mode?: "create" | "edit";
+  initialMeal?: Meal | null;
 }
 
 const CreateMealModal: React.FC<CreateMealModalProps> = ({
@@ -34,6 +36,8 @@ const CreateMealModal: React.FC<CreateMealModalProps> = ({
   onSave,
   loading,
   error,
+  mode = "create",
+  initialMeal = null,
 }) => {
   const [form, setForm] = useState<AdminMealCreate>({
     name: "",
@@ -47,6 +51,20 @@ const CreateMealModal: React.FC<CreateMealModalProps> = ({
   });
   const [uploadingImage, setUploadingImage] = useState(false);
   const [uploadErr, setUploadErr] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (mode !== "edit" || !initialMeal) return;
+    setForm({
+      name: initialMeal.name,
+      description: initialMeal.description ?? "",
+      weight: initialMeal.weight,
+      calorie: initialMeal.calorie,
+      image_link: initialMeal.image_link,
+      category: initialMeal.category,
+      price: initialMeal.price,
+      is_available: initialMeal.is_available,
+    });
+  }, [mode, initialMeal]);
 
   const handleChange = (field: keyof AdminMealCreate, value: unknown) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -72,7 +90,7 @@ const CreateMealModal: React.FC<CreateMealModalProps> = ({
       >
         <div className="flex items-start justify-between gap-2">
           <div className="text-sm font-semibold text-slate-900">
-            Новое блюдо
+            {mode === "edit" ? "Редактировать блюдо" : "Новое блюдо"}
           </div>
           <button
             type="button"
@@ -138,7 +156,7 @@ const CreateMealModal: React.FC<CreateMealModalProps> = ({
         {/* Image upload */}
         <div className="space-y-1">
           <label className="text-[11px] text-slate-600">
-            Изображение блюда * (JPG, JPEG, PNG)
+            Изображение блюда {mode === "create" ? "*" : ""} (JPG, JPEG, PNG)
           </label>
           <input
             type="file"
@@ -218,7 +236,7 @@ const CreateMealModal: React.FC<CreateMealModalProps> = ({
           disabled={loading || uploadingImage || !form.image_link}
           className="w-full rounded-2xl bg-slate-900 text-white text-xs font-semibold py-2 mt-1 disabled:opacity-60"
         >
-          {loading ? "Сохраняем..." : "Создать блюдо"}
+          {loading ? "Сохраняем..." : mode === "edit" ? "Сохранить" : "Создать блюдо"}
         </button>
       </form>
     </div>
@@ -235,7 +253,8 @@ export const AdminMenuTab: React.FC<AdminMenuTabProps> = ({
   const [createLoading, setCreateLoading] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
   const [editMeal, setEditMeal] = useState<Meal | null>(null);
-  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [editLoading, setEditLoading] = useState(false);
+  const [editError, setEditError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!restaurantId || Number.isNaN(restaurantId)) return;
@@ -275,6 +294,31 @@ export const AdminMenuTab: React.FC<AdminMenuTabProps> = ({
     }
   };
 
+  const handleEditSave = async (form: AdminMealCreate) => {
+    if (!editMeal) return;
+    try {
+      setEditLoading(true);
+      setEditError(null);
+      const updated = await updateAdminMeal(editMeal.id, editMeal, {
+        name: form.name,
+        description: form.description,
+        weight: form.weight,
+        calorie: form.calorie,
+        image_link: form.image_link,
+        category: form.category,
+        price: form.price,
+        is_available: form.is_available,
+      });
+      setMeals((prev) => prev.map((m) => (m.id === updated.id ? updated : m)));
+      setEditMeal(null);
+    } catch (err) {
+      console.error(err);
+      setEditError("Не удалось сохранить блюдо.");
+    } finally {
+      setEditLoading(false);
+    }
+  };
+
   const handleToggleAvailability = async (
     mealId: number,
     meal: Meal,
@@ -292,8 +336,8 @@ export const AdminMenuTab: React.FC<AdminMenuTabProps> = ({
   };
 
   const openEditModal = (meal: Meal) => {
+    setEditError(null);
     setEditMeal(meal);
-    setIsEditOpen(true);
   };
 
   return (
@@ -353,6 +397,7 @@ export const AdminMenuTab: React.FC<AdminMenuTabProps> = ({
                   type="button"
                   className="text-slate-400 hover:text-slate-700 text-sm"
                   onClick={() => openEditModal(meal)}
+                  aria-label="Редактировать блюдо"
                 >
                   ✏️
                 </button>
@@ -391,35 +436,16 @@ export const AdminMenuTab: React.FC<AdminMenuTabProps> = ({
         />
       )}
 
-      {isEditOpen && editMeal && (
-        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center px-4">
-          <div className="bg-white rounded-3xl p-4 w-full max-w-sm shadow-lg">
-            <div className="flex items-start justify-between gap-2 mb-3">
-              <div className="text-sm font-semibold text-slate-900">
-                Редактирование блюда
-              </div>
-              <button
-                type="button"
-                className="text-slate-400 hover:text-slate-700 text-lg leading-none"
-                onClick={() => {
-                  setIsEditOpen(false);
-                  setEditMeal(null);
-                }}
-              >
-                ×
-              </button>
-            </div>
-            <div className="text-xs text-slate-500">
-              Редактирование блюда будет реализовано в следующем шаге.
-            </div>
-            <div className="text-xs font-semibold text-slate-900 mt-2">
-              {editMeal.name}
-            </div>
-            <div className="text-[10px] text-slate-500 mt-1">
-              {editMeal.category} • {Math.round(editMeal.price)} ₽
-            </div>
-          </div>
-        </div>
+      {editMeal && (
+        <CreateMealModal
+          restaurantId={restaurantId}
+          mode="edit"
+          initialMeal={editMeal}
+          onCancel={() => setEditMeal(null)}
+          onSave={handleEditSave}
+          loading={editLoading}
+          error={editError}
+        />
       )}
     </div>
   );

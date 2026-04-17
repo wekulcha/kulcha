@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { fetchAdminRestaurants, createRestaurant } from "../api/admin";
 import { ApiError } from "../api/client";
-import type { CreateRestaurantRequest } from "../types/admin";
+import type { AdminRestaurantOverview, CreateRestaurantRequest } from "../types/admin";
 
 function formatApiFailure(err: unknown): string {
   if (err instanceof ApiError) {
@@ -28,6 +28,7 @@ function formatApiFailure(err: unknown): string {
 export function RestaurantsPage() {
   const queryClient = useQueryClient();
   const [showForm, setShowForm] = useState(false);
+  const [detail, setDetail] = useState<AdminRestaurantOverview | null>(null);
   const [form, setForm] = useState<CreateRestaurantRequest>({
     name: "",
     address: "",
@@ -122,20 +123,70 @@ export function RestaurantsPage() {
         </p>
       )}
 
-      <div className="grid gap-3">
+      <div className="grid gap-2">
         {restaurants.map((r) => (
-          <div
+          <button
             key={r.id}
-            className="bg-white rounded-3xl p-4 shadow-sm border border-slate-100"
+            type="button"
+            onClick={() => setDetail(r)}
+            className="bg-white rounded-2xl p-3 shadow-sm border border-slate-100 text-left hover:border-slate-300 transition-colors"
           >
-            <div className="font-semibold text-slate-900">{r.name}</div>
-            <div className="text-xs text-slate-500 mt-1">{r.address}</div>
-            <div className="text-xs text-slate-600 mt-2">
-              Сотрудников: {r.staff?.length ?? 0}, блюд: {r.meals?.length ?? 0}, заказов: {r.orderHistory?.length ?? 0}
+            <div className="font-semibold text-slate-900 text-sm">{r.name}</div>
+            <div className="text-[11px] text-slate-500 mt-0.5">{r.address}</div>
+            <div className="text-[10px] text-slate-500 mt-1">
+              Сотрудников: {r.staff?.length ?? 0} · блюд: {r.meals?.length ?? 0} · заказов:{" "}
+              {r.orderHistory?.length ?? 0}
             </div>
-          </div>
+          </button>
         ))}
       </div>
+
+      {detail && (
+        <div
+          className="fixed inset-0 z-50 bg-black/40 flex items-end sm:items-center justify-center p-4"
+          onClick={() => setDetail(null)}
+        >
+          <div
+            className="bg-white rounded-3xl p-4 w-full max-w-sm max-h-[85vh] overflow-y-auto shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-start gap-2 mb-2">
+              <div>
+                <div className="text-sm font-semibold text-slate-900">{detail.name}</div>
+                <div className="text-xs text-slate-500 mt-1">{detail.address}</div>
+              </div>
+              <button
+                type="button"
+                className="text-slate-400 hover:text-slate-700 text-lg leading-none"
+                onClick={() => setDetail(null)}
+              >
+                ×
+              </button>
+            </div>
+            <div className="text-[11px] text-slate-600 space-y-2">
+              <div>
+                <span className="font-semibold">ID:</span> {detail.id}
+              </div>
+              <div>
+                <span className="font-semibold">Сотрудники ({detail.staff?.length ?? 0}):</span>
+                <ul className="mt-1 list-disc pl-4 max-h-24 overflow-y-auto">
+                  {(detail.staff ?? []).slice(0, 20).map((s) => (
+                    <li key={s.id}>
+                      user {s.userId} · {s.permission}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <span className="font-semibold">Блюд в меню:</span> {detail.meals?.length ?? 0}
+              </div>
+              <div>
+                <span className="font-semibold">Заказов в истории:</span> {detail.orderHistory?.length ?? 0}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

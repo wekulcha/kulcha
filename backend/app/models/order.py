@@ -60,6 +60,9 @@ class Order(Base):
     delivery_fee: Mapped[Decimal] = mapped_column(Numeric, nullable=False)
     service_fee: Mapped[Decimal] = mapped_column(Numeric, nullable=False)
     total: Mapped[Decimal] = mapped_column(Numeric, nullable=False)
+    user_telegram_notify_message_id: Mapped[int | None] = mapped_column(
+        BigInteger, nullable=True
+    )
 
     user = relationship("User", lazy="joined")
     restaurant = relationship("Restaurant", lazy="joined")

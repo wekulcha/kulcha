@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { fetchMyOrders } from '../../api/orders';
-import { fetchCurrentUser } from '../../api/users';
+import { fetchCurrentUser, updateUserProfile } from '../../api/users';
 import { useAuth } from '../../context/AuthContext';
 import { Header } from '../../layout/Header';
 import { MiniAppShell } from '../../layout/MiniAppShell';
@@ -69,6 +69,9 @@ function OrderCard({ order }: { order: UserOrder }) {
 export function ProfilePage() {
   const navigate = useNavigate();
   const { currentUser, authError, authReady, reloadAuth } = useAuth();
+  const [addressDraft, setAddressDraft] = useState('');
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [saveProfileMsg, setSaveProfileMsg] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(currentUser);
   const [orders, setOrders] = useState<UserOrder[]>([]);
   const [loadingProfile, setLoadingProfile] = useState(false);
@@ -126,6 +129,14 @@ export function ProfilePage() {
     };
   }, [authReady, currentUser]);
 
+  useEffect(() => {
+    if (user?.address != null) {
+      setAddressDraft(user.address);
+    } else {
+      setAddressDraft('');
+    }
+  }, [user?.address]);
+
   const activeOrders = useMemo(
     () => orders.filter((order) => ACTIVE_STATUSES.has(order.status)),
     [orders]
@@ -170,13 +181,11 @@ export function ProfilePage() {
         {currentUser && (
           <section className="bg-white rounded-2xl p-3 shadow-sm space-y-2">
             <div className="text-sm font-semibold text-slate-900">Ваши данные</div>
-            <div className="text-xs text-slate-500">
-              Профиль загружается из серверной сессии mini app и используется для ваших заказов.
-            </div>
             {loadingProfile && <div className="text-xs text-slate-500">Обновляем профиль...</div>}
             {profileError && <div className="text-xs text-amber-600">{profileError}</div>}
+            {saveProfileMsg && <div className="text-xs text-emerald-600">{saveProfileMsg}</div>}
             {user && (
-              <div className="mt-2 space-y-2 text-sm">
+              <div className="mt-2 space-y-3 text-sm">
                 <div className="flex justify-between gap-2">
                   <span className="text-slate-500 shrink-0">Telegram ID</span>
                   <span className="font-mono text-slate-800 text-right">{user.telegram_id ?? '—'}</span>
@@ -188,6 +197,42 @@ export function ProfilePage() {
                 <div className="flex justify-between gap-2">
                   <span className="text-slate-500">Телефон</span>
                   <span className="text-slate-800 text-right">{displayPhone(user.phone)}</span>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs text-slate-500">Адрес для доставки</label>
+                  <textarea
+                    className="w-full min-h-[72px] rounded-xl border border-slate-200 px-2 py-1.5 text-sm"
+                    placeholder="Сохранится для следующих заказов"
+                    value={addressDraft}
+                    onChange={(e) => {
+                      setAddressDraft(e.target.value);
+                      setSaveProfileMsg(null);
+                    }}
+                  />
+                  <button
+                    type="button"
+                    disabled={savingProfile || !user.id}
+                    onClick={async () => {
+                      if (!user?.id) return;
+                      setSavingProfile(true);
+                      setSaveProfileMsg(null);
+                      try {
+                        const next = await updateUserProfile(user.id, {
+                          address: addressDraft.trim() || null,
+                        });
+                        setUser(next);
+                        setSaveProfileMsg('Сохранено.');
+                        void reloadAuth();
+                      } catch {
+                        setSaveProfileMsg('Не удалось сохранить.');
+                      } finally {
+                        setSavingProfile(false);
+                      }
+                    }}
+                    className="text-xs font-semibold text-white bg-slate-900 rounded-xl px-3 py-2 disabled:opacity-50"
+                  >
+                    {savingProfile ? 'Сохранение…' : 'Сохранить адрес'}
+                  </button>
                 </div>
               </div>
             )}
