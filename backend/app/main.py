@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import re
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -57,6 +58,21 @@ origins = [
     *settings.cors_additional_origins,
 ]
 
+_CORS_ORIGIN_REGEX = re.compile(r"https://.*\.ngrok-free\.app")
+
+
+def _apply_cors(request: Request, response: JSONResponse) -> JSONResponse:
+    """Дублирует логику CORSMiddleware для ответов из exception handler (иначе 500 без CORS)."""
+    origin = request.headers.get("origin")
+    if not origin:
+        return response
+    allowed = origin in origins or bool(_CORS_ORIGIN_REGEX.fullmatch(origin))
+    if allowed:
+        response.headers["Access-Control-Allow-Origin"] = origin
+        response.headers["Access-Control-Allow-Credentials"] = "true"
+    return response
+
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -70,7 +86,8 @@ app.add_middleware(
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception) -> JSONResponse:
     logger.error("Unhandled exception on %s %s: %s", request.method, request.url.path, exc, exc_info=True)
-    return JSONResponse(status_code=500, content={"detail": "Internal server error"})
+    response = JSONResponse(status_code=500, content={"detail": "Internal server error"})
+    return _apply_cors(request, response)
 
 
 app.include_router(auth.router)

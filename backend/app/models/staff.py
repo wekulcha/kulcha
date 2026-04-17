@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from sqlalchemy import BigInteger, ForeignKey, UniqueConstraint
+from sqlalchemy import BigInteger, Enum as SQLEnum, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
@@ -16,7 +16,11 @@ class Staff(Base):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     user_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("users.id"), nullable=False)
     restaurant_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("restaurant.id"), nullable=False)
-    permission: Mapped[StaffPermission] = mapped_column(nullable=False)
+    # VARCHAR, не нативный ENUM PostgreSQL — на проде часто нет типа staffpermission
+    permission: Mapped[StaffPermission] = mapped_column(
+        SQLEnum(StaffPermission, native_enum=False, length=64),
+        nullable=False,
+    )
 
     user = relationship("User", lazy="joined")
     restaurant = relationship("Restaurant", lazy="joined")
