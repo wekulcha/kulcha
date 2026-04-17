@@ -50,7 +50,19 @@ type LoadResult =
   | {
       ok: false;
       reason: "no_telegram_context" | "no_access" | "network";
+      /** Текст с сервера или сообщение об ошибке fetch (для отладки) */
+      detail?: string;
     };
+
+function parseErrorBody(text: string): string {
+  try {
+    const j = JSON.parse(text) as { detail?: unknown };
+    if (typeof j.detail === "string") return j.detail;
+  } catch {
+    /* ignore */
+  }
+  return text.slice(0, 500);
+}
 
 async function loadSession(): Promise<LoadResult> {
   // 1. Bot-generated HMAC token в URL — работает в любом браузере
@@ -80,11 +92,12 @@ async function loadSession(): Promise<LoadResult> {
           })),
         };
       } else if (resp.status === 403) {
-        return { ok: false, reason: "no_access" };
+        const t = await resp.text();
+        return { ok: false, reason: "no_access", detail: parseErrorBody(t) };
       }
       // 401/expired — fall through to initData
     } catch {
-      // network error — fall through
+      // сеть / abort — пробуем initData ниже
     }
   }
 
@@ -105,7 +118,12 @@ async function loadSession(): Promise<LoadResult> {
       body: JSON.stringify({}),
     });
     if (!resp.ok) {
-      return { ok: false, reason: "no_access" };
+      const t = await resp.text();
+      return {
+        ok: false,
+        reason: "no_access",
+        detail: `${resp.status}: ${parseErrorBody(t)}`,
+      };
     }
     const data = (await resp.json()) as SessionResponse;
     return {
@@ -123,8 +141,12 @@ async function loadSession(): Promise<LoadResult> {
         permissions: r.permissions ?? [],
       })),
     };
-  } catch {
-    return { ok: false, reason: "network" };
+  } catch (e) {
+    return {
+      ok: false,
+      reason: "network",
+      detail: e instanceof Error ? e.message : String(e),
+    };
   }
 }
 
@@ -155,10 +177,17 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({
           );
         } else if (result.reason === "no_access") {
           setAuthError(
-            "Нет доступа. Убедитесь, что вы добавлены как сотрудник ресторана, и откройте панель из бота."
+            [
+              "Нет доступа. Убедитесь, что вы добавлены как сотрудник ресторана, и откройте панель из бота.",
+              result.detail,
+            ]
+              .filter(Boolean)
+              .join(" ")
           );
         } else {
-          setAuthError("Не удалось подключиться к серверу.");
+          setAuthError(
+            ["Не удалось подключиться к серверу.", result.detail].filter(Boolean).join(" ")
+          );
         }
       })
       .catch(() => {

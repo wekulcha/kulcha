@@ -157,10 +157,11 @@ const CreateMealModal: React.FC<CreateMealModalProps> = ({
                 setUploadErr("Не удалось загрузить файл. Попробуйте JPG или PNG до 8 МБ.");
               } finally {
                 setUploadingImage(false);
+                // сбрасываем input, чтобы можно было выбрать тот же файл снова;
+                // нельзя ставить required на file — после сброса браузер считает поле пустым
                 e.target.value = "";
               }
             }}
-            required
           />
           <p className="text-[10px] text-slate-500">
             {uploadingImage

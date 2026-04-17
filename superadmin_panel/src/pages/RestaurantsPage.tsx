@@ -1,7 +1,29 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { fetchAdminRestaurants, createRestaurant } from "../api/admin";
+import { ApiError } from "../api/client";
 import type { CreateRestaurantRequest } from "../types/admin";
+
+function formatApiFailure(err: unknown): string {
+  if (err instanceof ApiError) {
+    try {
+      const j = JSON.parse(err.body) as { detail?: unknown };
+      const d = j.detail;
+      if (typeof d === "string") return d;
+      if (Array.isArray(d)) {
+        return d
+          .map((x) => (typeof x === "object" && x && "msg" in x ? String((x as { msg: string }).msg) : String(x)))
+          .join("; ");
+      }
+    } catch {
+      /* not JSON */
+    }
+    if (err.body) return err.body;
+    return `Ошибка ${err.status}`;
+  }
+  if (err instanceof Error) return err.message;
+  return String(err);
+}
 
 export function RestaurantsPage() {
   const queryClient = useQueryClient();
@@ -86,13 +108,19 @@ export function RestaurantsPage() {
             </button>
           </div>
           {createMutation.isError && (
-            <p className="text-xs text-red-600">{String(createMutation.error)}</p>
+            <p className="text-xs text-red-600 whitespace-pre-wrap break-words" role="alert">
+              {formatApiFailure(createMutation.error)}
+            </p>
           )}
         </div>
       )}
 
       {isLoading && <p className="text-sm text-slate-500">Загрузка…</p>}
-      {error && <p className="text-sm text-red-600">{String(error)}</p>}
+      {error && (
+        <p className="text-sm text-red-600 whitespace-pre-wrap break-words" role="alert">
+          {formatApiFailure(error)}
+        </p>
+      )}
 
       <div className="grid gap-3">
         {restaurants.map((r) => (
