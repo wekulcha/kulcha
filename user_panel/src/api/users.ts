@@ -13,11 +13,12 @@ interface UserDto {
 
 export function toUser(dto: UserDto): User {
   const id = dto.id ?? dto.telegramId ?? 0;
+  const tid = dto.id ?? dto.telegramId;
   return {
     id,
     username: dto.username,
     phone: dto.phone,
-    telegram_id: dto.id,
+    telegram_id: tid ?? null,
     email: dto.email ?? null,
     address: dto.address ?? null,
     registered_at: dto.registeredAt,
