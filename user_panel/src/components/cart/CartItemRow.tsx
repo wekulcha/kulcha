@@ -1,5 +1,6 @@
 import { useCart } from '../../context/CartContext';
 import type { CartItem } from '../../types/cart';
+import { mealImageUrl } from '../../utils/mealImageUrl';
 
 interface CartItemRowProps {
   item: CartItem;
@@ -15,7 +16,7 @@ export function CartItemRow({ item }: CartItemRowProps) {
       <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0">
         {item.meal.image_link ? (
           <img
-            src={item.meal.image_link}
+            src={mealImageUrl(item.meal.image_link)}
             alt={item.meal.name}
             className="w-full h-full object-cover"
           />

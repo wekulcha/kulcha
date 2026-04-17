@@ -7,6 +7,9 @@ const MenuPage = lazy(() => import('./pages/Menu/MenuPage').then((m) => ({ defau
 const CartPage = lazy(() => import('./pages/Cart/CartPage').then((m) => ({ default: m.CartPage })));
 const CheckoutPage = lazy(() => import('./pages/Checkout/CheckoutPage').then((m) => ({ default: m.CheckoutPage })));
 const ProfilePage = lazy(() => import('./pages/Profile/ProfilePage').then((m) => ({ default: m.ProfilePage })));
+const OrderHistoryPage = lazy(() =>
+  import('./pages/OrderHistory/OrderHistoryPage').then((m) => ({ default: m.OrderHistoryPage }))
+);
 
 const PageFallback = () => (
   <div className="min-h-screen flex items-center justify-center bg-slate-100">
@@ -21,5 +24,6 @@ export const router = createBrowserRouter([
   { path: '/cart', element: <Suspense fallback={<PageFallback />}><CartPage /></Suspense> },
   { path: '/checkout', element: <Suspense fallback={<PageFallback />}><CheckoutPage /></Suspense> },
   { path: '/profile', element: <Suspense fallback={<PageFallback />}><ProfilePage /></Suspense> },
+  { path: '/orders/history', element: <Suspense fallback={<PageFallback />}><OrderHistoryPage /></Suspense> },
 ]);
 

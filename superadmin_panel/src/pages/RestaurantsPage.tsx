@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   createRestaurant,
   deleteAdminRestaurant,
@@ -34,6 +34,7 @@ export function RestaurantsPage() {
   const queryClient = useQueryClient();
   const [showForm, setShowForm] = useState(false);
   const [detail, setDetail] = useState<AdminRestaurantOverview | null>(null);
+  const [search, setSearch] = useState("");
   const [form, setForm] = useState<CreateRestaurantRequest>({
     name: "",
     address: "",
@@ -67,17 +68,37 @@ export function RestaurantsPage() {
     },
   });
 
+  const filteredRestaurants = useMemo(() => {
+    const n = search.trim().toLowerCase();
+    if (!n) return restaurants;
+    return restaurants.filter((r) => {
+      const hay = [String(r.id), r.name ?? "", r.address ?? ""].join(" ").toLowerCase();
+      return hay.includes(n);
+    });
+  }, [restaurants, search]);
+
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-slate-900">Рестораны</h1>
-        <button
-          type="button"
-          onClick={() => setShowForm(true)}
-          className="px-4 py-2 bg-slate-900 text-white rounded-2xl text-sm font-medium hover:bg-slate-800"
-        >
-          + Создать ресторан
-        </button>
+      <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <h1 className="text-xl font-semibold text-slate-900">Рестораны</h1>
+          <div className="flex flex-col sm:flex-row gap-2 sm:items-center w-full sm:justify-end sm:flex-1 sm:min-w-0">
+            <input
+              type="search"
+              placeholder="Поиск по ID, названию, адресу…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full sm:max-w-xs rounded-xl border border-slate-200 px-3 py-2 text-sm"
+            />
+            <button
+              type="button"
+              onClick={() => setShowForm(true)}
+              className="shrink-0 px-4 py-2 bg-slate-900 text-white rounded-2xl text-sm font-medium hover:bg-slate-800"
+            >
+              + Создать ресторан
+            </button>
+          </div>
+        </div>
       </div>
 
       {showForm && (
@@ -137,59 +158,32 @@ export function RestaurantsPage() {
       )}
 
       <div className="grid gap-2">
-        {restaurants.map((r) => {
+        {filteredRestaurants.map((r) => {
           const active = r.isActive !== false;
           return (
-            <div
+            <button
               key={r.id}
-              className="bg-white rounded-2xl p-3 shadow-sm border border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2"
+              type="button"
+              onClick={() => setDetail(r)}
+              className="bg-white rounded-2xl p-3 shadow-sm border border-slate-100 text-left hover:border-slate-200 transition-colors w-full"
             >
-              <button
-                type="button"
-                onClick={() => setDetail(r)}
-                className="text-left flex-1 min-w-0 hover:opacity-90"
-              >
-                <div className="font-semibold text-slate-900 text-sm">{r.name}</div>
-                <div className="text-[11px] text-slate-500 mt-0.5">{r.address}</div>
-                <div className="text-[10px] text-slate-500 mt-1">
-                  <span className={active ? "text-emerald-700" : "text-slate-400"}>
-                    {active ? "активен" : "выключен"}
-                  </span>
-                  {" · "}
-                  Сотрудников: {r.staff?.length ?? 0} · блюд: {r.meals?.length ?? 0} · заказов:{" "}
-                  {r.orderHistory?.length ?? 0}
-                </div>
-              </button>
-              <div className="flex flex-wrap gap-1 shrink-0">
-                <button
-                  type="button"
-                  disabled={toggleMutation.isPending || deleteMutation.isPending}
-                  onClick={() => toggleMutation.mutate({ id: r.id, active: !active })}
-                  className="rounded-xl bg-slate-200 px-3 py-1.5 text-[11px] font-medium text-slate-800 disabled:opacity-50"
-                >
-                  {active ? "Отключить" : "Включить"}
-                </button>
-                <button
-                  type="button"
-                  disabled={toggleMutation.isPending || deleteMutation.isPending}
-                  onClick={() => {
-                    if (
-                      !window.confirm(
-                        `Удалить ресторан «${r.name}» безвозвратно? Только если нет заказов по нему.`
-                      )
-                    )
-                      return;
-                    deleteMutation.mutate(r.id);
-                  }}
-                  className="rounded-xl bg-red-50 px-3 py-1.5 text-[11px] font-medium text-red-700 disabled:opacity-50"
-                >
-                  Удалить
-                </button>
+              <div className="font-semibold text-slate-900 text-sm">{r.name}</div>
+              <div className="text-[11px] text-slate-500 mt-0.5">{r.address}</div>
+              <div className="text-[10px] text-slate-500 mt-1">
+                <span className={active ? "text-emerald-700" : "text-slate-400"}>
+                  {active ? "активен" : "выключен"}
+                </span>
+                {" · "}
+                Сотрудников: {r.staff?.length ?? 0} · блюд: {r.meals?.length ?? 0} · заказов:{" "}
+                {r.orderHistory?.length ?? 0}
               </div>
-            </div>
+            </button>
           );
         })}
       </div>
+      {!isLoading && filteredRestaurants.length === 0 && restaurants.length > 0 && (
+        <p className="text-sm text-slate-500">Ничего не найдено.</p>
+      )}
 
       {(toggleMutation.isError || deleteMutation.isError) && (
         <p className="text-xs text-red-600" role="alert">
@@ -239,6 +233,37 @@ export function RestaurantsPage() {
               <div>
                 <span className="font-semibold">Заказов в истории:</span> {detail.orderHistory?.length ?? 0}
               </div>
+            </div>
+            <div className="flex flex-wrap gap-2 mt-4 pt-3 border-t border-slate-100">
+              <button
+                type="button"
+                disabled={toggleMutation.isPending || deleteMutation.isPending}
+                onClick={() =>
+                  toggleMutation.mutate({
+                    id: detail.id,
+                    active: !(detail.isActive !== false),
+                  })
+                }
+                className="flex-1 min-w-[120px] rounded-xl bg-slate-200 px-3 py-2 text-xs font-medium text-slate-800 disabled:opacity-50"
+              >
+                {detail.isActive !== false ? "Отключить" : "Включить"}
+              </button>
+              <button
+                type="button"
+                disabled={toggleMutation.isPending || deleteMutation.isPending}
+                onClick={() => {
+                  if (
+                    !window.confirm(
+                      `Удалить ресторан «${detail.name}» безвозвратно? Только если нет заказов по нему.`
+                    )
+                  )
+                    return;
+                  deleteMutation.mutate(detail.id);
+                }}
+                className="flex-1 min-w-[120px] rounded-xl bg-red-50 px-3 py-2 text-xs font-medium text-red-700 disabled:opacity-50"
+              >
+                Удалить
+              </button>
             </div>
           </div>
         </div>

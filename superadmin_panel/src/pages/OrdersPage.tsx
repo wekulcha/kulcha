@@ -28,10 +28,11 @@ const STATUS_RU: Record<string, string> = {
 
 export function OrdersPage() {
   const [openId, setOpenId] = useState<number | null>(null);
+  const [orderQ, setOrderQ] = useState("");
 
   const { data: orders = [], isLoading, error } = useQuery({
-    queryKey: ["admin", "orders"],
-    queryFn: fetchAdminOrders,
+    queryKey: ["admin", "orders", orderQ],
+    queryFn: () => fetchAdminOrders(orderQ),
   });
 
   const { data: detail, isLoading: detailLoading } = useQuery({
@@ -44,7 +45,16 @@ export function OrdersPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-semibold text-slate-900">Заказы</h1>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+        <h1 className="text-xl font-semibold text-slate-900">Заказы</h1>
+        <input
+          type="search"
+          placeholder="№ заказа, ID ресторана или пользователя, название ресторана…"
+          value={orderQ}
+          onChange={(e) => setOrderQ(e.target.value)}
+          className="w-full sm:max-w-md rounded-xl border border-slate-200 px-3 py-2 text-sm"
+        />
+      </div>
       {isLoading && <p className="text-sm text-slate-500">Загрузка…</p>}
       {error && <p className="text-sm text-red-600">{String(error)}</p>}
       <div className="grid gap-2">
@@ -127,6 +137,12 @@ function OrderDetailBody({ d }: { d: AdminOrderDetail }) {
           <div className="col-span-2">
             <div className="text-[10px] text-slate-400 uppercase">Локация / адрес</div>
             <div>{d.deliveryAddress}</div>
+          </div>
+        )}
+        {d.tableNumber && (
+          <div className="col-span-2">
+            <div className="text-[10px] text-slate-400 uppercase">Стол</div>
+            <div>{d.tableNumber}</div>
           </div>
         )}
         <div>

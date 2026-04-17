@@ -30,8 +30,9 @@ export async function fetchAdminUsers(): Promise<AdminUserOverview[]> {
   return apiFetchJson<AdminUserOverview[]>("/admin/users", {}, { auth: true });
 }
 
-export async function fetchAdminOrders(): Promise<AdminOrderSummary[]> {
-  return apiFetchJson<AdminOrderSummary[]>("/admin/orders", {}, { auth: true });
+export async function fetchAdminOrders(q?: string): Promise<AdminOrderSummary[]> {
+  const qs = q?.trim() ? `?q=${encodeURIComponent(q.trim())}` : "";
+  return apiFetchJson<AdminOrderSummary[]>(`/admin/orders${qs}`, {}, { auth: true });
 }
 
 export async function fetchAdminOrderDetail(orderId: number): Promise<AdminOrderDetail> {

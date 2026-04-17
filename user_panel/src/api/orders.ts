@@ -4,6 +4,7 @@ import { apiFetchJson } from './client';
 interface OrderCheckoutBody {
   restaurantId: number;
   deliveryAddress: string | null;
+  tableNumber: string | null;
   orderType: 'DELIVERY' | 'DINE_IN';
   itemsTotal: number;
   deliveryFee: number;
@@ -17,6 +18,7 @@ interface OrderDto {
   status: UserOrder['status'];
   userId: number | null;
   deliveryAddress: string | null;
+  tableNumber: string | null;
   restaurantId: number | null;
   createdAt: string | null;
   updatedAt: string | null;
@@ -40,6 +42,7 @@ function toUserOrder(dto: OrderDto): UserOrder {
     status: dto.status,
     user_id: dto.userId,
     delivery_address: dto.deliveryAddress,
+    table_number: dto.tableNumber ?? null,
     restaurant_id: dto.restaurantId,
     created_at: dto.createdAt,
     updated_at: dto.updatedAt,
@@ -56,6 +59,7 @@ export async function createOrder(payload: CreateOrderPayload): Promise<OrderRes
   const body: OrderCheckoutBody = {
     restaurantId: payload.restaurant_id,
     deliveryAddress: payload.delivery_address ?? null,
+    tableNumber: payload.table_number ?? null,
     orderType: payload.service_type,
     itemsTotal: payload.items_total,
     deliveryFee: payload.delivery_fee,

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { fetchMyOrders } from '../../api/orders';
 import { fetchCurrentUser, updateUserProfile } from '../../api/users';
+import { OrderCard } from '../../components/orders/OrderCard';
 import { useAuth } from '../../context/AuthContext';
 import { Header } from '../../layout/Header';
 import { MiniAppShell } from '../../layout/MiniAppShell';
@@ -11,60 +12,9 @@ import { formatLocationParts, parseLocationParts } from '../../utils/locationFor
 
 const ACTIVE_STATUSES = new Set<OrderStatus>(['CREATED', 'ACCEPTED', 'COOKING', 'DELIVERY']);
 
-const STATUS_LABELS: Record<OrderStatus, string> = {
-  CREATED: 'Создан',
-  ACCEPTED: 'Принят',
-  COOKING: 'Готовится',
-  DELIVERY: 'В доставке',
-  DONE: 'Завершен',
-  CANCELLED: 'Отменен',
-};
-
-const ORDER_TYPE_LABELS = {
-  DELIVERY: 'Доставка',
-  DINE_IN: 'В зале',
-} as const;
-
-function formatDate(value: string | null): string {
-  if (!value) return '—';
-  const date = new Date(value);
-  return Number.isNaN(date.getTime())
-    ? value
-    : date.toLocaleString('ru-RU', {
-        day: '2-digit',
-        month: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-      });
-}
-
-function formatMoney(value: number | null): string {
-  if (value == null) return '—';
-  return `${value.toFixed(0)} ₽`;
-}
-
 function displayPhone(phone: string | null): string {
   if (!phone || phone.startsWith('tg-')) return '—';
   return phone;
-}
-
-function OrderCard({ order }: { order: UserOrder }) {
-  return (
-    <div className="rounded-xl border border-slate-100 bg-slate-50 px-3 py-3 space-y-1">
-      <div className="flex items-center justify-between gap-3">
-        <div className="text-sm font-semibold text-slate-900">Заказ №{order.id}</div>
-        <div className="text-xs text-slate-500">{STATUS_LABELS[order.status]}</div>
-      </div>
-      <div className="text-xs text-slate-500">{formatDate(order.created_at)}</div>
-      <div className="flex items-center justify-between gap-3 text-sm text-slate-700">
-        <span>{order.order_type ? ORDER_TYPE_LABELS[order.order_type] : '—'}</span>
-        <span className="font-semibold text-slate-900">{formatMoney(order.total)}</span>
-      </div>
-      {order.delivery_address && (
-        <div className="text-xs text-slate-500">Адрес: {order.delivery_address}</div>
-      )}
-    </div>
-  );
 }
 
 export function ProfilePage() {
@@ -73,6 +23,7 @@ export function ProfilePage() {
   const [floor, setFloor] = useState('');
   const [line, setLine] = useState('');
   const [pavilion, setPavilion] = useState('');
+  const [editingAddress, setEditingAddress] = useState(false);
   const [savingProfile, setSavingProfile] = useState(false);
   const [saveProfileMsg, setSaveProfileMsg] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(currentUser);
@@ -118,7 +69,7 @@ export function ProfilePage() {
           setOrders(ordersResult.value);
         } else {
           setOrders([]);
-          setOrdersError('Не удалось загрузить историю заказов.');
+          setOrdersError('Не удалось загрузить заказы.');
         }
       })
       .finally(() => {
@@ -143,10 +94,26 @@ export function ProfilePage() {
     () => orders.filter((order) => ACTIVE_STATUSES.has(order.status)),
     [orders]
   );
-  const pastOrders = useMemo(
-    () => orders.filter((order) => !ACTIVE_STATUSES.has(order.status)),
-    [orders]
-  );
+
+  const saveAddress = async () => {
+    if (!user?.id) return;
+    setSavingProfile(true);
+    setSaveProfileMsg(null);
+    try {
+      const addr = formatLocationParts(floor, line, pavilion).trim() || null;
+      const next = await updateUserProfile(user.id, {
+        address: addr,
+      });
+      setUser(next);
+      setSaveProfileMsg('Сохранено.');
+      setEditingAddress(false);
+      void reloadAuth();
+    } catch {
+      setSaveProfileMsg('Не удалось сохранить.');
+    } finally {
+      setSavingProfile(false);
+    }
+  };
 
   return (
     <MiniAppShell>
@@ -201,14 +168,53 @@ export function ProfilePage() {
                   <span className="text-slate-800 text-right">{displayPhone(user.phone)}</span>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-xs text-slate-500">Локация на рынке (этаж · линия · павильон)</label>
+                  <div className="flex items-start justify-between gap-2">
+                    <label className="text-xs text-slate-500 pt-0.5">
+                      Локация на рынке (этаж · линия · павильон)
+                    </label>
+                    <div className="flex shrink-0">
+                      {!editingAddress ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSaveProfileMsg(null);
+                            setEditingAddress(true);
+                          }}
+                          className="p-2 rounded-xl text-slate-500 hover:bg-slate-100 transition-colors"
+                          aria-label="Редактировать адрес"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                            />
+                          </svg>
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          disabled={savingProfile}
+                          onClick={() => void saveAddress()}
+                          className="p-2 rounded-xl text-emerald-600 hover:bg-emerald-50 transition-colors disabled:opacity-50"
+                          aria-label="Сохранить адрес"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          </svg>
+                        </button>
+                      )}
+                    </div>
+                  </div>
                   <div className="grid grid-cols-3 gap-2">
                     <div>
                       <span className="text-[10px] text-slate-400 block mb-0.5">Этаж</span>
                       <input
-                        className="w-full rounded-xl border border-slate-200 px-2 py-1.5 text-sm text-center"
+                        className="w-full rounded-xl border border-slate-200 px-2 py-1.5 text-sm text-center read-only:bg-slate-50 read-only:text-slate-600"
                         placeholder="—"
                         value={floor}
+                        readOnly={!editingAddress}
                         onChange={(e) => {
                           setFloor(e.target.value);
                           setSaveProfileMsg(null);
@@ -218,9 +224,10 @@ export function ProfilePage() {
                     <div>
                       <span className="text-[10px] text-slate-400 block mb-0.5">Линия</span>
                       <input
-                        className="w-full rounded-xl border border-slate-200 px-2 py-1.5 text-sm text-center"
+                        className="w-full rounded-xl border border-slate-200 px-2 py-1.5 text-sm text-center read-only:bg-slate-50 read-only:text-slate-600"
                         placeholder="—"
                         value={line}
+                        readOnly={!editingAddress}
                         onChange={(e) => {
                           setLine(e.target.value);
                           setSaveProfileMsg(null);
@@ -230,9 +237,10 @@ export function ProfilePage() {
                     <div>
                       <span className="text-[10px] text-slate-400 block mb-0.5">Павильон</span>
                       <input
-                        className="w-full rounded-xl border border-slate-200 px-2 py-1.5 text-sm text-center"
+                        className="w-full rounded-xl border border-slate-200 px-2 py-1.5 text-sm text-center read-only:bg-slate-50 read-only:text-slate-600"
                         placeholder="—"
                         value={pavilion}
+                        readOnly={!editingAddress}
                         onChange={(e) => {
                           setPavilion(e.target.value);
                           setSaveProfileMsg(null);
@@ -240,31 +248,6 @@ export function ProfilePage() {
                       />
                     </div>
                   </div>
-                  <button
-                    type="button"
-                    disabled={savingProfile || !user.id}
-                    onClick={async () => {
-                      if (!user?.id) return;
-                      setSavingProfile(true);
-                      setSaveProfileMsg(null);
-                      try {
-                        const addr = formatLocationParts(floor, line, pavilion).trim() || null;
-                        const next = await updateUserProfile(user.id, {
-                          address: addr,
-                        });
-                        setUser(next);
-                        setSaveProfileMsg('Сохранено.');
-                        void reloadAuth();
-                      } catch {
-                        setSaveProfileMsg('Не удалось сохранить.');
-                      } finally {
-                        setSavingProfile(false);
-                      }
-                    }}
-                    className="text-xs font-semibold text-white bg-slate-900 rounded-xl px-3 py-2 disabled:opacity-50"
-                  >
-                    {savingProfile ? 'Сохранение…' : 'Сохранить адрес'}
-                  </button>
                 </div>
               </div>
             )}
@@ -276,6 +259,7 @@ export function ProfilePage() {
           {!currentUser && (
             <div className="text-xs text-slate-500">После авторизации здесь появится активный заказ.</div>
           )}
+          {ordersError && <div className="text-xs text-amber-600">{ordersError}</div>}
           {currentUser && loadingOrders && (
             <div className="text-xs text-slate-500">Загружаем текущий заказ...</div>
           )}
@@ -287,26 +271,18 @@ export function ProfilePage() {
           )}
         </section>
 
-        <section className="bg-white rounded-2xl p-3 shadow-sm space-y-2">
-          <div className="text-sm font-semibold text-slate-900">История заказов</div>
-          {ordersError && <div className="text-xs text-amber-600">{ordersError}</div>}
-          {!currentUser && (
-            <div className="text-xs text-slate-500">История появится после входа в аккаунт.</div>
-          )}
-          {currentUser && loadingOrders && (
-            <div className="text-xs text-slate-500">Загружаем историю заказов...</div>
-          )}
-          {currentUser && !loadingOrders && pastOrders.length === 0 && !ordersError && (
-            <div className="text-xs text-slate-500">Пока завершенных заказов нет.</div>
-          )}
-          {currentUser && !loadingOrders && pastOrders.length > 0 && (
-            <div className="space-y-2">
-              {pastOrders.slice(0, 5).map((order) => (
-                <OrderCard key={order.id} order={order} />
-              ))}
-            </div>
-          )}
-        </section>
+        {currentUser && (
+          <section className="bg-white rounded-2xl p-3 shadow-sm">
+            <button
+              type="button"
+              className="w-full flex items-center justify-between py-1 text-sm text-slate-800 hover:bg-slate-50 rounded-lg px-1 transition-colors"
+              onClick={() => navigate('/orders/history')}
+            >
+              <span>История заказов</span>
+              <span className="text-slate-400 text-xs">›</span>
+            </button>
+          </section>
+        )}
 
         <section className="bg-white rounded-2xl p-3 shadow-sm space-y-1">
           <button

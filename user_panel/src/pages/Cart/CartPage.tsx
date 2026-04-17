@@ -76,7 +76,7 @@ export function CartPage() {
       {items.length > 0 && (
         <div className="fixed bottom-4 left-1/2 -translate-x-1/2 w-full max-w-[430px] px-4 z-20">
           <button
-            onClick={() => navigate('/checkout')}
+            onClick={() => navigate('/checkout', { replace: true })}
             className="w-full bg-slate-900 text-white text-sm font-semibold py-3 rounded-2xl shadow-lg hover:bg-slate-800 transition-colors"
           >
             ДАЛЕЕ

@@ -122,6 +122,7 @@ class AdminOrderDetailDto(BaseModel):
     updatedAt: datetime | None = None
     orderType: str
     deliveryAddress: str | None = None
+    tableNumber: str | None = None
     restaurantId: int
     restaurantName: str
     userId: int

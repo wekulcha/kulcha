@@ -106,6 +106,8 @@ def _format_user_order_block(
         parts.append(f"• {_esc(p.meal.name)} × {p.quantity} — {p.total_price} ₽")
     if order.delivery_address:
         parts.append(f"\n🚚 Адрес: {_esc(order.delivery_address)}")
+    if order.table_number:
+        parts.append(f"\n🪑 Стол: <b>{_esc(order.table_number)}</b>")
     if is_update:
         parts.append("\n<i>Статус обновлён. При следующем изменении пришлём новое сообщение.</i>")
     else:
@@ -132,21 +134,20 @@ def _format_admin_new_order(order: Order, lines: list[OrderPosition]) -> str:
         parts.append(f"• {_esc(p.meal.name)} × {p.quantity}")
     if order.delivery_address:
         parts.append(f"\n🚚 {_esc(order.delivery_address)}")
+    if order.table_number:
+        parts.append(f"\n🪑 Стол: <b>{_esc(order.table_number)}</b>")
     parts.append("\n<i>Выберите статус ниже ↓</i>")
     return "\n".join(parts)
 
 
 def _build_admin_keyboard(order_id: int) -> dict:
-    def _btn(text: str, code: str) -> list[dict]:
-        return [{"text": text, "callback_data": f"k:{order_id}:{code}"}]
-
+    """Новый заказ: отмена слева, принят справа. Дальше клавиатура обновляется из бота по статусу."""
     return {
         "inline_keyboard": [
-            _btn("✅ Принят", "ACC"),
-            _btn("👨‍🍳 Готовится", "COO"),
-            _btn("🚚 Доставка", "DEL"),
-            _btn("✔️ Готово", "DON"),
-            _btn("❌ Отмена", "CAN"),
+            [
+                {"text": "❌ Отмена", "callback_data": f"k:{order_id}:CAN"},
+                {"text": "✅ Принят", "callback_data": f"k:{order_id}:ACC"},
+            ]
         ]
     }
 

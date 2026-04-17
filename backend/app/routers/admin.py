@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy import delete, func, select
+from sqlalchemy import delete, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
@@ -349,12 +349,27 @@ async def remove_courier(
 async def admin_list_orders(
     db: AsyncSession = Depends(get_db),
     _caller: User = Depends(require_superadmin),
+    q: str | None = None,
 ):
-    result = await db.execute(
+    stmt = (
         select(Order)
         .options(joinedload(Order.user), joinedload(Order.restaurant))
         .order_by(Order.created_at.desc())
     )
+    raw = (q or "").strip()
+    if raw:
+        conds = [Restaurant.name.ilike(f"%{raw}%")]
+        if raw.isdigit():
+            n = int(raw)
+            conds.extend(
+                [
+                    Order.id == n,
+                    Order.user_id == n,
+                    Order.restaurant_id == n,
+                ]
+            )
+        stmt = stmt.join(Restaurant, Order.restaurant_id == Restaurant.id).where(or_(*conds))
+    result = await db.execute(stmt)
     rows = result.unique().scalars().all()
     return [
         AdminOrderSummaryDto(
@@ -408,6 +423,7 @@ async def admin_order_detail(
         updatedAt=o.updated_at,
         orderType=o.order_type.value,
         deliveryAddress=o.delivery_address,
+        tableNumber=o.table_number,
         restaurantId=o.restaurant_id,
         restaurantName=o.restaurant.name,
         userId=o.user_id,

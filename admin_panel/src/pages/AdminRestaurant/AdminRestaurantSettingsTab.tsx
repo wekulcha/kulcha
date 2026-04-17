@@ -70,9 +70,6 @@ export const AdminRestaurantSettingsTab: React.FC<Props> = ({ restaurantId }) =>
   return (
     <div className="bg-white rounded-3xl p-3 shadow-sm border border-slate-100 space-y-3">
       <div className="text-sm font-semibold text-slate-900">О ресторане</div>
-      <p className="text-[11px] text-slate-500">
-        Название и адрес в списке кафе, обложка — в карточке приложения для гостей.
-      </p>
       {loading && <div className="text-xs text-slate-500">Загрузка…</div>}
       {err && <div className="text-[11px] text-red-500">{err}</div>}
 

@@ -13,6 +13,8 @@ export interface CreateOrderPayload {
   restaurant_id: number;
   service_type: ServiceType;
   delivery_address: string | null;
+  /** Для заказа в зале */
+  table_number: string | null;
   username: string | null;
   phone: string;
   payment_method: PaymentMethod;
@@ -34,6 +36,7 @@ export interface UserOrder {
   status: OrderStatus;
   user_id: number | null;
   delivery_address: string | null;
+  table_number: string | null;
   restaurant_id: number | null;
   created_at: string | null;
   updated_at: string | null;

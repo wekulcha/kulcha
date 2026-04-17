@@ -63,6 +63,7 @@ class Order(Base):
     user_telegram_notify_message_id: Mapped[int | None] = mapped_column(
         BigInteger, nullable=True
     )
+    table_number: Mapped[str | None] = mapped_column(String, nullable=True)
 
     user = relationship("User", lazy="joined")
     restaurant = relationship("Restaurant", lazy="joined")

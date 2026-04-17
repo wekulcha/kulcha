@@ -27,6 +27,7 @@ function formatApiFailure(err: unknown): string {
 
 export function UsersPage() {
   const [q, setQ] = useState("");
+  const [detail, setDetail] = useState<AdminUserOverview | null>(null);
   const queryClient = useQueryClient();
   const { data: users = [], isLoading, error, isError } = useQuery({
     queryKey: ["admin", "users"],
@@ -41,7 +42,10 @@ export function UsersPage() {
 
   const deleteMutation = useMutation({
     mutationFn: (id: number) => deleteAdminUser(id),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin", "users"] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "users"] });
+      setDetail(null);
+    },
   });
 
   const filtered = useMemo(() => {
@@ -79,22 +83,32 @@ export function UsersPage() {
               <th className="px-2 py-2 font-medium">Ник</th>
               <th className="px-2 py-2 font-medium">Телефон</th>
               <th className="px-2 py-2 font-medium">Статус</th>
-              <th className="px-2 py-2 font-medium">Действия</th>
             </tr>
           </thead>
           <tbody>
-            {filtered.map((u) => (
-              <UserRow
-                key={u.id}
-                u={u}
-                onToggle={(active) => toggleMutation.mutate({ id: u.id, active })}
-                onDelete={() => {
-                  if (!window.confirm(`Удалить пользователя ${u.id} безвозвратно? Только если нет заказов.`)) return;
-                  deleteMutation.mutate(u.id);
-                }}
-                busy={toggleMutation.isPending || deleteMutation.isPending}
-              />
-            ))}
+            {filtered.map((u) => {
+              const active = u.isActive !== false;
+              return (
+                <tr
+                  key={u.id}
+                  onClick={() => setDetail(u)}
+                  className="border-t border-slate-100 hover:bg-slate-50/80 cursor-pointer"
+                >
+                  <td className="px-2 py-1.5 font-mono text-[11px]">{u.id}</td>
+                  <td className="px-2 py-1.5 max-w-[120px] truncate" title={u.username ?? ""}>
+                    {u.username || "—"}
+                  </td>
+                  <td className="px-2 py-1.5 max-w-[100px] truncate" title={u.phone ?? ""}>
+                    {u.phone || "—"}
+                  </td>
+                  <td className="px-2 py-1.5">
+                    <span className={active ? "text-emerald-700" : "text-slate-400"}>
+                      {active ? "активен" : "выкл."}
+                    </span>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
         {!isLoading && filtered.length === 0 && (
@@ -106,54 +120,88 @@ export function UsersPage() {
           {formatApiFailure(toggleMutation.error ?? deleteMutation.error)}
         </p>
       )}
-    </div>
-  );
-}
 
-function UserRow({
-  u,
-  onToggle,
-  onDelete,
-  busy,
-}: {
-  u: AdminUserOverview;
-  onToggle: (active: boolean) => void;
-  onDelete: () => void;
-  busy: boolean;
-}) {
-  const active = u.isActive !== false;
-  return (
-    <tr className="border-t border-slate-100 hover:bg-slate-50/80">
-      <td className="px-2 py-1.5 font-mono text-[11px]">{u.id}</td>
-      <td className="px-2 py-1.5 max-w-[100px] truncate" title={u.username ?? ""}>
-        {u.username || "—"}
-      </td>
-      <td className="px-2 py-1.5 max-w-[90px] truncate" title={u.phone ?? ""}>
-        {u.phone || "—"}
-      </td>
-      <td className="px-2 py-1.5">
-        <span className={active ? "text-emerald-700" : "text-slate-400"}>{active ? "активен" : "выкл."}</span>
-      </td>
-      <td className="px-2 py-1.5">
-        <div className="flex flex-wrap gap-1">
-          <button
-            type="button"
-            disabled={busy}
-            onClick={() => onToggle(!active)}
-            className="rounded-lg bg-slate-200 px-2 py-0.5 text-[10px] font-medium text-slate-800 disabled:opacity-50"
+      {detail && (
+        <div
+          className="fixed inset-0 z-50 bg-black/40 flex items-end sm:items-center justify-center p-4"
+          onClick={() => setDetail(null)}
+        >
+          <div
+            className="bg-white rounded-3xl p-4 w-full max-w-md max-h-[88vh] overflow-y-auto shadow-xl"
+            onClick={(e) => e.stopPropagation()}
           >
-            {active ? "Отключить" : "Включить"}
-          </button>
-          <button
-            type="button"
-            disabled={busy}
-            onClick={onDelete}
-            className="rounded-lg bg-red-50 px-2 py-0.5 text-[10px] font-medium text-red-700 disabled:opacity-50"
-          >
-            Удалить
-          </button>
+            <div className="flex justify-between items-start gap-2 mb-3">
+              <div>
+                <div className="text-sm font-semibold text-slate-900">
+                  {detail.username || `Пользователь ${detail.id}`}
+                </div>
+                <div className="text-[11px] text-slate-500 mt-0.5 font-mono">id: {detail.id}</div>
+              </div>
+              <button
+                type="button"
+                className="text-slate-400 hover:text-slate-700 text-lg leading-none"
+                onClick={() => setDetail(null)}
+              >
+                ×
+              </button>
+            </div>
+            <div className="text-[11px] text-slate-600 space-y-2">
+              <div>
+                <span className="font-semibold">Телефон:</span> {detail.phone || "—"}
+              </div>
+              <div>
+                <span className="font-semibold">Email:</span> {detail.email || "—"}
+              </div>
+              <div>
+                <span className="font-semibold">Адрес:</span> {detail.address || "—"}
+              </div>
+              <div>
+                <span className="font-semibold">Курьер:</span> {detail.courier ? "да" : "нет"}
+              </div>
+              <div>
+                <span className="font-semibold">Рестораны:</span>
+                <ul className="mt-1 list-disc pl-4 max-h-20 overflow-y-auto">
+                  {(detail.staffAssignments ?? []).map((s) => (
+                    <li key={`${s.restaurantId}-${s.permission}`}>
+                      {s.restaurantName} · {s.permission}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <span className="font-semibold">Заказов в истории:</span> {detail.orderHistory?.length ?? 0}
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-2 mt-4 pt-3 border-t border-slate-100">
+              <button
+                type="button"
+                disabled={toggleMutation.isPending || deleteMutation.isPending}
+                onClick={() =>
+                  toggleMutation.mutate({
+                    id: detail.id,
+                    active: !(detail.isActive !== false),
+                  })
+                }
+                className="flex-1 min-w-[120px] rounded-xl bg-slate-200 px-3 py-2 text-xs font-medium text-slate-800 disabled:opacity-50"
+              >
+                {detail.isActive !== false ? "Отключить" : "Включить"}
+              </button>
+              <button
+                type="button"
+                disabled={toggleMutation.isPending || deleteMutation.isPending}
+                onClick={() => {
+                  if (!window.confirm(`Удалить пользователя ${detail.id} безвозвратно? Только если нет заказов.`))
+                    return;
+                  deleteMutation.mutate(detail.id);
+                }}
+                className="flex-1 min-w-[120px] rounded-xl bg-red-50 px-3 py-2 text-xs font-medium text-red-700 disabled:opacity-50"
+              >
+                Удалить
+              </button>
+            </div>
+          </div>
         </div>
-      </td>
-    </tr>
+      )}
+    </div>
   );
 }

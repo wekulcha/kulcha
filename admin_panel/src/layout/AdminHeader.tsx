@@ -7,6 +7,8 @@ interface AdminHeaderProps {
   onBurgerClick?: () => void;
   onSearchClick?: () => void;
   showSearch?: boolean;
+  /** Если задан — справа вместо кнопки поиска (например иконка «ресторан»). */
+  rightSlot?: React.ReactNode;
 }
 
 export const AdminHeader: React.FC<AdminHeaderProps> = ({
@@ -16,6 +18,7 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
   onBurgerClick,
   onSearchClick,
   showSearch = true,
+  rightSlot,
 }) => {
   return (
     <header className="flex items-center justify-between px-4 py-3 bg-slate-50 border-b border-slate-200">
@@ -38,9 +41,11 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
         )}
       </button>
 
-      <div className="text-sm font-semibold text-slate-900 truncate px-2">{title}</div>
+      <div className="text-sm font-semibold text-slate-900 truncate px-2 flex-1 text-center">{title}</div>
 
-      {showSearch ? (
+      {rightSlot != null ? (
+        <div className="w-9 h-9 flex items-center justify-end">{rightSlot}</div>
+      ) : showSearch ? (
         <button
           type="button"
           onClick={onSearchClick}

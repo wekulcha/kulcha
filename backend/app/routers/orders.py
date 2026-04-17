@@ -32,6 +32,7 @@ def _to_dto(order: Order) -> OrderDto:
         status=order.status.value,
         userId=order.user_id,
         deliveryAddress=order.delivery_address,
+        tableNumber=order.table_number,
         restaurantId=order.restaurant_id,
         createdAt=order.created_at,
         updatedAt=order.updated_at,
@@ -254,10 +255,12 @@ async def checkout(
     if not rest_row or not rest_row.is_active:
         raise HTTPException(400, "Ресторан недоступен")
 
+    tn = (body.tableNumber.strip() if body.tableNumber else None) or None
     order = Order(
         status=OrderStatus.CREATED,
         user_id=customer.id,
         delivery_address=body.deliveryAddress,
+        table_number=tn,
         restaurant_id=body.restaurantId,
         created_at=datetime.now(),
         updated_at=datetime.now(),

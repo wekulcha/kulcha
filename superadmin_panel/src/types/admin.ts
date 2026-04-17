@@ -55,6 +55,7 @@ export interface AdminOrderDetail {
   updatedAt?: string | null;
   orderType: string;
   deliveryAddress: string | null;
+  tableNumber?: string | null;
   restaurantId: number;
   restaurantName: string;
   userId: number;

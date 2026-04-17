@@ -39,6 +39,8 @@ const STATUS_COLOR_CLASSES: Record<AdminOrderStatusCode, string> = {
 
 interface AdminOrdersTabProps {
   restaurantId: number;
+  /** Главный экран ресторана — без заголовка «Управление заказами». */
+  hideTitle?: boolean;
 }
 
 function getNextStatus(
@@ -341,6 +343,7 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
 
 export const AdminOrdersTab: React.FC<AdminOrdersTabProps> = ({
   restaurantId,
+  hideTitle = false,
 }) => {
   const [activeFilter, setActiveFilter] =
     useState<AdminOrderFilterStatus>("ALL");
@@ -392,10 +395,16 @@ export const AdminOrdersTab: React.FC<AdminOrdersTabProps> = ({
   ];
 
   return (
-    <div className="bg-white rounded-3xl p-3 shadow-sm border border-slate-100 space-y-3">
-      <div className="text-sm font-semibold text-slate-900">
-        Управление заказами
-      </div>
+    <div
+      className={
+        hideTitle
+          ? "space-y-3"
+          : "bg-white rounded-3xl p-3 shadow-sm border border-slate-100 space-y-3"
+      }
+    >
+      {!hideTitle && (
+        <div className="text-sm font-semibold text-slate-900">Управление заказами</div>
+      )}
 
       <div className="flex gap-1 overflow-x-auto no-scrollbar pb-1">
         {filters.map((f) => {

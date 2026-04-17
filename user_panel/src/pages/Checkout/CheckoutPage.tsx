@@ -35,6 +35,7 @@ export function CheckoutPage() {
   const [floor, setFloor] = useState('');
   const [line, setLine] = useState('');
   const [pavilion, setPavilion] = useState('');
+  const [tableNumber, setTableNumber] = useState('');
   const [username, setUsername] = useState<string>('');
   const [phone, setPhone] = useState<string>('');
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('CASH');
@@ -97,6 +98,7 @@ export function CheckoutPage() {
       restaurant_id: selectedRestaurant.id,
       service_type: serviceType,
       delivery_address: deliveryAddr,
+      table_number: serviceType === 'DINE_IN' ? tableNumber.trim() || null : null,
       username: username.replace(/^@/, '') || null,
       phone: phone.trim(),
       payment_method: paymentMethod,
@@ -138,7 +140,7 @@ export function CheckoutPage() {
         <Header
           title="Оформление"
           showBack
-          onBackClick={() => navigate('/cart')}
+          onBackClick={() => navigate('/cart', { replace: true })}
           onProfileClick={() => navigate('/profile')}
           showSearch={false}
         />
@@ -179,12 +181,7 @@ export function CheckoutPage() {
 
         {serviceType === 'DELIVERY' ? (
           <div className="bg-white rounded-2xl p-3 shadow-sm space-y-3">
-            <div>
-              <div className="text-sm font-semibold text-slate-900">Локация на рынке</div>
-              <p className="text-[11px] text-slate-500 mt-0.5">
-                Укажите этаж, линию и павильон — без улицы и дома.
-              </p>
-            </div>
+            <div className="text-sm font-semibold text-slate-900">Локация на рынке</div>
             <div className="grid grid-cols-3 gap-2">
               <div>
                 <label className="block text-[10px] font-medium text-slate-500 mb-1 uppercase tracking-wide">
@@ -224,16 +221,19 @@ export function CheckoutPage() {
                 />
               </div>
             </div>
-            <p className="text-[11px] text-slate-400">
-              Если адрес сохранён в профиле, поля подставятся автоматически.
-            </p>
           </div>
         ) : (
-          <div className="bg-white rounded-2xl p-3 shadow-sm">
-            <div className="text-sm font-semibold text-slate-900">Обслуживание в зале</div>
-            <div className="text-xs text-slate-500 mt-1">
-              Заказ будет подан в зале {selectedRestaurant?.name ?? ''}.
-            </div>
+          <div className="bg-white rounded-2xl p-3 shadow-sm space-y-2">
+            <div className="text-sm font-semibold text-slate-900">В зале</div>
+            <label className="block text-[11px] text-slate-500">Номер стола</label>
+            <input
+              type="text"
+              inputMode="numeric"
+              className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
+              placeholder="Например: 12"
+              value={tableNumber}
+              onChange={(e) => setTableNumber(e.target.value)}
+            />
           </div>
         )}
 

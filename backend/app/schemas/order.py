@@ -11,6 +11,7 @@ class OrderDto(BaseModel):
     status: str | None = None
     userId: int | None = None
     deliveryAddress: str | None = None
+    tableNumber: str | None = None
     restaurantId: int | None = None
     createdAt: datetime | None = None
     updatedAt: datetime | None = None
@@ -31,6 +32,7 @@ class OrderCheckoutLine(BaseModel):
 class OrderCheckoutRequest(BaseModel):
     restaurantId: int
     deliveryAddress: str | None = None
+    tableNumber: str | None = None
     orderType: str
     itemsTotal: Decimal | None = None
     deliveryFee: Decimal | None = None

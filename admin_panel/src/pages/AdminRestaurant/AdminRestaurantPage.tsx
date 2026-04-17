@@ -8,7 +8,8 @@ import { AdminStaffTab } from "./AdminStaffTab";
 import { AdminRestaurantSettingsTab } from "./AdminRestaurantSettingsTab";
 import { fetchRestaurant, type RestaurantDetail } from "../../api/adminRestaurant";
 
-type TabKey = "orders" | "menu" | "team" | "analytics" | "about";
+type MainView = "orders" | "hub";
+type HubTab = "about" | "menu" | "team" | "analytics";
 
 interface LocationState {
   restaurantName?: string;
@@ -25,7 +26,8 @@ export const AdminRestaurantPage: React.FC = () => {
     [params.id]
   );
 
-  const [activeTab, setActiveTab] = useState<TabKey>("orders");
+  const [mainView, setMainView] = useState<MainView>("orders");
+  const [hubTab, setHubTab] = useState<HubTab>("about");
   const [detail, setDetail] = useState<RestaurantDetail | null>(null);
   const restaurantName =
     detail?.name ??
@@ -45,6 +47,57 @@ export const AdminRestaurantPage: React.FC = () => {
     };
   }, [restaurantId]);
 
+  const hubButton = (
+    <button
+      type="button"
+      onClick={() => {
+        setMainView("hub");
+        setHubTab("about");
+      }}
+      className="w-9 h-9 rounded-full bg-slate-200 flex items-center justify-center text-slate-800 hover:bg-slate-300"
+      title="Ресторан"
+      aria-label="Настройки ресторана"
+    >
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+        />
+      </svg>
+    </button>
+  );
+
+  if (mainView === "hub") {
+    return (
+      <>
+        <AdminHeader
+          title="Ресторан"
+          showBack
+          onBackClick={() => setMainView("orders")}
+          showSearch={false}
+        />
+        <main className="flex-1 overflow-y-auto px-4 pt-3 pb-6 bg-gradient-to-b from-slate-50 to-slate-100">
+          <p className="text-sm font-semibold text-slate-900 mb-1">{restaurantName}</p>
+          <p className="text-xs text-slate-500 mb-3 line-clamp-2">{detail?.address ?? "—"}</p>
+          <div className="flex flex-wrap gap-1.5 mb-4">
+            <HubChip label="Карточка" active={hubTab === "about"} onClick={() => setHubTab("about")} />
+            <HubChip label="Меню" active={hubTab === "menu"} onClick={() => setHubTab("menu")} />
+            <HubChip label="Команда" active={hubTab === "team"} onClick={() => setHubTab("team")} />
+            <HubChip label="Аналитика" active={hubTab === "analytics"} onClick={() => setHubTab("analytics")} />
+          </div>
+          <div className="space-y-3">
+            {hubTab === "about" && <AdminRestaurantSettingsTab restaurantId={restaurantId} />}
+            {hubTab === "menu" && <AdminMenuTab restaurantId={restaurantId} />}
+            {hubTab === "team" && <AdminStaffTab restaurantId={restaurantId} />}
+            {hubTab === "analytics" && <AdminAnalyticsTab restaurantId={restaurantId} />}
+          </div>
+        </main>
+      </>
+    );
+  }
+
   return (
     <>
       <AdminHeader
@@ -53,134 +106,37 @@ export const AdminRestaurantPage: React.FC = () => {
         onBackClick={() => navigate(-1)}
         onBurgerClick={() => navigate("/profile")}
         showSearch={false}
+        rightSlot={hubButton}
       />
 
-      <main className="flex-1 overflow-y-auto px-4 pt-3 pb-6 bg-gradient-to-b from-slate-50 to-slate-100">
-        {/* Restaurant info card */}
-        <section className="mb-3">
-          <div className="bg-white rounded-3xl p-3 shadow-sm border border-slate-100">
-            <div className="text-sm font-semibold text-slate-900">{restaurantName}</div>
-            <div className="text-xs text-slate-500 mt-1 line-clamp-2">
-              {detail?.address ?? "Загрузка…"}
-            </div>
-            <p className="text-[11px] text-slate-400 mt-2">
-              Фото и редактирование карточки — во вкладке «Ресторан».
-            </p>
-          </div>
-        </section>
-
-        {/* Tabs */}
-        <section className="mb-4">
-          <div className="grid grid-cols-2 gap-2">
-            <TabButton
-              label="Заказы"
-              active={activeTab === "orders"}
-              color="emerald"
-              onClick={() => setActiveTab("orders")}
-            />
-            <TabButton
-              label="Меню"
-              active={activeTab === "menu"}
-              color="sky"
-              onClick={() => setActiveTab("menu")}
-            />
-            <TabButton
-              label="Команда"
-              active={activeTab === "team"}
-              color="amber"
-              onClick={() => setActiveTab("team")}
-            />
-            <TabButton
-              label="Аналитика"
-              active={activeTab === "analytics"}
-              color="violet"
-              onClick={() => setActiveTab("analytics")}
-            />
-            <div className="col-span-2">
-              <TabButton
-                label="Ресторан"
-                active={activeTab === "about"}
-                color="rose"
-                onClick={() => setActiveTab("about")}
-              />
-            </div>
-          </div>
-        </section>
-
-        {/* Tab content */}
-        <section className="space-y-3">
-          {activeTab === "orders" && (
-            <AdminOrdersTab restaurantId={restaurantId} />
-          )}
-          {activeTab === "menu" && (
-            <AdminMenuTab restaurantId={restaurantId} />
-          )}
-          {activeTab === "team" && (
-            <AdminStaffTab restaurantId={restaurantId} />
-          )}
-          {activeTab === "analytics" && (
-            <AdminAnalyticsTab restaurantId={restaurantId} />
-          )}
-          {activeTab === "about" && (
-            <AdminRestaurantSettingsTab restaurantId={restaurantId} />
-          )}
-        </section>
+      <main className="flex-1 overflow-y-auto px-4 pt-2 pb-6 bg-gradient-to-b from-slate-50 to-slate-100">
+        <AdminOrdersTab restaurantId={restaurantId} hideTitle />
       </main>
     </>
   );
 };
 
-interface TabButtonProps {
-  label: string;
-  active: boolean;
-  color: "emerald" | "sky" | "violet" | "amber" | "rose";
-  onClick: () => void;
-}
-
-const TabButton: React.FC<TabButtonProps> = ({
+function HubChip({
   label,
   active,
-  color,
   onClick,
-}) => {
-  const baseColors: Record<string, { active: string; inactive: string }> = {
-    emerald: {
-      active: "from-emerald-500 to-emerald-600 text-white",
-      inactive: "bg-emerald-50 text-emerald-700",
-    },
-    sky: {
-      active: "from-sky-500 to-sky-600 text-white",
-      inactive: "bg-sky-50 text-sky-700",
-    },
-    violet: {
-      active: "from-violet-500 to-violet-600 text-white",
-      inactive: "bg-violet-50 text-violet-700",
-    },
-    amber: {
-      active: "from-amber-500 to-amber-600 text-white",
-      inactive: "bg-amber-50 text-amber-800",
-    },
-    rose: {
-      active: "from-rose-500 to-rose-600 text-white",
-      inactive: "bg-rose-50 text-rose-800",
-    },
-  };
-
-  const colors = baseColors[color];
-
+}: {
+  label: string;
+  active: boolean;
+  onClick: () => void;
+}) {
   return (
     <button
       type="button"
       onClick={onClick}
       className={
-        "w-full rounded-2xl px-3 py-3 text-xs font-semibold shadow-sm transition-transform active:scale-[0.98] " +
+        "rounded-full px-3 py-1.5 text-xs font-medium border transition-colors " +
         (active
-          ? `bg-gradient-to-br ${colors.active}`
-          : `${colors.inactive} border border-transparent`)
+          ? "bg-slate-900 text-white border-slate-900"
+          : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50")
       }
     >
       {label}
     </button>
   );
-};
-
+}

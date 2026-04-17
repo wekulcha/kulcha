@@ -9,6 +9,7 @@ from aiogram.filters import CommandStart
 
 from config import ADMIN_MINI_APP_URL, API_BASE, BOT_TOKEN, INTERNAL_API_SECRET, SUPPORT_LINK
 from keyboards import main_menu_keyboard
+from order_keyboard import order_status_keyboard
 
 
 def _generate_bot_auth_token(telegram_id: int, ttl: int = 600) -> str:
@@ -130,7 +131,10 @@ async def order_status_callback(query: CallbackQuery):
             await query.answer("Статус обновлён ✓")
             if query.message:
                 try:
-                    await query.message.edit_reply_markup(reply_markup=None)
+                    data = r.json() if r.content else {}
+                    st = str(data.get("status") or "")
+                    new_kb = order_status_keyboard(order_id, st)
+                    await query.message.edit_reply_markup(reply_markup=new_kb)
                 except Exception:
                     pass
         else:
