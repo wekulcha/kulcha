@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends, Header, HTTPException
-from sqlalchemy import select
+from sqlalchemy import select, true
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
@@ -39,17 +39,32 @@ def _meal_dto(m: Meal) -> MealDto:
 
 @router.get("")
 async def get_all(db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(Restaurant))
+    result = await db.execute(select(Restaurant).where(Restaurant.is_active == true()))
     return [_to_dto(r) for r in result.scalars().all()]
 
 
 @router.get("/{restaurant_id}")
-async def get_by_id(restaurant_id: int, db: AsyncSession = Depends(get_db)):
+async def get_by_id(
+    restaurant_id: int,
+    db: AsyncSession = Depends(get_db),
+    x_telegram_init_data: str | None = Header(None, alias="X-Telegram-Init-Data"),
+):
     result = await db.execute(select(Restaurant).where(Restaurant.id == restaurant_id))
     r = result.scalars().first()
     if not r:
         raise HTTPException(404, "Restaurant not found")
-    return _to_dto(r)
+    if r.is_active:
+        return _to_dto(r)
+    if x_telegram_init_data:
+        settings = get_settings()
+        tg = verify_telegram_init_data(x_telegram_init_data, settings.admin_bot_token)
+        if tg:
+            result_u = await db.execute(select(User).where(User.id == tg["id"]))
+            u = result_u.scalars().first()
+            if u:
+                await staff_access.require_restaurant_staff(db, u.id, restaurant_id)
+                return _to_dto(r)
+    raise HTTPException(404, "Restaurant not found")
 
 
 @router.patch("/{restaurant_id}")
@@ -93,8 +108,23 @@ async def get_meals(
     x_telegram_init_data: str | None = Header(None, alias="X-Telegram-Init-Data"),
 ):
     result = await db.execute(select(Restaurant).where(Restaurant.id == restaurant_id))
-    if not result.scalars().first():
+    r = result.scalars().first()
+    if not r:
         raise HTTPException(404, "Restaurant not found")
+    if not r.is_active:
+        if availableOnly:
+            raise HTTPException(404, "Restaurant not found")
+        if not x_telegram_init_data:
+            raise HTTPException(404, "Restaurant not found")
+        settings = get_settings()
+        tg = verify_telegram_init_data(x_telegram_init_data, settings.admin_bot_token)
+        if not tg:
+            raise HTTPException(404, "Restaurant not found")
+        result_u = await db.execute(select(User).where(User.id == tg["id"]))
+        u = result_u.scalars().first()
+        if not u:
+            raise HTTPException(404, "Restaurant not found")
+        await staff_access.require_restaurant_staff(db, u.id, restaurant_id)
 
     if not availableOnly:
         if not x_telegram_init_data:

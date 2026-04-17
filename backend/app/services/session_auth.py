@@ -121,6 +121,8 @@ async def get_user_from_bearer(db: AsyncSession, authorization: str | None) -> U
     user = result.scalars().first()
     if not user:
         raise HTTPException(401, "User not found for access token")
+    if not user.is_active:
+        raise HTTPException(403, "Аккаунт отключён")
     return user
 
 
@@ -128,6 +130,8 @@ async def ensure_customer(db: AsyncSession, telegram_id: int, username: str | No
     result = await db.execute(select(User).where(User.id == telegram_id))
     user = result.scalars().first()
     if user:
+        if not user.is_active:
+            raise HTTPException(403, "Аккаунт отключён")
         return user
 
     user = User(
@@ -181,6 +185,8 @@ async def rotate_refresh_session(
     user = result.scalars().first()
     if not user:
         raise HTTPException(401, "User not found for refresh session")
+    if not user.is_active:
+        raise HTTPException(403, "Аккаунт отключён")
     return user, refresh_token, refresh_expires_at
 
 

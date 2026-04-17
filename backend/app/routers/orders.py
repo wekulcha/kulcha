@@ -13,9 +13,11 @@ from app.database import get_db
 from app.models.enums import OrderStatus, OrderType
 from app.models.meal import Meal
 from app.models.order import Order
+from app.models.restaurant import Restaurant
 from app.models.order_position import OrderPosition
 from app.models.user import User
 from app.schemas.order import OrderCheckoutRequest, OrderDto, OrderStatusPatchDto
+from app.deps.superadmin import assert_superadmin
 from app.services import staff_access
 from app.services.session_auth import ensure_customer, get_user_from_bearer
 from app.services.telegram_auth import verify_bot_link_token, verify_telegram_init_data
@@ -145,6 +147,7 @@ async def get_all(
         return [_to_dto(order) for order in result.unique().scalars().all()]
 
     if status is not None:
+        await assert_superadmin(db, authorization)
         try:
             parsed_status = OrderStatus(status)
         except ValueError as exc:
@@ -157,6 +160,7 @@ async def get_all(
         )
         return [_to_dto(order) for order in result.unique().scalars().all()]
 
+    await assert_superadmin(db, authorization)
     result = await db.execute(
         select(Order)
         .options(joinedload(Order.user), joinedload(Order.restaurant), joinedload(Order.courier))
@@ -244,6 +248,11 @@ async def checkout(
 
     if not body.items:
         raise HTTPException(400, "Invalid checkout payload")
+
+    r_check = await db.execute(select(Restaurant).where(Restaurant.id == body.restaurantId))
+    rest_row = r_check.scalars().first()
+    if not rest_row or not rest_row.is_active:
+        raise HTTPException(400, "Ресторан недоступен")
 
     order = Order(
         status=OrderStatus.CREATED,

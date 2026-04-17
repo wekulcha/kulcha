@@ -99,6 +99,8 @@ async def _list_restaurants_for_staff(db: AsyncSession, user_id: int) -> list[Us
     restaurants = []
     for assignments in grouped.values():
         first = assignments[0]
+        if not first.restaurant.is_active:
+            continue
         restaurants.append(
             UserRestaurantDto(
                 id=first.restaurant.id,
@@ -316,6 +318,8 @@ async def webapp_admin(
     user = result.scalars().first()
     if not user:
         user = await ensure_customer(db, int(tid), tg_user.get("username"))
+    elif not user.is_active:
+        raise HTTPException(403, "Аккаунт отключён")
 
     restaurants = await _list_restaurants_for_staff(db, user.id)
     if not restaurants:

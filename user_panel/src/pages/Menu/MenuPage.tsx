@@ -7,6 +7,7 @@ import { useAppContext } from '../../context/AppContext';
 import { fetchMealsByRestaurant } from '../../api/meals';
 import { MenuItemCard } from '../../components/menu/MenuItemCard';
 import type { Meal } from '../../types/meal';
+import { mealCategoryLabel } from '../../utils/mealCategoryLabels';
 
 export function MenuPage() {
   const { restaurantId } = useParams<{ restaurantId: string }>();
@@ -232,7 +233,7 @@ export function MenuPage() {
                         : 'bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200')
                     }
                   >
-                    {cat}
+                    {mealCategoryLabel(cat)}
                   </button>
                 );
               })}
@@ -298,7 +299,7 @@ export function MenuPage() {
                     className="space-y-2"
                   >
                     <div className="text-sm font-semibold text-slate-800 px-1">
-                      {cat}
+                      {mealCategoryLabel(cat)}
                     </div>
                     <div className="space-y-3">
                       {mealsInCat.map((meal) => (

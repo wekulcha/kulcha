@@ -2,11 +2,23 @@ import enum
 
 
 class MealCategory(str, enum.Enum):
+    # Основные блюда
     FIRST = "FIRST"
     SECOND = "SECOND"
+    SOUP = "SOUP"
     SALAD = "SALAD"
+    SIDE = "SIDE"
+    # Выпечка, шашлыки, комбо и т.д.
+    BAKERY = "BAKERY"
+    KEBAB = "KEBAB"
+    GRILL = "GRILL"
+    COMBO = "COMBO"
+    SNACK = "SNACK"
+    BREAKFAST = "BREAKFAST"
     DESSERT = "DESSERT"
     DRINK = "DRINK"
+    SAUCE = "SAUCE"
+    PLATTER = "PLATTER"
 
 
 class OrderStatus(str, enum.Enum):

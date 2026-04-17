@@ -7,6 +7,7 @@ from sqlalchemy.orm import joinedload
 
 from app.config import get_settings
 from app.database import get_db
+from app.deps.superadmin import assert_superadmin
 from app.models.order import Order
 from app.models.order_position import OrderPosition
 from app.models.user import User
@@ -38,6 +39,7 @@ async def get_all(
     mealId: int | None = None,
     db: AsyncSession = Depends(get_db),
     x_telegram_init_data: str | None = Header(None, alias="X-Telegram-Init-Data"),
+    authorization: str | None = Header(None, alias="Authorization"),
 ):
     if orderId is not None:
         if not x_telegram_init_data:
@@ -70,6 +72,7 @@ async def get_all(
         return [_to_dto(p) for p in result.unique().scalars().all()]
 
     if mealId is not None:
+        await assert_superadmin(db, authorization)
         result = await db.execute(
             select(OrderPosition)
             .options(joinedload(OrderPosition.meal), joinedload(OrderPosition.order))
@@ -77,6 +80,7 @@ async def get_all(
         )
         return [_to_dto(p) for p in result.unique().scalars().all()]
 
+    await assert_superadmin(db, authorization)
     result = await db.execute(
         select(OrderPosition)
         .options(joinedload(OrderPosition.meal), joinedload(OrderPosition.order))

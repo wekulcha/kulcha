@@ -32,7 +32,8 @@ services:
       KULCHA_AUTH_COOKIE_SECURE: ${KULCHA_AUTH_COOKIE_SECURE:-true}
       KULCHA_SUPERADMIN_BOT_TOKEN: ${KULCHA_SUPERADMIN_BOT_TOKEN:-}
       KULCHA_SUPERADMIN_ALLOWED_IDS: ${KULCHA_SUPERADMIN_ALLOWED_IDS:-}
-      KULCHA_INTERNAL_API_SECRET: ${KULCHA_INTERNAL_API_SECRET:-}
+      # Должен совпадать с admin_bot; для продакшена задайте в .env своё значение.
+      KULCHA_INTERNAL_API_SECRET: ${KULCHA_INTERNAL_API_SECRET:-kulcha-local-internal-api-secret}
       KULCHA_BOT_API_SECRET: ${KULCHA_BOT_API_SECRET:-}
     depends_on:
       postgres:
@@ -99,7 +100,8 @@ services:
       - backend
     environment:
       KULCHA_ADMIN_BOT_TOKEN: ${KULCHA_ADMIN_BOT_TOKEN:-}
-      KULCHA_INTERNAL_API_SECRET: ${KULCHA_INTERNAL_API_SECRET:-}
+      # Должен совпадать с admin_bot; для продакшена задайте в .env своё значение.
+      KULCHA_INTERNAL_API_SECRET: ${KULCHA_INTERNAL_API_SECRET:-kulcha-local-internal-api-secret}
       KULCHA_API_BASE: http://backend:8000/api/v1
       KULCHA_ADMIN_MINI_APP_URL: https://${ADMIN_DOMAIN:-admin.wekulcha.online}
       KULCHA_SUPPORT_LINK: ${KULCHA_SUPPORT_LINK:-https://t.me/support}

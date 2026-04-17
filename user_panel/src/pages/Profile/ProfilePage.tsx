@@ -7,6 +7,7 @@ import { Header } from '../../layout/Header';
 import { MiniAppShell } from '../../layout/MiniAppShell';
 import type { OrderStatus, UserOrder } from '../../types/order';
 import type { User } from '../../types/user';
+import { formatLocationParts, parseLocationParts } from '../../utils/locationFormat';
 
 const ACTIVE_STATUSES = new Set<OrderStatus>(['CREATED', 'ACCEPTED', 'COOKING', 'DELIVERY']);
 
@@ -69,7 +70,9 @@ function OrderCard({ order }: { order: UserOrder }) {
 export function ProfilePage() {
   const navigate = useNavigate();
   const { currentUser, authError, authReady, reloadAuth } = useAuth();
-  const [addressDraft, setAddressDraft] = useState('');
+  const [floor, setFloor] = useState('');
+  const [line, setLine] = useState('');
+  const [pavilion, setPavilion] = useState('');
   const [savingProfile, setSavingProfile] = useState(false);
   const [saveProfileMsg, setSaveProfileMsg] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(currentUser);
@@ -130,11 +133,10 @@ export function ProfilePage() {
   }, [authReady, currentUser]);
 
   useEffect(() => {
-    if (user?.address != null) {
-      setAddressDraft(user.address);
-    } else {
-      setAddressDraft('');
-    }
+    const p = parseLocationParts(user?.address ?? null);
+    setFloor(p.floor);
+    setLine(p.line);
+    setPavilion(p.pavilion);
   }, [user?.address]);
 
   const activeOrders = useMemo(
@@ -198,17 +200,46 @@ export function ProfilePage() {
                   <span className="text-slate-500">Телефон</span>
                   <span className="text-slate-800 text-right">{displayPhone(user.phone)}</span>
                 </div>
-                <div className="space-y-1">
-                  <label className="text-xs text-slate-500">Адрес для доставки</label>
-                  <textarea
-                    className="w-full min-h-[72px] rounded-xl border border-slate-200 px-2 py-1.5 text-sm"
-                    placeholder="Сохранится для следующих заказов"
-                    value={addressDraft}
-                    onChange={(e) => {
-                      setAddressDraft(e.target.value);
-                      setSaveProfileMsg(null);
-                    }}
-                  />
+                <div className="space-y-2">
+                  <label className="text-xs text-slate-500">Локация на рынке (этаж · линия · павильон)</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    <div>
+                      <span className="text-[10px] text-slate-400 block mb-0.5">Этаж</span>
+                      <input
+                        className="w-full rounded-xl border border-slate-200 px-2 py-1.5 text-sm text-center"
+                        placeholder="—"
+                        value={floor}
+                        onChange={(e) => {
+                          setFloor(e.target.value);
+                          setSaveProfileMsg(null);
+                        }}
+                      />
+                    </div>
+                    <div>
+                      <span className="text-[10px] text-slate-400 block mb-0.5">Линия</span>
+                      <input
+                        className="w-full rounded-xl border border-slate-200 px-2 py-1.5 text-sm text-center"
+                        placeholder="—"
+                        value={line}
+                        onChange={(e) => {
+                          setLine(e.target.value);
+                          setSaveProfileMsg(null);
+                        }}
+                      />
+                    </div>
+                    <div>
+                      <span className="text-[10px] text-slate-400 block mb-0.5">Павильон</span>
+                      <input
+                        className="w-full rounded-xl border border-slate-200 px-2 py-1.5 text-sm text-center"
+                        placeholder="—"
+                        value={pavilion}
+                        onChange={(e) => {
+                          setPavilion(e.target.value);
+                          setSaveProfileMsg(null);
+                        }}
+                      />
+                    </div>
+                  </div>
                   <button
                     type="button"
                     disabled={savingProfile || !user.id}
@@ -217,8 +248,9 @@ export function ProfilePage() {
                       setSavingProfile(true);
                       setSaveProfileMsg(null);
                       try {
+                        const addr = formatLocationParts(floor, line, pavilion).trim() || null;
                         const next = await updateUserProfile(user.id, {
-                          address: addressDraft.trim() || null,
+                          address: addr,
                         });
                         setUser(next);
                         setSaveProfileMsg('Сохранено.');

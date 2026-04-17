@@ -7,18 +7,12 @@ import {
   updateMealAvailability,
   uploadMealImage,
 } from "../../api/adminMeals";
+import { MEAL_CATEGORY_OPTIONS, mealCategoryLabel } from "../../utils/mealCategory";
+import { mealImageUrl } from "../../utils/mealImageUrl";
 
 interface AdminMenuTabProps {
   restaurantId: number;
 }
-
-const CATEGORY_OPTIONS = [
-  { value: "FIRST", label: "Первое" },
-  { value: "SECOND", label: "Второе" },
-  { value: "SALAD", label: "Салаты" },
-  { value: "DESSERT", label: "Десерты" },
-  { value: "DRINK", label: "Напитки" },
-];
 
 interface CreateMealModalProps {
   restaurantId: number;
@@ -129,7 +123,7 @@ const CreateMealModal: React.FC<CreateMealModalProps> = ({
             <option value="" disabled>
               Выберите категорию
             </option>
-            {CATEGORY_OPTIONS.map((opt) => (
+            {MEAL_CATEGORY_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
                 {opt.label}
               </option>
@@ -383,12 +377,25 @@ export const AdminMenuTab: React.FC<AdminMenuTabProps> = ({
               }
             >
               <div className="flex items-start justify-between gap-2">
-                <div className="flex-1">
+                <div className="w-12 h-12 rounded-xl bg-slate-100 overflow-hidden flex-shrink-0 border border-slate-100">
+                  {meal.image_link ? (
+                    <img
+                      src={mealImageUrl(meal.image_link)}
+                      alt=""
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-[10px] text-slate-400">
+                      нет фото
+                    </div>
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
                   <div className="text-xs font-semibold text-slate-900 truncate">
                     {meal.name}
                   </div>
                   <div className="text-[10px] text-slate-500">
-                    {meal.category} • {Math.round(meal.price)} ₽
+                    {mealCategoryLabel(meal.category)} · {Math.round(meal.price)} ₽
                   </div>
                 </div>
 

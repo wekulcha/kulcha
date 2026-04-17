@@ -1,17 +1,19 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, Header, HTTPException
-from sqlalchemy import select
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy import delete, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
-from app.config import get_settings
 from app.database import get_db
+from app.deps.superadmin import require_superadmin
 from app.models.courier import Courier
 from app.models.enums import StaffPermission
 from app.models.meal import Meal
 from app.models.order import Order
+from app.models.order_position import OrderPosition
 from app.models.restaurant import Restaurant
+from app.models.subscription_log import SubscriptionLog
 from app.models.staff import Staff
 from app.models.user import User
 from app.schemas.admin import (
@@ -19,31 +21,21 @@ from app.schemas.admin import (
     AdminAssignStaffRequestDto,
     AdminCourierDto,
     AdminCreateRestaurantRequestDto,
+    AdminOrderDetailDto,
     AdminOrderHistoryItemDto,
+    AdminOrderPositionLineDto,
+    AdminOrderSummaryDto,
     AdminRestaurantDto,
     AdminRestaurantOverviewDto,
+    AdminSetActiveDto,
     AdminStaffAssignmentDto,
+    AdminStatsSummaryDto,
     AdminUserOverviewDto,
 )
 from app.schemas.meal import MealDto
 from app.schemas.order import OrderDto
 from app.schemas.staff import StaffDto
-from app.services.session_auth import get_user_from_bearer
-
 router = APIRouter(prefix="/api/v1/admin", tags=["admin"])
-
-
-async def _require_superadmin(
-    db: AsyncSession = Depends(get_db),
-    authorization: str | None = Header(None, alias="Authorization"),
-) -> User:
-    user = await get_user_from_bearer(db, authorization)
-    if not user:
-        raise HTTPException(401, "Authorization bearer token is required")
-    settings = get_settings()
-    if settings.superadmin_allowed_ids and user.id not in settings.superadmin_allowed_ids:
-        raise HTTPException(403, "Нет доступа. Ваш ID не в списке разработчиков.")
-    return user
 
 
 def _meal_dto(m: Meal) -> MealDto:
@@ -103,7 +95,7 @@ async def _grant_owner_full_staff_access(
 @router.get("/users")
 async def get_all_users(
     db: AsyncSession = Depends(get_db),
-    _caller: User = Depends(_require_superadmin),
+    _caller: User = Depends(require_superadmin),
 ):
     users_result = await db.execute(select(User))
     users = users_result.scalars().all()
@@ -143,6 +135,7 @@ async def get_all_users(
         overviews.append(AdminUserOverviewDto(
             id=user.id, username=user.username, phone=user.phone,
             email=user.email, address=user.address,
+            isActive=user.is_active,
             courier=is_courier,
             staffAssignments=staff_assignments,
             orderHistory=order_history,
@@ -153,7 +146,7 @@ async def get_all_users(
 @router.get("/couriers")
 async def get_all_couriers(
     db: AsyncSession = Depends(get_db),
-    _caller: User = Depends(_require_superadmin),
+    _caller: User = Depends(require_superadmin),
 ):
     result = await db.execute(select(Courier).options(joinedload(Courier.user)))
     return [
@@ -168,7 +161,7 @@ async def get_all_couriers(
 @router.get("/restaurants")
 async def get_all_restaurants(
     db: AsyncSession = Depends(get_db),
-    _caller: User = Depends(_require_superadmin),
+    _caller: User = Depends(require_superadmin),
 ):
     restaurants_result = await db.execute(select(Restaurant))
     restaurants = restaurants_result.scalars().all()
@@ -193,6 +186,8 @@ async def get_all_restaurants(
 
         overviews.append(AdminRestaurantOverviewDto(
             id=r.id, name=r.name, address=r.address,
+            imageLink=r.image_link,
+            isActive=r.is_active,
             staff=staff_list, meals=meals_list, orderHistory=orders_list,
         ))
     return overviews
@@ -202,7 +197,7 @@ async def get_all_restaurants(
 async def get_user_restaurants(
     user_id: int,
     db: AsyncSession = Depends(get_db),
-    _caller: User = Depends(_require_superadmin),
+    _caller: User = Depends(require_superadmin),
 ):
     result = await db.execute(select(User).where(User.id == user_id))
     if not result.scalars().first():
@@ -235,7 +230,7 @@ async def get_user_restaurants(
 async def create_restaurant(
     request: AdminCreateRestaurantRequestDto,
     db: AsyncSession = Depends(get_db),
-    _caller: User = Depends(_require_superadmin),
+    _caller: User = Depends(require_superadmin),
 ):
     if not request.name or not request.name.strip():
         raise HTTPException(400, "Нужно указать название ресторана")
@@ -250,7 +245,11 @@ async def create_restaurant(
             "Пользователь с таким ID не найден. Сначала создайте пользователя (например, /start в боте).",
         )
 
-    restaurant = Restaurant(name=request.name.strip(), address=request.address.strip())
+    restaurant = Restaurant(
+        name=request.name.strip(),
+        address=request.address.strip(),
+        is_active=True,
+    )
     db.add(restaurant)
     await db.flush()
 
@@ -271,7 +270,7 @@ async def create_restaurant(
 async def assign_courier(
     request: AdminAssignCourierRequestDto,
     db: AsyncSession = Depends(get_db),
-    _caller: User = Depends(_require_superadmin),
+    _caller: User = Depends(require_superadmin),
 ):
     result = await db.execute(select(User).where(User.id == request.userId))
     user = result.scalars().first()
@@ -297,7 +296,7 @@ async def assign_staff(
     restaurant_id: int,
     request: AdminAssignStaffRequestDto,
     db: AsyncSession = Depends(get_db),
-    _caller: User = Depends(_require_superadmin),
+    _caller: User = Depends(require_superadmin),
 ):
     if not request.permission:
         raise HTTPException(400, "permission is required")
@@ -337,10 +336,174 @@ async def assign_staff(
 async def remove_courier(
     courier_id: int,
     db: AsyncSession = Depends(get_db),
-    _caller: User = Depends(_require_superadmin),
+    _caller: User = Depends(require_superadmin),
 ):
     result = await db.execute(select(Courier).where(Courier.id == courier_id))
     c = result.scalars().first()
     if not c:
         raise HTTPException(404, "Courier not found")
     await db.delete(c)
+
+
+@router.get("/orders", response_model=list[AdminOrderSummaryDto])
+async def admin_list_orders(
+    db: AsyncSession = Depends(get_db),
+    _caller: User = Depends(require_superadmin),
+):
+    result = await db.execute(
+        select(Order)
+        .options(joinedload(Order.user), joinedload(Order.restaurant))
+        .order_by(Order.created_at.desc())
+    )
+    rows = result.unique().scalars().all()
+    return [
+        AdminOrderSummaryDto(
+            id=o.id,
+            status=o.status.value,
+            createdAt=o.created_at,
+            updatedAt=o.updated_at,
+            orderType=o.order_type.value,
+            restaurantId=o.restaurant_id,
+            restaurantName=o.restaurant.name,
+            userId=o.user_id,
+            username=o.user.username,
+            total=o.total,
+        )
+        for o in rows
+    ]
+
+
+@router.get("/orders/{order_id}", response_model=AdminOrderDetailDto)
+async def admin_order_detail(
+    order_id: int,
+    db: AsyncSession = Depends(get_db),
+    _caller: User = Depends(require_superadmin),
+):
+    result = await db.execute(
+        select(Order)
+        .options(joinedload(Order.user), joinedload(Order.restaurant))
+        .where(Order.id == order_id)
+    )
+    o = result.unique().scalars().first()
+    if not o:
+        raise HTTPException(404, "Order not found")
+    pos_result = await db.execute(
+        select(OrderPosition)
+        .options(joinedload(OrderPosition.meal))
+        .where(OrderPosition.order_id == order_id)
+    )
+    positions = [
+        AdminOrderPositionLineDto(
+            mealName=p.meal.name,
+            quantity=p.quantity,
+            unitPrice=p.unit_price,
+            totalPrice=p.total_price,
+        )
+        for p in pos_result.unique().scalars().all()
+    ]
+    return AdminOrderDetailDto(
+        id=o.id,
+        status=o.status.value,
+        createdAt=o.created_at,
+        updatedAt=o.updated_at,
+        orderType=o.order_type.value,
+        deliveryAddress=o.delivery_address,
+        restaurantId=o.restaurant_id,
+        restaurantName=o.restaurant.name,
+        userId=o.user_id,
+        username=o.user.username,
+        phone=o.user.phone,
+        itemsTotal=o.items_total,
+        deliveryFee=o.delivery_fee,
+        serviceFee=o.service_fee,
+        total=o.total,
+        positions=positions,
+    )
+
+
+@router.get("/stats/summary", response_model=AdminStatsSummaryDto)
+async def admin_stats_summary(
+    db: AsyncSession = Depends(get_db),
+    _caller: User = Depends(require_superadmin),
+):
+    users_n = int(await db.scalar(select(func.count()).select_from(User)) or 0)
+    rest_n = int(await db.scalar(select(func.count()).select_from(Restaurant)) or 0)
+    orders_n = int(await db.scalar(select(func.count()).select_from(Order)) or 0)
+    return AdminStatsSummaryDto(users=users_n, restaurants=rest_n, orders=orders_n)
+
+
+@router.patch("/users/{user_id}/status")
+async def set_user_active(
+    user_id: int,
+    body: AdminSetActiveDto,
+    db: AsyncSession = Depends(get_db),
+    _caller: User = Depends(require_superadmin),
+):
+    result = await db.execute(select(User).where(User.id == user_id))
+    user = result.scalars().first()
+    if not user:
+        raise HTTPException(404, "User not found")
+    user.is_active = body.isActive
+    await db.flush()
+    return {"ok": True}
+
+
+@router.delete("/users/{user_id}", status_code=204)
+async def delete_user(
+    user_id: int,
+    db: AsyncSession = Depends(get_db),
+    _caller: User = Depends(require_superadmin),
+):
+    n_orders = await db.scalar(select(func.count()).select_from(Order).where(Order.user_id == user_id))
+    if n_orders and int(n_orders) > 0:
+        raise HTTPException(
+            409,
+            "У пользователя есть заказы. Отключите аккаунт вместо удаления.",
+        )
+    await db.execute(delete(Staff).where(Staff.user_id == user_id))
+    await db.execute(delete(Courier).where(Courier.user_id == user_id))
+    result = await db.execute(select(User).where(User.id == user_id))
+    user = result.scalars().first()
+    if not user:
+        raise HTTPException(404, "User not found")
+    await db.delete(user)
+
+
+@router.patch("/restaurants/{restaurant_id}/status")
+async def set_restaurant_active(
+    restaurant_id: int,
+    body: AdminSetActiveDto,
+    db: AsyncSession = Depends(get_db),
+    _caller: User = Depends(require_superadmin),
+):
+    result = await db.execute(select(Restaurant).where(Restaurant.id == restaurant_id))
+    r = result.scalars().first()
+    if not r:
+        raise HTTPException(404, "Restaurant not found")
+    r.is_active = body.isActive
+    await db.flush()
+    return {"ok": True}
+
+
+@router.delete("/restaurants/{restaurant_id}", status_code=204)
+async def delete_restaurant(
+    restaurant_id: int,
+    db: AsyncSession = Depends(get_db),
+    _caller: User = Depends(require_superadmin),
+):
+    n_orders = await db.scalar(
+        select(func.count()).select_from(Order).where(Order.restaurant_id == restaurant_id)
+    )
+    if n_orders and int(n_orders) > 0:
+        raise HTTPException(
+            409,
+            "У ресторана есть заказы. Деактивируйте вместо удаления.",
+        )
+    await db.execute(delete(SubscriptionLog).where(SubscriptionLog.restaurant_id == restaurant_id))
+    await db.execute(delete(Meal).where(Meal.restaurant_id == restaurant_id))
+    await db.execute(delete(Staff).where(Staff.restaurant_id == restaurant_id))
+    result = await db.execute(select(Restaurant).where(Restaurant.id == restaurant_id))
+    r = result.scalars().first()
+    if not r:
+        raise HTTPException(404, "Restaurant not found")
+    await db.delete(r)

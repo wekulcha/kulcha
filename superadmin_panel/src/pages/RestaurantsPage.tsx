@@ -1,6 +1,11 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { fetchAdminRestaurants, createRestaurant } from "../api/admin";
+import {
+  createRestaurant,
+  deleteAdminRestaurant,
+  fetchAdminRestaurants,
+  setRestaurantActive,
+} from "../api/admin";
 import { ApiError } from "../api/client";
 import type { AdminRestaurantOverview, CreateRestaurantRequest } from "../types/admin";
 
@@ -49,6 +54,19 @@ export function RestaurantsPage() {
     },
   });
 
+  const toggleMutation = useMutation({
+    mutationFn: ({ id, active }: { id: number; active: boolean }) => setRestaurantActive(id, active),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin", "restaurants"] }),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: number) => deleteAdminRestaurant(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "restaurants"] });
+      setDetail(null);
+    },
+  });
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -90,12 +108,7 @@ export function RestaurantsPage() {
             <button
               type="button"
               onClick={() => createMutation.mutate(form)}
-              disabled={
-                !form.name ||
-                !form.address ||
-                !form.ownerUserId ||
-                createMutation.isPending
-              }
+              disabled={!form.name || !form.address || !form.ownerUserId || createMutation.isPending}
               className="px-4 py-2 bg-emerald-600 text-white rounded-xl text-sm disabled:opacity-50"
             >
               {createMutation.isPending ? "Создание…" : "Создать"}
@@ -124,22 +137,65 @@ export function RestaurantsPage() {
       )}
 
       <div className="grid gap-2">
-        {restaurants.map((r) => (
-          <button
-            key={r.id}
-            type="button"
-            onClick={() => setDetail(r)}
-            className="bg-white rounded-2xl p-3 shadow-sm border border-slate-100 text-left hover:border-slate-300 transition-colors"
-          >
-            <div className="font-semibold text-slate-900 text-sm">{r.name}</div>
-            <div className="text-[11px] text-slate-500 mt-0.5">{r.address}</div>
-            <div className="text-[10px] text-slate-500 mt-1">
-              Сотрудников: {r.staff?.length ?? 0} · блюд: {r.meals?.length ?? 0} · заказов:{" "}
-              {r.orderHistory?.length ?? 0}
+        {restaurants.map((r) => {
+          const active = r.isActive !== false;
+          return (
+            <div
+              key={r.id}
+              className="bg-white rounded-2xl p-3 shadow-sm border border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2"
+            >
+              <button
+                type="button"
+                onClick={() => setDetail(r)}
+                className="text-left flex-1 min-w-0 hover:opacity-90"
+              >
+                <div className="font-semibold text-slate-900 text-sm">{r.name}</div>
+                <div className="text-[11px] text-slate-500 mt-0.5">{r.address}</div>
+                <div className="text-[10px] text-slate-500 mt-1">
+                  <span className={active ? "text-emerald-700" : "text-slate-400"}>
+                    {active ? "активен" : "выключен"}
+                  </span>
+                  {" · "}
+                  Сотрудников: {r.staff?.length ?? 0} · блюд: {r.meals?.length ?? 0} · заказов:{" "}
+                  {r.orderHistory?.length ?? 0}
+                </div>
+              </button>
+              <div className="flex flex-wrap gap-1 shrink-0">
+                <button
+                  type="button"
+                  disabled={toggleMutation.isPending || deleteMutation.isPending}
+                  onClick={() => toggleMutation.mutate({ id: r.id, active: !active })}
+                  className="rounded-xl bg-slate-200 px-3 py-1.5 text-[11px] font-medium text-slate-800 disabled:opacity-50"
+                >
+                  {active ? "Отключить" : "Включить"}
+                </button>
+                <button
+                  type="button"
+                  disabled={toggleMutation.isPending || deleteMutation.isPending}
+                  onClick={() => {
+                    if (
+                      !window.confirm(
+                        `Удалить ресторан «${r.name}» безвозвратно? Только если нет заказов по нему.`
+                      )
+                    )
+                      return;
+                    deleteMutation.mutate(r.id);
+                  }}
+                  className="rounded-xl bg-red-50 px-3 py-1.5 text-[11px] font-medium text-red-700 disabled:opacity-50"
+                >
+                  Удалить
+                </button>
+              </div>
             </div>
-          </button>
-        ))}
+          );
+        })}
       </div>
+
+      {(toggleMutation.isError || deleteMutation.isError) && (
+        <p className="text-xs text-red-600" role="alert">
+          {formatApiFailure(toggleMutation.error ?? deleteMutation.error)}
+        </p>
+      )}
 
       {detail && (
         <div

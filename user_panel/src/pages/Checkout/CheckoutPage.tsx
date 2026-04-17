@@ -8,6 +8,7 @@ import { useCart } from '../../context/CartContext';
 import { Header } from '../../layout/Header';
 import { MiniAppShell } from '../../layout/MiniAppShell';
 import type { CreateOrderPayload, PaymentMethod } from '../../types/order';
+import { formatLocationParts, parseLocationParts } from '../../utils/locationFormat';
 
 function sanitizePhone(phone: string | null): string {
   if (!phone || phone.startsWith('tg-')) return '';
@@ -31,7 +32,9 @@ export function CheckoutPage() {
   const [serviceFee] = useState<number>(0);
   const total = itemsTotal + deliveryFee + serviceFee;
 
-  const [deliveryAddress, setDeliveryAddress] = useState('');
+  const [floor, setFloor] = useState('');
+  const [line, setLine] = useState('');
+  const [pavilion, setPavilion] = useState('');
   const [username, setUsername] = useState<string>('');
   const [phone, setPhone] = useState<string>('');
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('CASH');
@@ -47,7 +50,10 @@ export function CheckoutPage() {
 
   useEffect(() => {
     if (!currentUser?.address?.trim()) return;
-    setDeliveryAddress((prev) => (prev.trim() ? prev : currentUser.address!.trim()));
+    const p = parseLocationParts(currentUser.address);
+    setFloor((prev) => (prev.trim() ? prev : p.floor));
+    setLine((prev) => (prev.trim() ? prev : p.line));
+    setPavilion((prev) => (prev.trim() ? prev : p.pavilion));
   }, [currentUser?.address]);
 
   const handleSubmit = async () => {
@@ -79,12 +85,13 @@ export function CheckoutPage() {
       return;
     }
 
-    if (serviceType === 'DELIVERY' && !deliveryAddress.trim()) {
-      setErrorMessage('Укажите адрес доставки.');
+    const deliveryAddr =
+      serviceType === 'DELIVERY' ? formatLocationParts(floor, line, pavilion).trim() : null;
+
+    if (serviceType === 'DELIVERY' && !deliveryAddr) {
+      setErrorMessage('Укажите этаж, линию и павильон.');
       return;
     }
-
-    const deliveryAddr = serviceType === 'DELIVERY' ? deliveryAddress.trim() : null;
 
     const payload: CreateOrderPayload = {
       restaurant_id: selectedRestaurant.id,
@@ -171,17 +178,54 @@ export function CheckoutPage() {
         )}
 
         {serviceType === 'DELIVERY' ? (
-          <div className="bg-white rounded-2xl p-3 shadow-sm space-y-2">
-            <div className="text-sm font-semibold text-slate-900">Адрес доставки</div>
-            <label className="block text-xs text-slate-500 mb-1">Введите адрес вручную</label>
-            <textarea
-              className="w-full min-h-[88px] rounded-xl border border-slate-200 px-3 py-2 text-sm"
-              placeholder="Например: улица, дом, подъезд, квартира"
-              value={deliveryAddress}
-              onChange={(e) => setDeliveryAddress(e.target.value)}
-            />
+          <div className="bg-white rounded-2xl p-3 shadow-sm space-y-3">
+            <div>
+              <div className="text-sm font-semibold text-slate-900">Локация на рынке</div>
+              <p className="text-[11px] text-slate-500 mt-0.5">
+                Укажите этаж, линию и павильон — без улицы и дома.
+              </p>
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              <div>
+                <label className="block text-[10px] font-medium text-slate-500 mb-1 uppercase tracking-wide">
+                  Этаж
+                </label>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  className="w-full rounded-xl border border-slate-200 px-2 py-2 text-sm text-center placeholder:text-slate-300"
+                  placeholder="—"
+                  value={floor}
+                  onChange={(e) => setFloor(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="block text-[10px] font-medium text-slate-500 mb-1 uppercase tracking-wide">
+                  Линия
+                </label>
+                <input
+                  type="text"
+                  className="w-full rounded-xl border border-slate-200 px-2 py-2 text-sm text-center placeholder:text-slate-300"
+                  placeholder="—"
+                  value={line}
+                  onChange={(e) => setLine(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="block text-[10px] font-medium text-slate-500 mb-1 uppercase tracking-wide">
+                  Павильон
+                </label>
+                <input
+                  type="text"
+                  className="w-full rounded-xl border border-slate-200 px-2 py-2 text-sm text-center placeholder:text-slate-300"
+                  placeholder="—"
+                  value={pavilion}
+                  onChange={(e) => setPavilion(e.target.value)}
+                />
+              </div>
+            </div>
             <p className="text-[11px] text-slate-400">
-              Если адрес сохранён в профиле, он подставится автоматически — при необходимости измените.
+              Если адрес сохранён в профиле, поля подставятся автоматически.
             </p>
           </div>
         ) : (

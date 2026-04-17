@@ -5,15 +5,10 @@ import { AdminOrdersTab } from "./AdminOrdersTab";
 import { AdminMenuTab } from "./AdminMenuTab";
 import { AdminAnalyticsTab } from "./AdminAnalyticsTab";
 import { AdminStaffTab } from "./AdminStaffTab";
-import {
-  fetchRestaurant,
-  patchRestaurant,
-  uploadRestaurantCover,
-  type RestaurantDetail,
-} from "../../api/adminRestaurant";
-import { BASE_URL } from "../../api/baseUrl";
+import { AdminRestaurantSettingsTab } from "./AdminRestaurantSettingsTab";
+import { fetchRestaurant, type RestaurantDetail } from "../../api/adminRestaurant";
 
-type TabKey = "orders" | "menu" | "team" | "analytics";
+type TabKey = "orders" | "menu" | "team" | "analytics" | "about";
 
 interface LocationState {
   restaurantName?: string;
@@ -32,9 +27,6 @@ export const AdminRestaurantPage: React.FC = () => {
 
   const [activeTab, setActiveTab] = useState<TabKey>("orders");
   const [detail, setDetail] = useState<RestaurantDetail | null>(null);
-  const [coverUploading, setCoverUploading] = useState(false);
-  const [coverErr, setCoverErr] = useState<string | null>(null);
-
   const restaurantName =
     detail?.name ??
     state?.restaurantName ??
@@ -53,16 +45,6 @@ export const AdminRestaurantPage: React.FC = () => {
     };
   }, [restaurantId]);
 
-  const coverPreview = (path: string | null | undefined) => {
-    if (!path) return "";
-    if (path.startsWith("http")) return path;
-    try {
-      return new URL(BASE_URL, window.location.href).origin + (path.startsWith("/") ? path : `/${path}`);
-    } catch {
-      return path;
-    }
-  };
-
   return (
     <>
       <AdminHeader
@@ -76,52 +58,14 @@ export const AdminRestaurantPage: React.FC = () => {
       <main className="flex-1 overflow-y-auto px-4 pt-3 pb-6 bg-gradient-to-b from-slate-50 to-slate-100">
         {/* Restaurant info card */}
         <section className="mb-3">
-          <div className="bg-white rounded-3xl p-3 shadow-sm border border-slate-100 space-y-2">
-            <div className="flex gap-3">
-              <div className="w-20 h-20 rounded-2xl bg-slate-100 overflow-hidden flex-shrink-0">
-                {detail?.imageLink ? (
-                  <img
-                    src={coverPreview(detail.imageLink)}
-                    alt=""
-                    className="w-full h-full object-cover"
-                  />
-                ) : null}
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="text-sm font-semibold text-slate-900 mb-1">
-                  {restaurantName}
-                </div>
-                <div className="text-xs text-slate-500 line-clamp-3">
-                  {detail?.address ?? "Загрузка…"}
-                </div>
-              </div>
+          <div className="bg-white rounded-3xl p-3 shadow-sm border border-slate-100">
+            <div className="text-sm font-semibold text-slate-900">{restaurantName}</div>
+            <div className="text-xs text-slate-500 mt-1 line-clamp-2">
+              {detail?.address ?? "Загрузка…"}
             </div>
-            <div className="text-[11px] text-slate-500">
-              Обложка для списка кафе в приложении пользователя (JPG, PNG).
-            </div>
-            <input
-              type="file"
-              accept="image/jpeg,image/png,image/jpg"
-              disabled={coverUploading}
-              className="text-[11px] w-full"
-              onChange={async (e) => {
-                const file = e.target.files?.[0];
-                if (!file || !restaurantId) return;
-                setCoverErr(null);
-                setCoverUploading(true);
-                try {
-                  const path = await uploadRestaurantCover(restaurantId, file);
-                  const next = await patchRestaurant(restaurantId, { imageLink: path });
-                  setDetail(next);
-                } catch {
-                  setCoverErr("Не удалось загрузить фото.");
-                } finally {
-                  setCoverUploading(false);
-                  e.target.value = "";
-                }
-              }}
-            />
-            {coverErr && <div className="text-[11px] text-red-500">{coverErr}</div>}
+            <p className="text-[11px] text-slate-400 mt-2">
+              Фото и редактирование карточки — во вкладке «Ресторан».
+            </p>
           </div>
         </section>
 
@@ -152,6 +96,14 @@ export const AdminRestaurantPage: React.FC = () => {
               color="violet"
               onClick={() => setActiveTab("analytics")}
             />
+            <div className="col-span-2">
+              <TabButton
+                label="Ресторан"
+                active={activeTab === "about"}
+                color="rose"
+                onClick={() => setActiveTab("about")}
+              />
+            </div>
           </div>
         </section>
 
@@ -169,6 +121,9 @@ export const AdminRestaurantPage: React.FC = () => {
           {activeTab === "analytics" && (
             <AdminAnalyticsTab restaurantId={restaurantId} />
           )}
+          {activeTab === "about" && (
+            <AdminRestaurantSettingsTab restaurantId={restaurantId} />
+          )}
         </section>
       </main>
     </>
@@ -178,7 +133,7 @@ export const AdminRestaurantPage: React.FC = () => {
 interface TabButtonProps {
   label: string;
   active: boolean;
-  color: "emerald" | "sky" | "violet" | "amber";
+  color: "emerald" | "sky" | "violet" | "amber" | "rose";
   onClick: () => void;
 }
 
@@ -204,6 +159,10 @@ const TabButton: React.FC<TabButtonProps> = ({
     amber: {
       active: "from-amber-500 to-amber-600 text-white",
       inactive: "bg-amber-50 text-amber-800",
+    },
+    rose: {
+      active: "from-rose-500 to-rose-600 text-white",
+      inactive: "bg-rose-50 text-rose-800",
     },
   };
 

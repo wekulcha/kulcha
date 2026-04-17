@@ -38,6 +38,7 @@ class AdminUserOverviewDto(BaseModel):
     phone: str | None = None
     email: str | None = None
     address: str | None = None
+    isActive: bool = True
     courier: bool = False
     staffAssignments: list[AdminStaffAssignmentDto] = []
     orderHistory: list[AdminOrderHistoryItemDto] = []
@@ -47,6 +48,8 @@ class AdminRestaurantOverviewDto(BaseModel):
     id: int
     name: str
     address: str
+    imageLink: str | None = None
+    isActive: bool = True
     staff: list[StaffDto] = []
     meals: list[MealDto] = []
     orderHistory: list[OrderDto] = []
@@ -86,3 +89,52 @@ class AdminCourierDto(BaseModel):
     username: str | None = None
     phone: str | None = None
     email: str | None = None
+
+
+class AdminSetActiveDto(BaseModel):
+    isActive: bool
+
+
+class AdminOrderSummaryDto(BaseModel):
+    id: int
+    status: str
+    createdAt: datetime
+    updatedAt: datetime | None = None
+    orderType: str
+    restaurantId: int
+    restaurantName: str
+    userId: int
+    username: str | None = None
+    total: Decimal
+
+
+class AdminOrderPositionLineDto(BaseModel):
+    mealName: str
+    quantity: int
+    unitPrice: Decimal
+    totalPrice: Decimal
+
+
+class AdminOrderDetailDto(BaseModel):
+    id: int
+    status: str
+    createdAt: datetime
+    updatedAt: datetime | None = None
+    orderType: str
+    deliveryAddress: str | None = None
+    restaurantId: int
+    restaurantName: str
+    userId: int
+    username: str | None = None
+    phone: str | None = None
+    itemsTotal: Decimal
+    deliveryFee: Decimal
+    serviceFee: Decimal
+    total: Decimal
+    positions: list[AdminOrderPositionLineDto] = []
+
+
+class AdminStatsSummaryDto(BaseModel):
+    users: int
+    restaurants: int
+    orders: int

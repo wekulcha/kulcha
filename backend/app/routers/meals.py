@@ -9,6 +9,7 @@ from app.config import get_settings
 from app.database import get_db
 from app.models.enums import MealCategory
 from app.models.meal import Meal
+from app.models.restaurant import Restaurant
 from app.models.user import User
 from app.schemas.meal import MealDto
 from app.services import staff_access
@@ -45,6 +46,10 @@ async def get_all(
     db: AsyncSession = Depends(get_db),
 ):
     if restaurantId is not None and category is not None:
+        r0 = await db.execute(select(Restaurant).where(Restaurant.id == restaurantId))
+        rrest = r0.scalars().first()
+        if not rrest or not rrest.is_active:
+            return []
         try:
             cat = MealCategory(category)
         except ValueError:
@@ -59,6 +64,10 @@ async def get_all(
         return [_to_dto(m) for m in result.scalars().all()]
 
     if restaurantId is not None:
+        r0 = await db.execute(select(Restaurant).where(Restaurant.id == restaurantId))
+        rrest = r0.scalars().first()
+        if not rrest or not rrest.is_active:
+            return []
         result = await db.execute(
             select(Meal).where(Meal.restaurant_id == restaurantId, Meal.is_available == True)  # noqa: E712
         )
