@@ -21,6 +21,7 @@ interface OrderDto {
   deliveryFee: number;
   serviceFee: number;
   total: number;
+  isPaid?: boolean;
 }
 
 function toAdminOrder(d: OrderDto): AdminOrder {
@@ -38,17 +39,22 @@ function toAdminOrder(d: OrderDto): AdminOrder {
     serviceFee: Number(d.serviceFee),
     updatedAt: d.updatedAt ?? null,
     courierId: d.courierId ?? null,
+    isPaid: d.isPaid ?? false,
   };
 }
 
 export async function fetchAdminOrders(
   restaurantId: number,
-  status: AdminOrderFilterStatus = "ALL"
+  status: AdminOrderFilterStatus = "ALL",
+  options?: { todayOnly?: boolean }
 ): Promise<AdminOrder[]> {
   const params = new URLSearchParams();
   params.set("restaurantId", String(restaurantId));
   if (status && status !== "ALL") {
     params.set("status", status);
+  }
+  if (options?.todayOnly) {
+    params.set("todayOnly", "true");
   }
   const url = `${BASE_URL}/orders?${params.toString()}`;
   const resp = await fetch(url, { headers: buildAdminApiJsonHeaders() });
@@ -57,6 +63,19 @@ export async function fetchAdminOrders(
   }
   const data = (await resp.json()) as OrderDto[];
   return data.map(toAdminOrder);
+}
+
+export async function patchOrderPaid(orderId: number, isPaid: boolean): Promise<AdminOrder> {
+  const resp = await fetch(`${BASE_URL}/orders/${orderId}/paid`, {
+    method: "PATCH",
+    headers: { ...buildAdminApiJsonHeaders(), "Content-Type": "application/json" },
+    body: JSON.stringify({ isPaid }),
+  });
+  if (!resp.ok) {
+    throw new Error(`Failed to patch paid: ${resp.status}`);
+  }
+  const d = (await resp.json()) as OrderDto;
+  return toAdminOrder(d);
 }
 
 export async function updateAdminOrderStatus(
@@ -78,6 +97,7 @@ export async function updateAdminOrderStatus(
     deliveryFee: currentOrder.deliveryFee ?? 0,
     serviceFee: currentOrder.serviceFee ?? 0,
     total: currentOrder.total,
+    isPaid: currentOrder.isPaid ?? false,
   };
   const resp = await fetch(`${BASE_URL}/orders/${orderId}`, {
     method: "PUT",

@@ -11,6 +11,7 @@ from app.models.enums import StaffPermission
 from app.models.staff import Staff
 from app.models.user import User
 from app.schemas.staff import AddStaffRequestDto, StaffMemberDto
+from app.services.phone_norm import normalize_ru_phone_to_storage
 from app.services import staff_access
 from app.services.telegram_auth import verify_telegram_init_data
 
@@ -67,10 +68,20 @@ async def add_staff(
 ):
     await _require_admin_actor(db, x_telegram_init_data, restaurant_id, True)
 
-    result = await db.execute(select(User).where(User.id == body.telegramId))
-    target = result.scalars().first()
+    if body.telegramId is not None:
+        result = await db.execute(select(User).where(User.id == body.telegramId))
+        target = result.scalars().first()
+    else:
+        norm = normalize_ru_phone_to_storage(body.phone or "")
+        if not norm:
+            raise HTTPException(400, "Некорректный номер телефона")
+        result = await db.execute(select(User).where(User.phone == norm))
+        target = result.scalars().first()
     if not target:
-        raise HTTPException(400, "Пользователь с таким Telegram ID не найден. Сначала /start в боте KULCHA.")
+        raise HTTPException(
+            400,
+            "Пользователь не найден. Сначала /start в боте KULCHA и номер телефона.",
+        )
 
     try:
         perm = StaffPermission(body.permission)

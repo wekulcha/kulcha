@@ -190,7 +190,12 @@ async def notify_order_placed(db: AsyncSession, order_id: int) -> None:
             .where(Staff.restaurant_id == order.restaurant_id)
         )
         staff_list = staff_result.unique().scalars().all()
+        seen_user_ids: set[int] = set()
         for s in staff_list:
+            uid = int(s.user_id)
+            if uid in seen_user_ids:
+                continue
+            seen_user_ids.add(uid)
             await telegram_bot_client.send_message(
                 admin_token, s.user.id, admin_html, reply_markup=keyboard
             )

@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from decimal import Decimal
 
-from sqlalchemy import BigInteger, DateTime, ForeignKey, Numeric, String, TypeDecorator
+from sqlalchemy import BigInteger, Boolean, DateTime, ForeignKey, Numeric, String, TypeDecorator
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
@@ -64,6 +64,7 @@ class Order(Base):
         BigInteger, nullable=True
     )
     table_number: Mapped[str | None] = mapped_column(String, nullable=True)
+    is_paid: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
 
     user = relationship("User", lazy="joined")
     restaurant = relationship("Restaurant", lazy="joined")

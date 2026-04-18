@@ -21,6 +21,8 @@ export const AdminStaffTab: React.FC<AdminStaffTabProps> = ({ restaurantId }) =>
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [tgInput, setTgInput] = useState("");
+  const [phoneInput, setPhoneInput] = useState("");
+  const [addMode, setAddMode] = useState<"id" | "phone">("id");
   const [perm, setPerm] = useState<StaffPermission>("CAN_LOOK_ORDERS");
   const [adding, setAdding] = useState(false);
 
@@ -43,17 +45,28 @@ export const AdminStaffTab: React.FC<AdminStaffTabProps> = ({ restaurantId }) =>
   }, [restaurantId]);
 
   const handleAdd = async () => {
-    const tid = parseInt(tgInput.trim(), 10);
-    if (!Number.isFinite(tid) || tid <= 0) {
-      setError("Введите числовой Telegram ID.");
-      return;
-    }
     try {
       setAdding(true);
       setError(null);
-      const created = await addRestaurantStaff(restaurantId, tid, perm);
-      setList((prev) => [...prev, created]);
-      setTgInput("");
+      if (addMode === "id") {
+        const tid = parseInt(tgInput.trim(), 10);
+        if (!Number.isFinite(tid) || tid <= 0) {
+          setError("Введите числовой Telegram ID.");
+          return;
+        }
+        const created = await addRestaurantStaff(restaurantId, perm, { telegramId: tid });
+        setList((prev) => [...prev, created]);
+        setTgInput("");
+      } else {
+        const p = phoneInput.replace(/\D/g, "");
+        if (p.length !== 10) {
+          setError("Введите 10 цифр номера (как в профиле, с 9…).");
+          return;
+        }
+        const created = await addRestaurantStaff(restaurantId, perm, { phone: `7${p}` });
+        setList((prev) => [...prev, created]);
+        setPhoneInput("");
+      }
     } catch {
       setError(
         "Не удалось добавить. Пользователь должен сначала нажать /start в боте KULCHA и не должен дублировать роль."
@@ -84,14 +97,52 @@ export const AdminStaffTab: React.FC<AdminStaffTabProps> = ({ restaurantId }) =>
       {error && <div className="text-[11px] text-red-500">{error}</div>}
 
       <div className="space-y-2 rounded-2xl border border-slate-100 p-2 bg-slate-50/80">
-        <label className="text-[11px] text-slate-600">Telegram ID</label>
-        <input
-          type="number"
-          className="w-full rounded-xl border border-slate-200 px-2 py-1.5 text-[11px]"
-          placeholder="например 123456789"
-          value={tgInput}
-          onChange={(e) => setTgInput(e.target.value)}
-        />
+        <div className="flex gap-1">
+          <button
+            type="button"
+            className={
+              "flex-1 rounded-xl py-1.5 text-[10px] font-medium border " +
+              (addMode === "id" ? "bg-slate-900 text-white border-slate-900" : "bg-white border-slate-200")
+            }
+            onClick={() => setAddMode("id")}
+          >
+            По Telegram ID
+          </button>
+          <button
+            type="button"
+            className={
+              "flex-1 rounded-xl py-1.5 text-[10px] font-medium border " +
+              (addMode === "phone" ? "bg-slate-900 text-white border-slate-900" : "bg-white border-slate-200")
+            }
+            onClick={() => setAddMode("phone")}
+          >
+            По телефону
+          </button>
+        </div>
+        {addMode === "id" ? (
+          <>
+            <label className="text-[11px] text-slate-600">Telegram ID</label>
+            <input
+              type="number"
+              className="w-full rounded-xl border border-slate-200 px-2 py-1.5 text-[11px]"
+              placeholder="например 123456789"
+              value={tgInput}
+              onChange={(e) => setTgInput(e.target.value)}
+            />
+          </>
+        ) : (
+          <>
+            <label className="text-[11px] text-slate-600">Телефон (как в профиле, без +7)</label>
+            <input
+              type="tel"
+              inputMode="numeric"
+              className="w-full rounded-xl border border-slate-200 px-2 py-1.5 text-[11px]"
+              placeholder="9001234567"
+              value={phoneInput}
+              onChange={(e) => setPhoneInput(e.target.value.replace(/\D/g, "").slice(0, 10))}
+            />
+          </>
+        )}
         <label className="text-[11px] text-slate-600">Права</label>
         <select
           className="w-full rounded-xl border border-slate-200 px-2 py-1.5 text-[11px] bg-white"

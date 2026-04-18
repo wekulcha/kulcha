@@ -42,6 +42,10 @@ export async function fetchAnalyticsSummary(
   const avg_check = orders_count > 0 ? revenue / orders_count : 0;
   const delivery_orders = filtered.filter((o) => o.orderType === "DELIVERY").length;
   const dine_in_orders = filtered.filter((o) => o.orderType === "DINE_IN").length;
+  const paid_orders = filtered.filter((o) => o.isPaid);
+  const unpaid_orders = filtered.filter((o) => !o.isPaid);
+  const paid_revenue = paid_orders.reduce((s, o) => s + Number(o.total), 0);
+  const unpaid_revenue = unpaid_orders.reduce((s, o) => s + Number(o.total), 0);
 
   return {
     period,
@@ -52,6 +56,10 @@ export async function fetchAnalyticsSummary(
     avg_check,
     delivery_orders,
     dine_in_orders,
+    paid_orders_count: paid_orders.length,
+    unpaid_orders_count: unpaid_orders.length,
+    paid_revenue,
+    unpaid_revenue,
   };
 }
 

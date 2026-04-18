@@ -1,13 +1,23 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MiniAppShell } from '../../layout/MiniAppShell';
+import { getTelegramStartParam } from '../../telegram/initTelegram';
 
 export function SplashPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      navigate('/cafes');
+      const sp = getTelegramStartParam();
+      if (sp === 'cart') {
+        navigate('/cart', { replace: true });
+        return;
+      }
+      if (sp === 'profile') {
+        navigate('/profile', { replace: true });
+        return;
+      }
+      navigate('/cafes', { replace: true });
     }, 1300);
 
     return () => clearTimeout(timer);

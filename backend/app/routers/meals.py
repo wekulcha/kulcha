@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends, Header, HTTPException
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
@@ -9,6 +9,7 @@ from app.config import get_settings
 from app.database import get_db
 from app.models.enums import MealCategory
 from app.models.meal import Meal
+from app.models.order_position import OrderPosition
 from app.models.restaurant import Restaurant
 from app.models.user import User
 from app.schemas.meal import MealDto
@@ -158,4 +159,9 @@ async def delete_meal(
     if not existing:
         raise HTTPException(404, "Meal not found")
     await _require_menu_editor(db, x_telegram_init_data, existing.restaurant_id)
+    cnt = await db.execute(
+        select(func.count()).select_from(OrderPosition).where(OrderPosition.meal_id == meal_id)
+    )
+    if (cnt.scalar() or 0) > 0:
+        raise HTTPException(400, "Нельзя удалить блюдо: оно уже встречается в заказах.")
     await db.delete(existing)

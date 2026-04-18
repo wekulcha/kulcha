@@ -8,6 +8,7 @@ import {
   updateAdminOrderStatus,
   fetchOrderPositions,
   fetchUser,
+  patchOrderPaid,
   AdminOrderFilterStatus,
 } from "../../api/adminOrders";
 
@@ -88,6 +89,7 @@ interface OrderCardProps {
   order: AdminOrder;
   isUpdating: boolean;
   onChangeStatus: (newStatus: AdminOrderStatusCode) => Promise<void> | void;
+  onPaidUpdated: (order: AdminOrder) => void;
   onOpenDetails: (order: AdminOrder) => void;
 }
 
@@ -95,6 +97,7 @@ const OrderCard: React.FC<OrderCardProps> = ({
   order,
   isUpdating,
   onChangeStatus,
+  onPaidUpdated,
   onOpenDetails,
 }) => {
   const [statusPickerOpen, setStatusPickerOpen] = useState(false);
@@ -151,8 +154,16 @@ const OrderCard: React.FC<OrderCardProps> = ({
           <span className="w-1.5 h-1.5 rounded-full bg-current" />
           {statusLabel(order.status)}
         </span>
-        <div className="text-[11px] text-slate-600 text-right">
-          {placeLabel}
+        <div className="flex items-center gap-1.5">
+          <span
+            className="text-sm leading-none"
+            title={order.isPaid ? "Оплачено" : "Не отмечено оплаченным"}
+          >
+            {order.isPaid ? "🟢" : "🔴"}
+          </span>
+          <div className="text-[11px] text-slate-600 text-right max-w-[90px] truncate">
+            {placeLabel}
+          </div>
         </div>
       </div>
 
@@ -172,6 +183,25 @@ const OrderCard: React.FC<OrderCardProps> = ({
           {nextStatusLabel(order.status)}
         </button>
 
+        {order.status === "DONE" && (
+          <button
+            type="button"
+            className="rounded-xl px-2 py-1.5 text-[11px] font-medium border border-emerald-200 bg-emerald-50 text-emerald-900"
+            onClick={async (e) => {
+              e.stopPropagation();
+              try {
+                const u = await patchOrderPaid(order.id, !order.isPaid);
+                onPaidUpdated(u);
+              } catch {
+                alert("Не удалось обновить оплату");
+              }
+            }}
+            disabled={isUpdating}
+            title="Оплата"
+          >
+            💰
+          </button>
+        )}
         <div className="relative" ref={pickerRef}>
           <button
             type="button"
@@ -361,7 +391,7 @@ export const AdminOrdersTab: React.FC<AdminOrdersTabProps> = ({
       try {
         setLoading(true);
         setError(null);
-        const data = await fetchAdminOrders(restaurantId, activeFilter);
+        const data = await fetchAdminOrders(restaurantId, activeFilter, { todayOnly: true });
         setOrders(data);
       } catch (err) {
         console.error(err);
@@ -372,6 +402,8 @@ export const AdminOrdersTab: React.FC<AdminOrdersTabProps> = ({
     };
 
     load();
+    const id = window.setInterval(load, 12000);
+    return () => window.clearInterval(id);
   }, [restaurantId, activeFilter]);
 
   const handleOpenDetails = (order: AdminOrder) => {
@@ -447,6 +479,9 @@ export const AdminOrdersTab: React.FC<AdminOrdersTabProps> = ({
             key={order.id}
             order={order}
             isUpdating={updatingId === order.id}
+            onPaidUpdated={(updated) => {
+              setOrders((prev) => prev.map((o) => (o.id === updated.id ? updated : o)));
+            }}
             onChangeStatus={async (newStatus) => {
               try {
                 setUpdatingId(order.id);

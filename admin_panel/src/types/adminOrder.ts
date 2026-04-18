@@ -31,4 +31,5 @@ export interface AdminOrder {
   items?: AdminOrderItem[];
   username?: string | null;
   phone?: string;
+  isPaid?: boolean;
 }

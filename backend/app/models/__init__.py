@@ -6,6 +6,7 @@ from app.models.refresh_session import RefreshSession
 from app.models.restaurant import Restaurant
 from app.models.staff import Staff
 from app.models.subscription_log import SubscriptionLog
+from app.models.support_ticket import SupportTicket
 from app.models.user import User
 
 __all__ = [
@@ -17,5 +18,6 @@ __all__ = [
     "Restaurant",
     "Staff",
     "SubscriptionLog",
+    "SupportTicket",
     "User",
 ]

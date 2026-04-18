@@ -41,13 +41,16 @@ export async function fetchRestaurantStaff(restaurantId: number): Promise<StaffM
 
 export async function addRestaurantStaff(
   restaurantId: number,
-  telegramId: number,
-  permission: StaffPermission
+  permission: StaffPermission,
+  opts: { telegramId?: number; phone?: string }
 ): Promise<StaffMember> {
+  const body: Record<string, unknown> = { permission };
+  if (opts.telegramId != null) body.telegramId = opts.telegramId;
+  if (opts.phone != null && opts.phone.trim()) body.phone = opts.phone.trim();
   const resp = await fetch(`${BASE_URL}/restaurants/${restaurantId}/staff`, {
     method: "POST",
     headers: buildAdminApiJsonHeaders(),
-    body: JSON.stringify({ telegramId, permission }),
+    body: JSON.stringify(body),
   });
   if (!resp.ok) throw new Error(`Failed to add staff: ${resp.status}`);
   const d = (await resp.json()) as StaffMemberDto;

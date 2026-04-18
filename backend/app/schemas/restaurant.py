@@ -8,9 +8,17 @@ class RestaurantDto(BaseModel):
     name: str | None = None
     address: str | None = None
     imageLink: str | None = None
+    workingHoursFrom: str | None = None
+    workingHoursTo: str | None = None
+    ordersAcceptFrom: str | None = None
+    ordersAcceptTo: str | None = None
 
 
 class RestaurantPatchDto(BaseModel):
     name: str | None = None
     address: str | None = None
     imageLink: str | None = None
+    workingHoursFrom: str | None = None
+    workingHoursTo: str | None = None
+    ordersAcceptFrom: str | None = None
+    ordersAcceptTo: str | None = None

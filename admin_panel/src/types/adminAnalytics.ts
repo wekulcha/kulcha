@@ -9,6 +9,10 @@ export interface AdminAnalyticsSummary {
   avg_check: number;
   delivery_orders: number;
   dine_in_orders: number;
+  paid_orders_count: number;
+  unpaid_orders_count: number;
+  paid_revenue: number;
+  unpaid_revenue: number;
 }
 
 export interface AdminAnalyticsDailyPoint {

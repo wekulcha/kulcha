@@ -21,6 +21,13 @@ declare global {
   }
 }
 
+export function getTelegramStartParam(): string {
+  if (typeof window === 'undefined') return '';
+  const unsafe = window.Telegram?.WebApp?.initDataUnsafe as { start_param?: string } | undefined;
+  const p = unsafe?.start_param?.trim();
+  return p || '';
+}
+
 export function getTelegramInitData(): string {
   if (typeof window === 'undefined') return '';
 

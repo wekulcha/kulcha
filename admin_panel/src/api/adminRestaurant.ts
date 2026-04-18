@@ -6,6 +6,10 @@ export interface RestaurantDetail {
   name: string;
   address: string;
   imageLink: string | null;
+  workingHoursFrom?: string | null;
+  workingHoursTo?: string | null;
+  ordersAcceptFrom?: string | null;
+  ordersAcceptTo?: string | null;
 }
 
 export async function fetchRestaurant(restaurantId: number): Promise<RestaurantDetail> {
@@ -19,12 +23,27 @@ export async function fetchRestaurant(restaurantId: number): Promise<RestaurantD
 
 export async function patchRestaurant(
   restaurantId: number,
-  patch: Partial<Pick<RestaurantDetail, "name" | "address" | "imageLink">>
+  patch: Partial<
+    Pick<
+      RestaurantDetail,
+      | "name"
+      | "address"
+      | "imageLink"
+      | "workingHoursFrom"
+      | "workingHoursTo"
+      | "ordersAcceptFrom"
+      | "ordersAcceptTo"
+    >
+  >
 ): Promise<RestaurantDetail> {
   const body: Record<string, string | undefined> = {};
   if (patch.name !== undefined) body.name = patch.name;
   if (patch.address !== undefined) body.address = patch.address;
   if (patch.imageLink !== undefined) body.imageLink = patch.imageLink ?? undefined;
+  if (patch.workingHoursFrom !== undefined) body.workingHoursFrom = patch.workingHoursFrom ?? undefined;
+  if (patch.workingHoursTo !== undefined) body.workingHoursTo = patch.workingHoursTo ?? undefined;
+  if (patch.ordersAcceptFrom !== undefined) body.ordersAcceptFrom = patch.ordersAcceptFrom ?? undefined;
+  if (patch.ordersAcceptTo !== undefined) body.ordersAcceptTo = patch.ordersAcceptTo ?? undefined;
   const resp = await fetch(`${BASE_URL}/restaurants/${restaurantId}`, {
     method: "PATCH",
     headers: { ...buildAdminApiJsonHeaders(), "Content-Type": "application/json" },

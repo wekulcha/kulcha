@@ -41,27 +41,12 @@ async def cmd_start(message: Message):
     )
 
 
-@router.message(F.text == "🍽 Открыть панель")
-async def open_panel(message: Message):
+@router.message(F.text == "📥 Активные заказы")
+async def active_orders(message: Message):
     if ADMIN_MINI_APP_URL.startswith("https://"):
         uid = message.from_user.id
         token = _generate_bot_auth_token(uid) if BOT_TOKEN else None
         url = f"{ADMIN_MINI_APP_URL}?tg_auth={token}" if token else ADMIN_MINI_APP_URL
-        await message.answer(
-            "Нажмите кнопку, чтобы открыть панель управления:",
-            reply_markup=InlineKeyboardMarkup(inline_keyboard=[[
-                InlineKeyboardButton(text="🍽 Открыть панель", web_app=WebAppInfo(url=url))
-            ]]),
-        )
-    else:
-        await message.answer(
-            f"<b>Локальная панель</b>\nОткройте в браузере:\n<code>{ADMIN_MINI_APP_URL}</code>"
-        )
-
-
-@router.message(F.text == "📥 Активные заказы")
-async def active_orders(message: Message):
-    if ADMIN_MINI_APP_URL.startswith("https://"):
         await message.answer(
             "<b>Активные заказы</b>\n"
             "━━━━━━━━━━━━━━\n"
@@ -71,7 +56,7 @@ async def active_orders(message: Message):
                     [
                         InlineKeyboardButton(
                             text="📋 Открыть заказы",
-                            web_app=WebAppInfo(url=ADMIN_MINI_APP_URL),
+                            web_app=WebAppInfo(url=url),
                         )
                     ]
                 ]
@@ -82,15 +67,6 @@ async def active_orders(message: Message):
             "<b>Активные заказы</b>\n━━━━━━━━━━━━━━\n"
             f"Откройте в браузере:\n<code>{ADMIN_MINI_APP_URL}</code>"
         )
-
-
-@router.message(F.text == "📊 Итоги за сегодня")
-async def today_summary(message: Message):
-    await message.answer(
-        "<b>Итоги</b>\n"
-        "━━━━━━━━━━━━━━\n"
-        "Графики и выручка — во вкладке «Аналитика» в мини-приложении."
-    )
 
 
 @router.message(F.text == "💬 Поддержка")

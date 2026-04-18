@@ -14,6 +14,7 @@ from app.models.order import Order
 from app.models.staff import Staff
 from app.models.user import User
 from app.schemas.user import UserDto, UserRestaurantDto
+from app.services.phone_norm import normalize_ru_phone_to_storage
 from app.services.session_auth import ensure_customer, get_user_from_bearer
 from app.services.telegram_auth import verify_bot_link_token, verify_telegram_init_data
 
@@ -223,7 +224,10 @@ async def update_user(
     if dto.username is not None:
         user.username = dto.username
     if dto.phone is not None:
-        user.phone = dto.phone
+        norm = normalize_ru_phone_to_storage(dto.phone)
+        if not norm:
+            raise HTTPException(400, "Некорректный номер телефона")
+        user.phone = norm
     if dto.email is not None:
         user.email = dto.email
     if dto.address is not None:

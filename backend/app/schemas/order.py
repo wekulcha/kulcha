@@ -21,6 +21,7 @@ class OrderDto(BaseModel):
     deliveryFee: Decimal | None = None
     serviceFee: Decimal | None = None
     total: Decimal | None = None
+    isPaid: bool | None = None
 
 
 class OrderCheckoutLine(BaseModel):
@@ -43,3 +44,7 @@ class OrderCheckoutRequest(BaseModel):
 
 class OrderStatusPatchDto(BaseModel):
     status: str
+
+
+class OrderPaidPatchDto(BaseModel):
+    isPaid: bool

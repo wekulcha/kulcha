@@ -23,6 +23,7 @@ from app.routers import (
     restaurants,
     staff,
     subscription_logs,
+    support_internal,
     users,
 )
 
@@ -102,6 +103,7 @@ app.include_router(couriers.router)
 app.include_router(courier_panel.router)
 app.include_router(subscription_logs.router)
 app.include_router(admin.router)
+app.include_router(support_internal.router)
 
 
 @app.get("/health")

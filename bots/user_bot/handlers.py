@@ -1,6 +1,7 @@
+import html
 import httpx
 from aiogram import Router, F
-from aiogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
+from aiogram.types import Message
 from aiogram.filters import CommandStart
 
 from config import (
@@ -8,7 +9,6 @@ from config import (
     BOT_API_SECRET,
     SUPPORT_LINK,
     USER_MINI_APP_BASE,
-    USER_MINI_APP_VERSION,
 )
 
 STATUS_RU = {
@@ -36,15 +36,6 @@ def _bot_headers() -> dict:
     return h
 
 
-def _webapp_inline(text: str, url: str) -> InlineKeyboardMarkup:
-    if USER_MINI_APP_VERSION:
-        sep = "&" if "?" in url else "?"
-        url = f"{url}{sep}v={USER_MINI_APP_VERSION}"
-    return InlineKeyboardMarkup(
-        inline_keyboard=[[InlineKeyboardButton(text=text, web_app=WebAppInfo(url=url))]]
-    )
-
-
 @router.message(CommandStart())
 async def cmd_start(message: Message):
     user_id = message.from_user.id
@@ -56,7 +47,7 @@ async def cmd_start(message: Message):
                 await message.answer(
                     "<b>Добро пожаловать в KULCHA!</b>\n"
                     "━━━━━━━━━━━━━━\n"
-                    "Рады снова вас видеть. Выберите действие:",
+                    "Рады снова вас видеть. Откройте корзину или профиль кнопками ниже.",
                     reply_markup=main_menu_keyboard(),
                 )
                 return
@@ -65,7 +56,7 @@ async def cmd_start(message: Message):
     await message.answer(
         "<b>KULCHA</b> · доставка и зал\n"
         "━━━━━━━━━━━━━━\n"
-        "Чтобы оформлять заказы, нужен один раз поделиться <b>номером телефона</b> "
+        "Чтобы оформлять заказы, один раз поделитесь <b>номером телефона</b> "
         "(кнопка ниже). Мы сохраним телефон, ник в Telegram и ваш ID.",
         reply_markup=request_phone_keyboard(),
     )
@@ -95,8 +86,7 @@ async def on_contact(message: Message):
                 await message.answer(
                     "<b>Готово!</b>\n"
                     "━━━━━━━━━━━━━━\n"
-                    "Регистрация прошла успешно. Теперь можно заказывать через "
-                    "<b>«Заказать»</b> — откроется мини-приложение с вашим профилем.",
+                    "Регистрация прошла успешно. Можно выбирать рестораны и заказывать в мини-приложении.",
                     reply_markup=main_menu_keyboard(),
                 )
             else:
@@ -109,39 +99,6 @@ async def on_contact(message: Message):
                 f"Ошибка сети: <code>{e}</code>",
                 reply_markup=main_menu_keyboard(),
             )
-
-
-@router.message(F.text == "🍽 Заказать")
-async def order_cafes(message: Message):
-    if USER_MINI_APP_BASE.startswith("https://"):
-        await message.answer(
-            "Нажмите кнопку, чтобы открыть меню ресторанов:",
-            reply_markup=_webapp_inline("🍽 Открыть меню", f"{USER_MINI_APP_BASE}/cafes"),
-        )
-    else:
-        await message.answer(f"Откройте в браузере: {USER_MINI_APP_BASE}/cafes")
-
-
-@router.message(F.text == "🧺 Корзина")
-async def cart(message: Message):
-    if USER_MINI_APP_BASE.startswith("https://"):
-        await message.answer(
-            "Нажмите кнопку, чтобы открыть корзину:",
-            reply_markup=_webapp_inline("🧺 Открыть корзину", f"{USER_MINI_APP_BASE}/cart"),
-        )
-    else:
-        await message.answer(f"Откройте в браузере: {USER_MINI_APP_BASE}/cart")
-
-
-@router.message(F.text == "👤 Профиль")
-async def profile(message: Message):
-    if USER_MINI_APP_BASE.startswith("https://"):
-        await message.answer(
-            "Нажмите кнопку, чтобы открыть профиль:",
-            reply_markup=_webapp_inline("👤 Открыть профиль", f"{USER_MINI_APP_BASE}/profile"),
-        )
-    else:
-        await message.answer(f"Откройте в браузере: {USER_MINI_APP_BASE}/profile")
 
 
 @router.message(F.text == "📦 Статус заказа")
@@ -172,21 +129,50 @@ async def order_status(message: Message):
     st = o.get("status") or ""
     ot = o.get("orderType") or ""
     total = o.get("total")
+    addr = o.get("deliveryAddress") or ""
+    table = o.get("tableNumber") or ""
+    place_lines = []
+    if addr:
+        place_lines.append(f"📍 Адрес: {html.escape(addr)}")
+    if table:
+        place_lines.append(f"🪑 Стол: <b>{html.escape(table)}</b>")
     lines = [
-        "<b>📦 Ваш заказ</b>",
+        "<b>📦 Заказ</b>",
         "━━━━━━━━━━━━━━",
         f"№ <code>{o.get('id')}</code>",
         f"📌 Статус: <b>{STATUS_RU.get(st, st)}</b>",
         f"🧾 {ORDER_TYPE_RU.get(ot, ot)}",
-        f"💰 <b>{total} ₽</b>" if total is not None else "",
-        "",
-        "<i>Подробности — в мини-приложении → «Профиль».</i>",
     ]
+    if place_lines:
+        lines.append("")
+        lines.extend(place_lines)
+    lines.extend(
+        [
+            "",
+            f"💰 <b>{total} ₽</b>" if total is not None else "",
+            "",
+            "<i>Подробности — в мини-приложении → «Профиль».</i>",
+        ]
+    )
     await message.answer("\n".join(x for x in lines if x != ""))
 
 
 @router.message(F.text == "💬 Поддержка")
 async def support(message: Message):
     await message.answer(
-        f"<b>Поддержка</b>\n━━━━━━━━━━━━━━\nНапишите нам: {SUPPORT_LINK}"
+        f"<b>Поддержка</b>\n━━━━━━━━━━━━━━\nНапишите нам в боте: {SUPPORT_LINK}"
     )
+
+
+@router.message(F.text == "🧺 Корзина")
+async def cart_fallback(message: Message):
+    if USER_MINI_APP_BASE.startswith("https://"):
+        return
+    await message.answer(f"Откройте в браузере: {USER_MINI_APP_BASE.rstrip('/')}/cart")
+
+
+@router.message(F.text == "👤 Профиль")
+async def profile_fallback(message: Message):
+    if USER_MINI_APP_BASE.startswith("https://"):
+        return
+    await message.answer(f"Откройте в браузере: {USER_MINI_APP_BASE.rstrip('/')}/profile")

@@ -28,6 +28,7 @@ interface OrderDto {
   deliveryFee: number | string | null;
   serviceFee: number | string | null;
   total: number | string | null;
+  isPaid?: boolean | null;
 }
 
 function toNumber(value: number | string | null | undefined): number | null {
@@ -52,6 +53,7 @@ function toUserOrder(dto: OrderDto): UserOrder {
     delivery_fee: toNumber(dto.deliveryFee),
     service_fee: toNumber(dto.serviceFee),
     total: toNumber(dto.total),
+    is_paid: dto.isPaid ?? null,
   };
 }
 
@@ -92,4 +94,12 @@ export async function createOrder(payload: CreateOrderPayload): Promise<OrderRes
 export async function fetchMyOrders(): Promise<UserOrder[]> {
   const dto = await apiFetchJson<OrderDto[]>('/orders/my', {}, { auth: true });
   return dto.map(toUserOrder);
+}
+
+export async function cancelOrder(orderId: number): Promise<void> {
+  await apiFetchJson<unknown>(
+    `/orders/${orderId}/cancel`,
+    { method: 'POST' },
+    { auth: true }
+  );
 }

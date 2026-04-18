@@ -267,7 +267,14 @@ export function ProfilePage() {
             <div className="text-xs text-slate-500">Сейчас активных заказов нет.</div>
           )}
           {currentUser && !loadingOrders && activeOrders.length > 0 && (
-            <OrderCard order={activeOrders[0]} />
+            <OrderCard
+              order={activeOrders[0]}
+              onChanged={() => {
+                void fetchMyOrders()
+                  .then((list) => setOrders(list))
+                  .catch(() => {});
+              }}
+            />
           )}
         </section>
 

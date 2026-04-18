@@ -54,7 +54,7 @@ def _order_dto(o: Order) -> OrderDto:
         createdAt=o.created_at, updatedAt=o.updated_at,
         courierId=o.courier_id, orderType=o.order_type.value,
         itemsTotal=o.items_total, deliveryFee=o.delivery_fee,
-        serviceFee=o.service_fee, total=o.total,
+        serviceFee=o.service_fee, total=o.total, isPaid=o.is_paid,
     )
 
 

@@ -10,9 +10,18 @@ import { MiniAppShell } from '../../layout/MiniAppShell';
 import type { CreateOrderPayload, PaymentMethod } from '../../types/order';
 import { formatLocationParts, parseLocationParts } from '../../utils/locationFormat';
 
-function sanitizePhone(phone: string | null): string {
-  if (!phone || phone.startsWith('tg-')) return '';
-  return phone;
+function phoneDigitsToLocal10(stored: string | null): string {
+  if (!stored || stored.startsWith('tg-')) return '';
+  const d = stored.replace(/\D/g, '');
+  if (d.length === 11 && d.startsWith('7')) return d.slice(1);
+  if (d.length === 10) return d;
+  return '';
+}
+
+function isRegisteredPhone(phone: string | null): boolean {
+  if (!phone || phone.startsWith('tg-')) return false;
+  const d = phone.replace(/\D/g, '');
+  return d.length === 11 && d.startsWith('7');
 }
 
 function sanitizeUsername(username: string | null): string {
@@ -37,7 +46,7 @@ export function CheckoutPage() {
   const [pavilion, setPavilion] = useState('');
   const [tableNumber, setTableNumber] = useState('');
   const [username, setUsername] = useState<string>('');
-  const [phone, setPhone] = useState<string>('');
+  const [phoneLocal, setPhoneLocal] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('CASH');
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -45,7 +54,7 @@ export function CheckoutPage() {
 
   useEffect(() => {
     if (!currentUser) return;
-    setPhone((value) => (value.trim() ? value : sanitizePhone(currentUser.phone)));
+    setPhoneLocal((prev) => (prev.trim() ? prev : phoneDigitsToLocal10(currentUser.phone)));
     setUsername(sanitizeUsername(currentUser.username));
   }, [currentUser]);
 
@@ -81,10 +90,17 @@ export function CheckoutPage() {
       return;
     }
 
-    if (!phone.trim() || phone.trim().length < 5) {
-      setErrorMessage('Пожалуйста, укажите номер телефона.');
+    if (!isRegisteredPhone(currentUser.phone)) {
+      setErrorMessage('Сначала зарегистрируйтесь в боте KULCHA и отправьте номер телефона кнопкой «Отправить номер».');
       return;
     }
+
+    const digits = phoneLocal.replace(/\D/g, '').slice(0, 10);
+    if (digits.length !== 10) {
+      setErrorMessage('Введите 10 цифр номера после +7.');
+      return;
+    }
+    const phoneForApi = `7${digits}`;
 
     const deliveryAddr =
       serviceType === 'DELIVERY' ? formatLocationParts(floor, line, pavilion).trim() : null;
@@ -100,7 +116,7 @@ export function CheckoutPage() {
       delivery_address: deliveryAddr,
       table_number: serviceType === 'DINE_IN' ? tableNumber.trim() || null : null,
       username: username.replace(/^@/, '') || null,
-      phone: phone.trim(),
+      phone: phoneForApi,
       payment_method: paymentMethod,
       items: items.map((item) => ({
         meal_id: item.meal.id,
@@ -115,6 +131,7 @@ export function CheckoutPage() {
 
     try {
       setSubmitting(true);
+      await updateUserProfile(currentUser.id, { phone: phoneForApi });
       const response = await createOrder(payload);
       if (serviceType === 'DELIVERY' && currentUser && deliveryAddr) {
         void updateUserProfile(currentUser.id, { address: deliveryAddr }).catch(() => {});
@@ -132,7 +149,15 @@ export function CheckoutPage() {
     }
   };
 
-  const submitDisabled = submitting || total <= 0 || !selectedRestaurant || !authReady || !currentUser;
+  const phoneDigitsOk = phoneLocal.replace(/\D/g, '').length === 10;
+  const submitDisabled =
+    submitting ||
+    total <= 0 ||
+    !selectedRestaurant ||
+    !authReady ||
+    !currentUser ||
+    !isRegisteredPhone(currentUser.phone) ||
+    !phoneDigitsOk;
 
   return (
     <MiniAppShell>
@@ -251,13 +276,23 @@ export function CheckoutPage() {
             </div>
             <div>
               <label className="block text-xs text-slate-500 mb-1">Телефон</label>
-              <input
-                type="tel"
-                className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
-                placeholder="+7..."
-                value={phone}
-                onChange={(event) => setPhone(event.target.value)}
-              />
+              <div className="flex rounded-xl border border-slate-200 overflow-hidden bg-white">
+                <span className="px-3 py-2 text-sm bg-slate-100 text-slate-600 border-r border-slate-200 select-none">
+                  +7
+                </span>
+                <input
+                  type="tel"
+                  inputMode="numeric"
+                  autoComplete="tel-national"
+                  className="flex-1 min-w-0 px-3 py-2 text-sm outline-none"
+                  placeholder="9001234567"
+                  value={phoneLocal}
+                  onChange={(e) => {
+                    const d = e.target.value.replace(/\D/g, '').slice(0, 10);
+                    setPhoneLocal(d);
+                  }}
+                />
+              </div>
             </div>
           </div>
           <p className="text-[11px] text-slate-400">

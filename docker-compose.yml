@@ -112,6 +112,20 @@ services:
       KULCHA_ADMIN_MINI_APP_URL: https://${ADMIN_DOMAIN:-admin.wekulcha.online}
       KULCHA_SUPPORT_LINK: ${KULCHA_SUPPORT_LINK:-https://t.me/support}
 
+  support_bot:
+    build:
+      context: .
+      dockerfile: deploy/docker/support_bot.Dockerfile
+    container_name: kulcha-support-bot
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      KULCHA_SUPPORT_BOT_TOKEN: ${KULCHA_SUPPORT_BOT_TOKEN:-}
+      KULCHA_INTERNAL_API_SECRET: ${KULCHA_INTERNAL_API_SECRET:-kulcha-local-internal-api-secret}
+      KULCHA_API_BASE: http://backend:8000/api/v1
+      KULCHA_SUPPORT_GROUP_ID: ${KULCHA_SUPPORT_GROUP_ID:--1003920291106}
+
   superadmin_bot:
     build:
       context: .

@@ -46,4 +46,5 @@ export interface UserOrder {
   delivery_fee: number | null;
   service_fee: number | null;
   total: number | null;
+  is_paid?: boolean | null;
 }

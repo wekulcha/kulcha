@@ -25,6 +25,10 @@ def _to_dto(r: Restaurant) -> RestaurantDto:
         name=r.name,
         address=r.address,
         imageLink=r.image_link,
+        workingHoursFrom=r.working_hours_from,
+        workingHoursTo=r.working_hours_to,
+        ordersAcceptFrom=r.orders_accept_from,
+        ordersAcceptTo=r.orders_accept_to,
     )
 
 
@@ -95,6 +99,18 @@ async def patch_restaurant(
         r.address = body.address.strip()
     if body.imageLink is not None:
         r.image_link = body.imageLink.strip() or None
+    if body.workingHoursFrom is not None:
+        v = body.workingHoursFrom.strip() or None
+        r.working_hours_from = v
+    if body.workingHoursTo is not None:
+        v = body.workingHoursTo.strip() or None
+        r.working_hours_to = v
+    if body.ordersAcceptFrom is not None:
+        v = body.ordersAcceptFrom.strip() or None
+        r.orders_accept_from = v
+    if body.ordersAcceptTo is not None:
+        v = body.ordersAcceptTo.strip() or None
+        r.orders_accept_to = v
     await db.flush()
     return _to_dto(r)
 

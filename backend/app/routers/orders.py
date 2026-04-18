@@ -16,11 +16,13 @@ from app.models.order import Order
 from app.models.restaurant import Restaurant
 from app.models.order_position import OrderPosition
 from app.models.user import User
-from app.schemas.order import OrderCheckoutRequest, OrderDto, OrderStatusPatchDto
+from app.schemas.order import OrderCheckoutRequest, OrderDto, OrderPaidPatchDto, OrderStatusPatchDto
 from app.deps.superadmin import assert_superadmin
 from app.services import staff_access
 from app.services.session_auth import ensure_customer, get_user_from_bearer
 from app.services.telegram_auth import verify_bot_link_token, verify_telegram_init_data
+from app.services.phone_norm import is_proper_registered_phone
+from app.services.restaurant_hours import msk_today_utc_naive_bounds, restaurant_accepts_orders_now
 from app.services.telegram_notifier import notify_order_placed, notify_user_status_changed
 
 router = APIRouter(prefix="/api/v1/orders", tags=["orders"])
@@ -42,6 +44,7 @@ def _to_dto(order: Order) -> OrderDto:
         deliveryFee=order.delivery_fee,
         serviceFee=order.service_fee,
         total=order.total,
+        isPaid=order.is_paid,
     )
 
 
@@ -98,6 +101,7 @@ async def get_all(
     userId: int | None = None,
     restaurantId: int | None = None,
     status: str | None = None,
+    todayOnly: bool = False,
     db: AsyncSession = Depends(get_db),
     authorization: str | None = Header(None, alias="Authorization"),
     x_telegram_init_data: str | None = Header(None, alias="X-Telegram-Init-Data"),
@@ -139,12 +143,21 @@ async def get_all(
     if restaurantId is not None:
         admin = await _require_admin_user(db, init_data)
         await staff_access.require_restaurant_staff(db, admin.id, restaurantId)
-        result = await db.execute(
+        stmt = (
             select(Order)
             .options(joinedload(Order.user), joinedload(Order.restaurant), joinedload(Order.courier))
             .where(Order.restaurant_id == restaurantId)
-            .order_by(Order.created_at.desc())
         )
+        if status and status.upper() != "ALL":
+            try:
+                stmt = stmt.where(Order.status == OrderStatus(status))
+            except ValueError as exc:
+                raise HTTPException(400, f"Invalid status: {status}") from exc
+        if todayOnly:
+            start, end = msk_today_utc_naive_bounds()
+            stmt = stmt.where(Order.created_at >= start, Order.created_at < end)
+        stmt = stmt.order_by(Order.created_at.desc())
+        result = await db.execute(stmt)
         return [_to_dto(order) for order in result.unique().scalars().all()]
 
     if status is not None:
@@ -247,6 +260,12 @@ async def checkout(
     init_data = (x_telegram_init_data or x_init_data or "").strip()
     customer = await _require_customer_user(db, authorization, init_data, x_kulcha_bot_auth)
 
+    if not is_proper_registered_phone(customer.phone):
+        raise HTTPException(
+            403,
+            "Сначала зарегистрируйтесь через бота KULCHA и поделитесь номером телефона.",
+        )
+
     if not body.items:
         raise HTTPException(400, "Invalid checkout payload")
 
@@ -254,6 +273,34 @@ async def checkout(
     rest_row = r_check.scalars().first()
     if not rest_row or not rest_row.is_active:
         raise HTTPException(400, "Ресторан недоступен")
+
+    if not restaurant_accepts_orders_now(rest_row):
+        raise HTTPException(400, "Сейчас ресторан не принимает заказы (вне времени приёма).")
+
+    unavailable: list[str] = []
+    lines_payload: list[tuple[Meal, Decimal, int]] = []
+    for line in body.items:
+        if line.quantity is None or line.quantity <= 0:
+            raise HTTPException(400, "Invalid order line")
+        result = await db.execute(
+            select(Meal).options(joinedload(Meal.restaurant)).where(Meal.id == line.mealId)
+        )
+        meal = result.unique().scalars().first()
+        if not meal:
+            raise HTTPException(400, "Unknown meal")
+        if meal.restaurant_id != body.restaurantId:
+            raise HTTPException(400, "Meal does not belong to restaurant")
+        if not meal.is_available:
+            unavailable.append(meal.name)
+            continue
+        unit_price = line.unitPrice if line.unitPrice is not None else meal.price
+        lines_payload.append((meal, unit_price, line.quantity))
+
+    if unavailable:
+        raise HTTPException(
+            400,
+            f"Нет в наличии: {', '.join(unavailable)}",
+        )
 
     tn = (body.tableNumber.strip() if body.tableNumber else None) or None
     order = Order(
@@ -269,28 +316,17 @@ async def checkout(
         delivery_fee=body.deliveryFee or Decimal(0),
         service_fee=body.serviceFee or Decimal(0),
         total=body.total or Decimal(0),
+        is_paid=False,
     )
     db.add(order)
     await db.flush()
 
-    for line in body.items:
-        if line.quantity is None or line.quantity <= 0:
-            raise HTTPException(400, "Invalid order line")
-        result = await db.execute(
-            select(Meal).options(joinedload(Meal.restaurant)).where(Meal.id == line.mealId)
-        )
-        meal = result.unique().scalars().first()
-        if not meal:
-            raise HTTPException(400, "Unknown meal")
-        if meal.restaurant_id != body.restaurantId:
-            raise HTTPException(400, "Meal does not belong to restaurant")
-        unit_price = line.unitPrice if line.unitPrice is not None else meal.price
-        line_total = unit_price * line.quantity
-
+    for meal, unit_price, qty in lines_payload:
+        line_total = unit_price * qty
         position = OrderPosition(
             meal_id=meal.id,
             order_id=order.id,
-            quantity=line.quantity,
+            quantity=qty,
             unit_price=unit_price,
             total_price=line_total,
         )
@@ -343,12 +379,63 @@ async def update_order(
         existing.service_fee = dto.serviceFee
     if dto.total is not None:
         existing.total = dto.total
+    if dto.isPaid is not None:
+        existing.is_paid = dto.isPaid
     existing.updated_at = datetime.now()
 
     await db.flush()
     await notify_user_status_changed(db, order_id)
 
     return _to_dto(existing)
+
+
+@router.post("/{order_id}/cancel")
+async def cancel_my_order(
+    order_id: int,
+    db: AsyncSession = Depends(get_db),
+    authorization: str | None = Header(None, alias="Authorization"),
+    x_telegram_init_data: str | None = Header(None, alias="X-Telegram-Init-Data"),
+    x_init_data: str | None = Header(None, alias="X-Init-Data"),
+    x_kulcha_bot_auth: str | None = Header(None, alias="X-Kulcha-Bot-Auth"),
+):
+    init_data = (x_telegram_init_data or x_init_data or "").strip()
+    customer = await _require_customer_user(db, authorization, init_data, x_kulcha_bot_auth)
+    result = await db.execute(select(Order).where(Order.id == order_id))
+    order = result.scalars().first()
+    if not order:
+        raise HTTPException(404, "Order not found")
+    if order.user_id != customer.id:
+        raise HTTPException(403, "Forbidden")
+    if order.status != OrderStatus.CREATED:
+        raise HTTPException(400, "Отменить можно только заказ до принятия рестораном.")
+    order.status = OrderStatus.CANCELLED
+    order.updated_at = datetime.now()
+    await db.flush()
+    await notify_user_status_changed(db, order_id)
+    return _to_dto(order)
+
+
+@router.patch("/{order_id}/paid")
+async def patch_paid(
+    order_id: int,
+    body: OrderPaidPatchDto,
+    db: AsyncSession = Depends(get_db),
+    x_telegram_init_data: str = Header(..., alias="X-Telegram-Init-Data"),
+):
+    result = await db.execute(
+        select(Order)
+        .options(joinedload(Order.user), joinedload(Order.restaurant), joinedload(Order.courier))
+        .where(Order.id == order_id)
+    )
+    order = result.unique().scalars().first()
+    if not order:
+        raise HTTPException(404, "Order not found")
+    admin = await _require_admin_user(db, x_telegram_init_data)
+    await staff_access.require_restaurant_staff(db, admin.id, order.restaurant_id)
+    order.is_paid = body.isPaid
+    order.updated_at = datetime.now()
+    await db.flush()
+    return _to_dto(order)
 
 
 @router.patch("/{order_id}/status")

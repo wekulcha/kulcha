@@ -14,3 +14,7 @@ class Restaurant(Base):
     address: Mapped[str] = mapped_column(String, nullable=False)
     image_link: Mapped[str | None] = mapped_column(String(2048), nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    working_hours_from: Mapped[str | None] = mapped_column(String(8), nullable=True)
+    working_hours_to: Mapped[str | None] = mapped_column(String(8), nullable=True)
+    orders_accept_from: Mapped[str | None] = mapped_column(String(8), nullable=True)
+    orders_accept_to: Mapped[str | None] = mapped_column(String(8), nullable=True)

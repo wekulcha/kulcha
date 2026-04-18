@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { AdminMealCreate, Meal } from "../../types/adminMeal";
 import {
   createAdminMeal,
+  deleteMeal,
   fetchAdminMeals,
   updateAdminMeal,
   updateMealAvailability,
@@ -18,6 +19,7 @@ interface CreateMealModalProps {
   restaurantId: number;
   onCancel: () => void;
   onSave: (data: AdminMealCreate) => void;
+  onDelete?: () => void;
   loading: boolean;
   error: string | null;
   mode?: "create" | "edit";
@@ -28,6 +30,7 @@ const CreateMealModal: React.FC<CreateMealModalProps> = ({
   restaurantId,
   onCancel,
   onSave,
+  onDelete,
   loading,
   error,
   mode = "create",
@@ -182,6 +185,15 @@ const CreateMealModal: React.FC<CreateMealModalProps> = ({
                 ? "Фото загружено."
                 : "Выберите файл — он сохранится на сервере."}
           </p>
+          {form.image_link ? (
+            <div className="mt-2 rounded-xl overflow-hidden border border-slate-100 bg-slate-50 max-h-36">
+              <img
+                src={mealImageUrl(form.image_link)}
+                alt=""
+                className="w-full h-32 object-cover"
+              />
+            </div>
+          ) : null}
         </div>
 
         {/* Optional fields: description, weight, calorie */}
@@ -232,6 +244,17 @@ const CreateMealModal: React.FC<CreateMealModalProps> = ({
         >
           {loading ? "Сохраняем..." : mode === "edit" ? "Сохранить" : "Создать блюдо"}
         </button>
+        {mode === "edit" && onDelete && (
+          <button
+            type="button"
+            onClick={() => {
+              if (confirm("Удалить блюдо из меню?")) onDelete();
+            }}
+            className="w-full rounded-2xl border border-rose-200 text-rose-700 text-xs font-semibold py-2 mt-1"
+          >
+            Удалить блюдо
+          </button>
+        )}
       </form>
     </div>
   );
@@ -334,6 +357,79 @@ export const AdminMenuTab: React.FC<AdminMenuTabProps> = ({
     setEditMeal(meal);
   };
 
+  const categoryRank = useCallback((cat: string) => {
+    const i = MEAL_CATEGORY_OPTIONS.findIndex((o) => o.value === cat);
+    return i === -1 ? 999 : i;
+  }, []);
+
+  const sortedMeals = useMemo(() => {
+    return [...meals].sort((a, b) => {
+      const rc = categoryRank(a.category) - categoryRank(b.category);
+      if (rc !== 0) return rc;
+      return a.name.localeCompare(b.name, "ru");
+    });
+  }, [meals, categoryRank]);
+
+  const categoriesPresent = useMemo(() => {
+    const seen = new Set<string>();
+    const order: string[] = [];
+    for (const m of sortedMeals) {
+      if (!seen.has(m.category)) {
+        seen.add(m.category);
+        order.push(m.category);
+      }
+    }
+    return order;
+  }, [sortedMeals]);
+
+  const [activeCat, setActiveCat] = useState<string | null>(null);
+  const scrollRootRef = useRef<HTMLDivElement>(null);
+  const catAnchorRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
+  useEffect(() => {
+    if (categoriesPresent.length && !activeCat) {
+      setActiveCat(categoriesPresent[0]);
+    }
+  }, [categoriesPresent, activeCat]);
+
+  useEffect(() => {
+    const root = scrollRootRef.current;
+    if (!root || categoriesPresent.length === 0) return;
+    const obs = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+        const first = visible[0];
+        if (first?.target) {
+          const cat = (first.target as HTMLElement).dataset["cat"];
+          if (cat) setActiveCat(cat);
+        }
+      },
+      { root, threshold: [0, 0.15, 0.35], rootMargin: "-12% 0px -55% 0px" }
+    );
+    for (const c of categoriesPresent) {
+      const el = catAnchorRefs.current[c];
+      if (el) obs.observe(el);
+    }
+    return () => obs.disconnect();
+  }, [categoriesPresent, sortedMeals.length]);
+
+  const scrollToCategory = (cat: string) => {
+    const el = catAnchorRefs.current[cat];
+    el?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  const handleDeleteMeal = async (meal: Meal) => {
+    try {
+      await deleteMeal(meal.id);
+      setMeals((prev) => prev.filter((m) => m.id !== meal.id));
+      setEditMeal(null);
+    } catch {
+      alert("Не удалось удалить блюдо (возможно, оно есть в заказах).");
+    }
+  };
+
   return (
     <div className="bg-white rounded-3xl p-3 shadow-sm border border-slate-100 space-y-3">
       <div className="flex items-center justify-between">
@@ -367,8 +463,45 @@ export const AdminMenuTab: React.FC<AdminMenuTabProps> = ({
       )}
 
       {!loading && !error && meals.length > 0 && (
-        <div className="grid grid-cols-2 gap-2">
-          {meals.map((meal) => (
+        <>
+          <div className="flex gap-1 overflow-x-auto no-scrollbar pb-1 sticky top-0 z-10 bg-white/95 py-1 -mx-1 px-1">
+            {categoriesPresent.map((cat) => (
+              <button
+                key={cat}
+                type="button"
+                onClick={() => {
+                  setActiveCat(cat);
+                  scrollToCategory(cat);
+                }}
+                className={
+                  "px-3 py-1.5 rounded-full text-[10px] font-medium border whitespace-nowrap shrink-0 transition-colors " +
+                  (activeCat === cat
+                    ? "bg-slate-900 text-white border-slate-900"
+                    : "bg-slate-50 text-slate-700 border-slate-200")
+                }
+              >
+                {mealCategoryLabel(cat)}
+              </button>
+            ))}
+          </div>
+
+          <div ref={scrollRootRef} className="max-h-[70vh] overflow-y-auto pr-1 space-y-4">
+            {categoriesPresent.map((cat) => (
+              <div
+                key={cat}
+                data-cat={cat}
+                ref={(el) => {
+                  catAnchorRefs.current[cat] = el;
+                }}
+                className="scroll-mt-28"
+              >
+                <div className="text-[11px] font-semibold text-slate-500 mb-2 sticky top-0 bg-white/95 py-1 z-[5]">
+                  {mealCategoryLabel(cat)}
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  {sortedMeals
+                    .filter((m) => m.category === cat)
+                    .map((meal) => (
             <div
               key={meal.id}
               className={
@@ -399,7 +532,6 @@ export const AdminMenuTab: React.FC<AdminMenuTabProps> = ({
                   </div>
                 </div>
 
-                {/* Edit pencil */}
                 <button
                   type="button"
                   className="text-slate-400 hover:text-slate-700 text-sm"
@@ -410,7 +542,6 @@ export const AdminMenuTab: React.FC<AdminMenuTabProps> = ({
                 </button>
               </div>
 
-              {/* Availability toggle */}
               <div className="flex items-center justify-between mt-1">
                 <div className="flex items-center gap-1">
                   <input
@@ -429,8 +560,12 @@ export const AdminMenuTab: React.FC<AdminMenuTabProps> = ({
                 </div>
               </div>
             </div>
-          ))}
-        </div>
+                    ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
       )}
 
       {isCreateOpen && (
@@ -450,6 +585,7 @@ export const AdminMenuTab: React.FC<AdminMenuTabProps> = ({
           initialMeal={editMeal}
           onCancel={() => setEditMeal(null)}
           onSave={handleEditSave}
+          onDelete={() => void handleDeleteMeal(editMeal)}
           loading={editLoading}
           error={editError}
         />
