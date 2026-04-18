@@ -74,8 +74,7 @@ async def cmd_start(message: Message):
 
 @router.message(
     F.chat.type == ChatType.PRIVATE,
-    ~Command(),
-    F.text | F.photo | F.document,
+    F.photo | F.document | (F.text & ~F.text.startswith("/")),
 )
 async def user_message(message: Message):
     if not INTERNAL_SECRET:
