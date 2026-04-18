@@ -5,6 +5,11 @@ declare global {
         ready: () => void;
         expand?: () => void;
         initData?: string;
+        /** Парсированные поля initData (в т.ч. start_param для deep link). */
+        initDataUnsafe?: {
+          start_param?: string;
+          user?: { id?: number; username?: string };
+        };
         version?: string;
         platform?: string;
         colorScheme?: 'light' | 'dark';
@@ -23,8 +28,7 @@ declare global {
 
 export function getTelegramStartParam(): string {
   if (typeof window === 'undefined') return '';
-  const unsafe = window.Telegram?.WebApp?.initDataUnsafe as { start_param?: string } | undefined;
-  const p = unsafe?.start_param?.trim();
+  const p = window.Telegram?.WebApp?.initDataUnsafe?.start_param?.trim();
   return p || '';
 }
 
