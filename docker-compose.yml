@@ -35,6 +35,12 @@ services:
       # Должен совпадать с admin_bot; для продакшена задайте в .env своё значение.
       KULCHA_INTERNAL_API_SECRET: ${KULCHA_INTERNAL_API_SECRET:-kulcha-local-internal-api-secret}
       KULCHA_BOT_API_SECRET: ${KULCHA_BOT_API_SECRET:-}
+      KULCHA_OBJECT_STORAGE_ENDPOINT: ${KULCHA_OBJECT_STORAGE_ENDPOINT:-https://storage.yandexcloud.net}
+      KULCHA_OBJECT_STORAGE_REGION: ${KULCHA_OBJECT_STORAGE_REGION:-ru-central1}
+      KULCHA_OBJECT_STORAGE_BUCKET: ${KULCHA_OBJECT_STORAGE_BUCKET:-kulcha-main-menu-items}
+      KULCHA_OBJECT_STORAGE_ACCESS_KEY_ID: ${KULCHA_OBJECT_STORAGE_ACCESS_KEY_ID:-}
+      KULCHA_OBJECT_STORAGE_SECRET_ACCESS_KEY: ${KULCHA_OBJECT_STORAGE_SECRET_ACCESS_KEY:-}
+      KULCHA_OBJECT_STORAGE_PUBLIC_BASE_URL: ${KULCHA_OBJECT_STORAGE_PUBLIC_BASE_URL:-https://kulcha-main-menu-items.storage.yandexcloud.net}
     depends_on:
       postgres:
         condition: service_healthy

@@ -24,6 +24,12 @@ class Settings(BaseSettings):
     bot_api_secret: str = ""
 
     uploads_dir: str = "./uploads"
+    object_storage_endpoint: str = "https://storage.yandexcloud.net"
+    object_storage_region: str = "ru-central1"
+    object_storage_bucket: str = "kulcha-main-menu-items"
+    object_storage_access_key_id: str = ""
+    object_storage_secret_access_key: str = ""
+    object_storage_public_base_url: str = "https://kulcha-main-menu-items.storage.yandexcloud.net"
 
     cors_additional_origins: list[str] = []
 
