@@ -3,7 +3,13 @@ from aiogram import Router, F
 from aiogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
 from aiogram.filters import CommandStart, Command
 
-from config import API_BASE, ALLOWED_TELEGRAM_IDS, INTERNAL_API_SECRET, SUPERADMIN_MINI_APP_BASE
+from config import (
+    API_BASE,
+    ALLOWED_TELEGRAM_IDS,
+    INTERNAL_API_SECRET,
+    SUPERADMIN_MINI_APP_BASE,
+    SUPPORT_LINK,
+)
 
 router = Router()
 
@@ -29,6 +35,7 @@ async def cmd_start(message: Message):
             text="Открыть панель",
             web_app=WebAppInfo(url=SUPERADMIN_MINI_APP_BASE),
         )],
+        [InlineKeyboardButton(text="Поддержка", url=SUPPORT_LINK)],
     ])
     await message.answer(
         "Бот суперадмина KULCHA.\n"

@@ -9,3 +9,4 @@ SUPERADMIN_MINI_APP_BASE = (
 ALLOWED_TELEGRAM_IDS: set[int] = set(
     int(x) for x in os.environ.get("KULCHA_SUPERADMIN_ALLOWED_IDS", "").split(",") if x.strip().isdigit()
 )
+SUPPORT_LINK = os.environ.get("KULCHA_SUPPORT_LINK", "https://t.me/wekulcha_sup_bot")

@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import sys
 
 from dotenv import load_dotenv
 
@@ -12,17 +13,34 @@ from aiogram.enums import ParseMode
 from config import BOT_TOKEN
 from handlers import router
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s [%(name)s] %(message)s",
+)
 logger = logging.getLogger(__name__)
 
 
-async def main():
-    if not BOT_TOKEN:
-        logger.error("Set KULCHA_SUPPORT_BOT_TOKEN")
-        return
-    bot = Bot(token=BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
+async def main() -> None:
+    if not BOT_TOKEN or not BOT_TOKEN.strip():
+        logger.error(
+            "KULCHA_SUPPORT_BOT_TOKEN is empty. Set it in .env / docker-compose for the support bot."
+        )
+        sys.exit(1)
+
+    bot = Bot(token=BOT_TOKEN.strip(), default=DefaultBotProperties(parse_mode=ParseMode.HTML))
     dp = Dispatcher()
     dp.include_router(router)
+
+    # Если у бота был включён webhook (BotFather / тесты), long polling не получает апдейты.
+    await bot.delete_webhook(drop_pending_updates=False)
+    try:
+        me = await bot.get_me()
+        logger.info("Support bot OK: @%s (id=%s)", me.username, me.id)
+    except Exception:
+        logger.exception("Cannot call getMe — проверьте KULCHA_SUPPORT_BOT_TOKEN")
+        sys.exit(1)
+
+    logger.info("Starting long polling…")
     await dp.start_polling(bot)
 
 

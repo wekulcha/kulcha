@@ -1,4 +1,5 @@
 import html
+import logging
 import re
 
 import httpx
@@ -8,6 +9,8 @@ from aiogram.filters import Command, CommandStart
 from aiogram.types import Message
 
 from config import API_BASE, INTERNAL_SECRET, SUPPORT_GROUP_ID
+
+logger = logging.getLogger(__name__)
 
 router = Router()
 
@@ -57,8 +60,9 @@ async def _close_ticket(ticket_id: int) -> bool:
     return r.status_code in (200, 204)
 
 
-@router.message(CommandStart())
+@router.message(CommandStart(), F.chat.type == ChatType.PRIVATE)
 async def cmd_start(message: Message):
+    logger.info("cmd_start from user_id=%s", message.from_user.id if message.from_user else None)
     await message.answer(
         "<b>Поддержка KULCHA</b>\n"
         "━━━━━━━━━━━━━━\n"
