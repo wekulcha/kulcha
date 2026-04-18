@@ -3,12 +3,10 @@ from __future__ import annotations
 import logging
 import re
 from contextlib import asynccontextmanager
-from pathlib import Path
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from fastapi.staticfiles import StaticFiles
 
 from app.config import get_settings
 from app.routers import (
@@ -35,8 +33,6 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(application: FastAPI):  # noqa: ARG001
     settings = get_settings()
-    uploads = Path(settings.uploads_dir)
-    uploads.mkdir(parents=True, exist_ok=True)
     logger.info("Kulcha backend started (user_bot_token configured: %s, admin_bot_token configured: %s)",
                 bool(settings.user_bot_token), bool(settings.admin_bot_token))
     yield
@@ -84,6 +80,7 @@ app.add_middleware(
     expose_headers=["Content-Type"],
 )
 
+
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception) -> JSONResponse:
     logger.error("Unhandled exception on %s %s: %s", request.method, request.url.path, exc, exc_info=True)
@@ -105,10 +102,6 @@ app.include_router(couriers.router)
 app.include_router(courier_panel.router)
 app.include_router(subscription_logs.router)
 app.include_router(admin.router)
-
-uploads_path = Path(settings.uploads_dir)
-if uploads_path.exists():
-    app.mount("/uploads", StaticFiles(directory=str(uploads_path)), name="uploads")
 
 
 @app.get("/health")
