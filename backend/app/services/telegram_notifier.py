@@ -50,6 +50,15 @@ def _order_type_ru(ot: object) -> str:
     return _ORDER_TYPE_RU.get(_enum_key(ot), _enum_key(ot))
 
 
+def _compact_place_text(v: str | None) -> str:
+    if not v:
+        return "—"
+    t = " ".join(v.split())
+    t = t.replace("·", "-")
+    t = t.replace(" - ", "-").replace(" -", "-").replace("- ", "-")
+    return t
+
+
 def _username_at(username: str | None) -> str:
     if not username:
         return "—"
@@ -125,9 +134,9 @@ def _format_admin_new_order(order: Order, lines: list[OrderPosition]) -> str:
     status_ru = _status_ru(order.status)
     paid = "✅ Оплачен" if getattr(order, "is_paid", False) else "❌ Не оплачен"
     if _enum_key(order.order_type) == "DINE_IN":
-        place = f"Стол: <b>{_esc(order.table_number or '—')}</b>"
+        place = f"🪑 Стол: <b>{_esc(_compact_place_text(order.table_number))}</b>"
     else:
-        place = f"Адрес: {_esc(order.delivery_address or '—')}"
+        place = f"🚚 Адрес: <b>{_esc(_compact_place_text(order.delivery_address))}</b>"
     parts = [
         "🔔 <b>Новый заказ</b>",
         "━━━━━━━━━━━━━━",

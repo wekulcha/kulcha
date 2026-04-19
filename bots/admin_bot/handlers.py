@@ -50,30 +50,61 @@ def _apply_status_change_meta(
     actor: str,
 ) -> str:
     lines = source_html.split("\n")
-    updated: list[str] = []
-    replaced_number = False
-    replaced_paid = False
+    order_line = f"№ <code>{order_id}</code> · <b>{status_ru}</b>"
+    user_line = ""
+    place_line = ""
+    money_line = f"💰 · {paid_ru}"
+    positions_block: list[str] = []
+    comment_line = ""
+    in_positions = False
     for ln in lines:
         if "Новый заказ" in ln:
             continue
         if ln.startswith(f"№ <code>{order_id}</code>"):
-            updated.append(f"№ <code>{order_id}</code> · <b>{status_ru}</b>")
-            replaced_number = True
+            continue
+        if ln.startswith("👤 "):
+            user_line = ln
+            continue
+        if ln.startswith("🚚 ") or ln.startswith("🪑 ") or ln.startswith("Адрес:") or ln.startswith("Стол:"):
+            place_line = ln
             continue
         if ln.startswith("💰 "):
             left = ln.split("·")[0].strip()
-            updated.append(f"{left} · {paid_ru}")
-            replaced_paid = True
+            money_line = f"{left} · {paid_ru}"
+            continue
+        if ln.startswith("<b>Позиции:</b>"):
+            in_positions = True
+            positions_block = [ln]
+            continue
+        if in_positions:
+            if ln.strip() == "":
+                continue
+            if ln.startswith("• "):
+                positions_block.append(ln)
+                continue
+            in_positions = False
+        if ln.startswith("💬 "):
+            comment_line = ln
             continue
         if "Статус ещё не меняли" in ln or "Статус изменил:" in ln or "Выберите статус ниже" in ln:
             continue
-        updated.append(ln)
-    if not replaced_number:
-        updated.insert(2, f"№ <code>{order_id}</code> · <b>{status_ru}</b>")
-    if not replaced_paid:
-        updated.append(f"💰 · {paid_ru}")
-    updated.append(f"<i>Статус изменил: {html.escape(actor)}</i>")
-    return "\n".join(updated)
+
+    out: list[str] = [order_line, "━━━━━━━━━━━━━━"]
+    if user_line:
+        out.append(user_line)
+    out.append("")
+    if place_line:
+        out.append(place_line)
+    out.append(money_line)
+    out.append("")
+    if positions_block:
+        out.extend(positions_block)
+    if comment_line:
+        out.append("")
+        out.append(comment_line)
+    out.append("")
+    out.append(f"<i>Статус изменил: {html.escape(actor)}</i>")
+    return "\n".join(out)
 
 
 @router.message(CommandStart())
