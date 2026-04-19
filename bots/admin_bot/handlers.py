@@ -29,6 +29,15 @@ STATUS_FROM_CB = {
     "CAN": "CANCELLED",
 }
 
+STATUS_RU = {
+    "CREATED": "Создан",
+    "ACCEPTED": "Принят",
+    "COOKING": "Готовится",
+    "DELIVERY": "В доставке",
+    "DONE": "Выполнен",
+    "CANCELLED": "Отменён",
+}
+
 
 @router.message(CommandStart())
 async def cmd_start(message: Message):
@@ -111,6 +120,17 @@ async def order_status_callback(query: CallbackQuery):
                     st = str(data.get("status") or "")
                     new_kb = order_status_keyboard(order_id, st)
                     await query.message.edit_reply_markup(reply_markup=new_kb)
+                    who = query.from_user
+                    who_name = (
+                        f"@{who.username}" if who and who.username else f"id:{who.id if who else '—'}"
+                    )
+                    await query.message.answer(
+                        "<b>Статус обновлён</b>\n"
+                        "━━━━━━━━━━━━━━\n"
+                        f"Заказ № <code>{order_id}</code>\n"
+                        f"Новый статус: <b>{STATUS_RU.get(st, st)}</b>\n"
+                        f"Изменил: <b>{who_name}</b>"
+                    )
                 except Exception:
                     pass
         else:

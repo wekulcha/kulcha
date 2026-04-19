@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from sqlalchemy import Boolean, String
+from sqlalchemy import BigInteger, Boolean, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database import Base
@@ -18,3 +18,4 @@ class Restaurant(Base):
     working_hours_to: Mapped[str | None] = mapped_column(String(8), nullable=True)
     orders_accept_from: Mapped[str | None] = mapped_column(String(8), nullable=True)
     orders_accept_to: Mapped[str | None] = mapped_column(String(8), nullable=True)
+    telegram_group_chat_id: Mapped[int | None] = mapped_column(BigInteger, nullable=True)

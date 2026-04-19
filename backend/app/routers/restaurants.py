@@ -29,6 +29,7 @@ def _to_dto(r: Restaurant) -> RestaurantDto:
         workingHoursTo=r.working_hours_to,
         ordersAcceptFrom=r.orders_accept_from,
         ordersAcceptTo=r.orders_accept_to,
+        telegramGroupChatId=r.telegram_group_chat_id,
     )
 
 
@@ -111,6 +112,8 @@ async def patch_restaurant(
     if body.ordersAcceptTo is not None:
         v = body.ordersAcceptTo.strip() or None
         r.orders_accept_to = v
+    if "telegramGroupChatId" in body.model_fields_set:
+        r.telegram_group_chat_id = body.telegramGroupChatId
     await db.flush()
     return _to_dto(r)
 

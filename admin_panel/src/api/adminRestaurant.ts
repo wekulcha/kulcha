@@ -10,6 +10,7 @@ export interface RestaurantDetail {
   workingHoursTo?: string | null;
   ordersAcceptFrom?: string | null;
   ordersAcceptTo?: string | null;
+  telegramGroupChatId?: number | null;
 }
 
 export async function fetchRestaurant(restaurantId: number): Promise<RestaurantDetail> {
@@ -33,10 +34,11 @@ export async function patchRestaurant(
       | "workingHoursTo"
       | "ordersAcceptFrom"
       | "ordersAcceptTo"
+      | "telegramGroupChatId"
     >
   >
 ): Promise<RestaurantDetail> {
-  const body: Record<string, string | undefined> = {};
+  const body: Record<string, string | number | null | undefined> = {};
   if (patch.name !== undefined) body.name = patch.name;
   if (patch.address !== undefined) body.address = patch.address;
   if (patch.imageLink !== undefined) body.imageLink = patch.imageLink ?? undefined;
@@ -44,6 +46,7 @@ export async function patchRestaurant(
   if (patch.workingHoursTo !== undefined) body.workingHoursTo = patch.workingHoursTo ?? undefined;
   if (patch.ordersAcceptFrom !== undefined) body.ordersAcceptFrom = patch.ordersAcceptFrom ?? undefined;
   if (patch.ordersAcceptTo !== undefined) body.ordersAcceptTo = patch.ordersAcceptTo ?? undefined;
+  if (patch.telegramGroupChatId !== undefined) body.telegramGroupChatId = patch.telegramGroupChatId;
   const resp = await fetch(`${BASE_URL}/restaurants/${restaurantId}`, {
     method: "PATCH",
     headers: { ...buildAdminApiJsonHeaders(), "Content-Type": "application/json" },

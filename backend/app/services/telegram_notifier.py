@@ -184,6 +184,13 @@ async def notify_order_placed(db: AsyncSession, order_id: int) -> None:
         admin_html = _format_admin_new_order(order, lines)
         keyboard = _build_admin_keyboard(order.id)
 
+        group_chat_id = getattr(order.restaurant, "telegram_group_chat_id", None)
+        if group_chat_id is not None:
+            await telegram_bot_client.send_message(
+                admin_token, int(group_chat_id), admin_html, reply_markup=keyboard
+            )
+            return
+
         staff_result = await db.execute(
             select(Staff)
             .options(joinedload(Staff.user))

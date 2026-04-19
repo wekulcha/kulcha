@@ -29,10 +29,12 @@ export const AdminRestaurantSettingsTab: React.FC<Props> = ({ restaurantId }) =>
   const [workTo, setWorkTo] = useState("");
   const [ordersFrom, setOrdersFrom] = useState("");
   const [ordersTo, setOrdersTo] = useState("");
+  const [groupChatId, setGroupChatId] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const [ok, setOk] = useState<string | null>(null);
 
   useEffect(() => {
     if (!restaurantId || Number.isNaN(restaurantId)) return;
@@ -48,6 +50,9 @@ export const AdminRestaurantSettingsTab: React.FC<Props> = ({ restaurantId }) =>
         setWorkTo(d.workingHoursTo ?? "");
         setOrdersFrom(d.ordersAcceptFrom ?? "");
         setOrdersTo(d.ordersAcceptTo ?? "");
+        setGroupChatId(
+          d.telegramGroupChatId != null ? String(d.telegramGroupChatId) : ""
+        );
       })
       .catch(() => setErr("Не удалось загрузить данные ресторана."))
       .finally(() => {
@@ -62,7 +67,20 @@ export const AdminRestaurantSettingsTab: React.FC<Props> = ({ restaurantId }) =>
     if (!restaurantId) return;
     setSaving(true);
     setErr(null);
+    setOk(null);
     try {
+      const rawGroupId = groupChatId.trim();
+      let parsedGroupId: number | null | undefined = undefined;
+      if (rawGroupId !== "") {
+        const n = Number(rawGroupId);
+        if (!Number.isInteger(n)) {
+          setErr("ID группы должен быть целым числом (обычно начинается с -100...).");
+          return;
+        }
+        parsedGroupId = n;
+      } else {
+        parsedGroupId = null;
+      }
       const next = await patchRestaurant(restaurantId, {
         name: name.trim(),
         address: address.trim(),
@@ -70,8 +88,10 @@ export const AdminRestaurantSettingsTab: React.FC<Props> = ({ restaurantId }) =>
         workingHoursTo: workTo.trim() || null,
         ordersAcceptFrom: ordersFrom.trim() || null,
         ordersAcceptTo: ordersTo.trim() || null,
+        telegramGroupChatId: parsedGroupId,
       });
       setDetail(next);
+      setOk("Сохранено");
     } catch {
       setErr("Не удалось сохранить.");
     } finally {
@@ -84,6 +104,7 @@ export const AdminRestaurantSettingsTab: React.FC<Props> = ({ restaurantId }) =>
       <div className="text-sm font-semibold text-slate-900">О ресторане</div>
       {loading && <div className="text-xs text-slate-500">Загрузка…</div>}
       {err && <div className="text-[11px] text-red-500">{err}</div>}
+      {ok && <div className="text-[11px] text-emerald-600">{ok}</div>}
 
       {!loading && (
         <>
@@ -158,6 +179,22 @@ export const AdminRestaurantSettingsTab: React.FC<Props> = ({ restaurantId }) =>
             </p>
           </div>
 
+          <div className="space-y-1">
+            <label className="text-[11px] text-slate-600">
+              Telegram Group Chat ID для заказов
+            </label>
+            <input
+              type="text"
+              className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
+              placeholder="-1001234567890"
+              value={groupChatId}
+              onChange={(e) => setGroupChatId(e.target.value)}
+            />
+            <p className="text-[10px] text-slate-500">
+              Если заполнено, новые заказы будут приходить только в эту группу.
+            </p>
+          </div>
+
           <div className="flex gap-3 items-start">
             <div className="w-24 h-24 rounded-2xl bg-slate-100 overflow-hidden flex-shrink-0 border border-slate-100">
               {detail?.imageLink ? (
@@ -202,7 +239,7 @@ export const AdminRestaurantSettingsTab: React.FC<Props> = ({ restaurantId }) =>
             onClick={() => void save()}
             className="w-full rounded-2xl bg-slate-900 text-white text-xs font-semibold py-2.5 disabled:opacity-50"
           >
-            {saving ? "Сохранение…" : "Сохранить название и адрес"}
+            {saving ? "Сохранение…" : "Сохранить настройки"}
           </button>
         </>
       )}

@@ -12,6 +12,7 @@ class RestaurantDto(BaseModel):
     workingHoursTo: str | None = None
     ordersAcceptFrom: str | None = None
     ordersAcceptTo: str | None = None
+    telegramGroupChatId: int | None = None
 
 
 class RestaurantPatchDto(BaseModel):
@@ -22,3 +23,4 @@ class RestaurantPatchDto(BaseModel):
     workingHoursTo: str | None = None
     ordersAcceptFrom: str | None = None
     ordersAcceptTo: str | None = None
+    telegramGroupChatId: int | None = None
