@@ -12,6 +12,7 @@ from app.models.order import Order
 from app.models.order_position import OrderPosition
 from app.models.user import User
 from app.schemas.order_position import OrderPositionDto
+from app.services.session_auth import get_user_from_bearer
 from app.services import staff_access
 from app.services.telegram_auth import verify_telegram_init_data
 
@@ -42,9 +43,6 @@ async def get_all(
     authorization: str | None = Header(None, alias="Authorization"),
 ):
     if orderId is not None:
-        if not x_telegram_init_data:
-            raise HTTPException(401, "Telegram init data required")
-
         result = await db.execute(
             select(Order)
             .options(joinedload(Order.restaurant))
@@ -54,15 +52,21 @@ async def get_all(
         if not order:
             raise HTTPException(404, "Order not found")
 
-        settings = get_settings()
-        tg = verify_telegram_init_data(x_telegram_init_data, settings.admin_bot_token)
-        if not tg:
-            raise HTTPException(401, "Invalid Telegram init data")
-        result = await db.execute(select(User).where(User.id == tg["id"]))
-        u = result.scalars().first()
-        if not u:
-            raise HTTPException(403, "Unknown user")
-        await staff_access.require_restaurant_staff(db, u.id, order.restaurant_id)
+        bearer_user = await get_user_from_bearer(db, authorization)
+        if bearer_user and bearer_user.id == order.user_id:
+            pass
+        else:
+            if not x_telegram_init_data:
+                raise HTTPException(401, "Telegram init data required")
+            settings = get_settings()
+            tg = verify_telegram_init_data(x_telegram_init_data, settings.admin_bot_token)
+            if not tg:
+                raise HTTPException(401, "Invalid Telegram init data")
+            result = await db.execute(select(User).where(User.id == tg["id"]))
+            u = result.scalars().first()
+            if not u:
+                raise HTTPException(403, "Unknown user")
+            await staff_access.require_restaurant_staff(db, u.id, order.restaurant_id)
 
         result = await db.execute(
             select(OrderPosition)

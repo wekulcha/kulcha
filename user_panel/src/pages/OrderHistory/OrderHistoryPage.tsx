@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { fetchMyOrders } from '../../api/orders';
+import { fetchMyOrders, fetchOrderPositionsForUser } from '../../api/orders';
 import { OrderCard } from '../../components/orders/OrderCard';
 import { useAuth } from '../../context/AuthContext';
 import { Header } from '../../layout/Header';
@@ -15,6 +15,7 @@ export function OrderHistoryPage() {
   const [orders, setOrders] = useState<UserOrder[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [selected, setSelected] = useState<UserOrder | null>(null);
 
   useEffect(() => {
     if (!authReady || !currentUser) {
@@ -76,11 +77,92 @@ export function OrderHistoryPage() {
         {pastOrders.length > 0 && (
           <div className="space-y-2">
             {pastOrders.map((order) => (
-              <OrderCard key={order.id} order={order} />
+              <button
+                key={order.id}
+                type="button"
+                className="w-full text-left"
+                onClick={() => setSelected(order)}
+              >
+                <OrderCard order={order} />
+              </button>
             ))}
           </div>
         )}
       </main>
+      {selected && (
+        <OrderDetailsModal order={selected} onClose={() => setSelected(null)} />
+      )}
     </MiniAppShell>
+  );
+}
+
+function OrderDetailsModal({ order, onClose }: { order: UserOrder; onClose: () => void }) {
+  const [items, setItems] = useState<
+    { meal_id: number; name: string; quantity: number; total_price: number }[]
+  >([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      setLoading(true);
+      try {
+        const data = await fetchOrderPositionsForUser(order.id);
+        if (!cancelled) setItems(data);
+      } catch {
+        if (!cancelled) setItems([]);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [order.id]);
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center px-4" onClick={onClose}>
+      <div
+        className="bg-white rounded-3xl p-4 w-full max-w-sm shadow-lg space-y-3 max-h-[85vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-start justify-between">
+          <div>
+            <div className="text-xs text-slate-500">Заказ</div>
+            <div className="text-sm font-bold text-slate-900">№{order.id}</div>
+          </div>
+          <button type="button" className="text-slate-400 text-lg leading-none" onClick={onClose}>
+            ×
+          </button>
+        </div>
+        <div className="text-[11px] text-slate-600">
+          {order.order_type === 'DINE_IN' ? 'В зале' : 'Доставка'} · {order.total ?? 0} ₽
+        </div>
+        {order.delivery_address && (
+          <div className="text-[11px] text-slate-600">Адрес: {order.delivery_address}</div>
+        )}
+        {order.table_number && (
+          <div className="text-[11px] text-slate-600">Стол: {order.table_number}</div>
+        )}
+        {order.comment && <div className="text-[11px] text-slate-600">Комментарий: {order.comment}</div>}
+        <div className="space-y-1">
+          <div className="text-[11px] font-semibold text-slate-700">Позиции</div>
+          <div className="space-y-1 max-h-44 overflow-auto">
+            {loading ? (
+              <div className="text-[11px] text-slate-500">Загрузка...</div>
+            ) : (
+              items.map((item) => (
+                <div key={`${item.meal_id}-${item.quantity}`} className="flex justify-between text-xs text-slate-700">
+                  <span className="truncate">{item.name}</span>
+                  <span className="ml-2 text-slate-500">
+                    ×{item.quantity} · {Math.round(item.total_price)} ₽
+                  </span>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

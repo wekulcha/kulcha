@@ -5,6 +5,7 @@ interface OrderCheckoutBody {
   restaurantId: number;
   deliveryAddress: string | null;
   tableNumber: string | null;
+  comment: string | null;
   orderType: 'DELIVERY' | 'DINE_IN';
   itemsTotal: number;
   deliveryFee: number;
@@ -19,6 +20,7 @@ interface OrderDto {
   userId: number | null;
   deliveryAddress: string | null;
   tableNumber: string | null;
+  comment?: string | null;
   restaurantId: number | null;
   createdAt: string | null;
   updatedAt: string | null;
@@ -44,6 +46,7 @@ function toUserOrder(dto: OrderDto): UserOrder {
     user_id: dto.userId,
     delivery_address: dto.deliveryAddress,
     table_number: dto.tableNumber ?? null,
+    comment: dto.comment ?? null,
     restaurant_id: dto.restaurantId,
     created_at: dto.createdAt,
     updated_at: dto.updatedAt,
@@ -62,6 +65,7 @@ export async function createOrder(payload: CreateOrderPayload): Promise<OrderRes
     restaurantId: payload.restaurant_id,
     deliveryAddress: payload.delivery_address ?? null,
     tableNumber: payload.table_number ?? null,
+    comment: payload.comment ?? null,
     orderType: payload.service_type,
     itemsTotal: payload.items_total,
     deliveryFee: payload.delivery_fee,
@@ -102,4 +106,25 @@ export async function cancelOrder(orderId: number): Promise<void> {
     { method: 'POST' },
     { auth: true }
   );
+}
+
+export async function fetchOrderPositionsForUser(
+  orderId: number
+): Promise<{ meal_id: number; name: string; quantity: number; total_price: number }[]> {
+  const resp = await apiFetchJson<
+    { id: number; mealId: number; orderId: number; quantity: number; totalPrice: number }[]
+  >(`/order-positions?orderId=${orderId}`, {}, { auth: true });
+
+  const mealIds = [...new Set(resp.map((p) => p.mealId))];
+  const nameMap = new Map<number, string>();
+  for (const mid of mealIds) {
+    const meal = await apiFetchJson<{ name: string }>(`/meals/${mid}`);
+    nameMap.set(mid, meal.name);
+  }
+  return resp.map((p) => ({
+    meal_id: p.mealId,
+    name: nameMap.get(p.mealId) ?? `#${p.mealId}`,
+    quantity: p.quantity,
+    total_price: Number(p.totalPrice ?? 0),
+  }));
 }

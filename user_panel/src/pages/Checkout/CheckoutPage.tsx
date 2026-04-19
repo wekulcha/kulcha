@@ -45,6 +45,7 @@ export function CheckoutPage() {
   const [line, setLine] = useState('');
   const [pavilion, setPavilion] = useState('');
   const [tableNumber, setTableNumber] = useState('');
+  const [comment, setComment] = useState('');
   const [username, setUsername] = useState<string>('');
   const [phoneLocal, setPhoneLocal] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('CASH');
@@ -109,12 +110,17 @@ export function CheckoutPage() {
       setErrorMessage('Укажите этаж, линию и павильон.');
       return;
     }
+    if (serviceType === 'DINE_IN' && !tableNumber.trim()) {
+      setErrorMessage('Укажите номер стола для заказа в зале.');
+      return;
+    }
 
     const payload: CreateOrderPayload = {
       restaurant_id: selectedRestaurant.id,
       service_type: serviceType,
       delivery_address: deliveryAddr,
       table_number: serviceType === 'DINE_IN' ? tableNumber.trim() || null : null,
+      comment: comment.trim() || null,
       username: username.replace(/^@/, '') || null,
       phone: phoneForApi,
       payment_method: paymentMethod,
@@ -207,6 +213,9 @@ export function CheckoutPage() {
         {serviceType === 'DELIVERY' ? (
           <div className="bg-white rounded-2xl p-3 shadow-sm space-y-3">
             <div className="text-sm font-semibold text-slate-900">Локация на рынке</div>
+            <p className="text-[11px] text-slate-500">
+              Доставка осуществляется только внутри Фуд Сити.
+            </p>
             <div className="grid grid-cols-3 gap-2">
               <div>
                 <label className="block text-[10px] font-medium text-slate-500 mb-1 uppercase tracking-wide">
@@ -250,6 +259,9 @@ export function CheckoutPage() {
         ) : (
           <div className="bg-white rounded-2xl p-3 shadow-sm space-y-2">
             <div className="text-sm font-semibold text-slate-900">В зале</div>
+            <p className="text-[11px] text-slate-500">
+              Обслуживание и доставка доступны только внутри Фуд Сити.
+            </p>
             <label className="block text-[11px] text-slate-500">Номер стола</label>
             <input
               type="text"
@@ -261,6 +273,16 @@ export function CheckoutPage() {
             />
           </div>
         )}
+
+        <div className="bg-white rounded-2xl p-3 shadow-sm space-y-2">
+          <label className="block text-[11px] text-slate-500">Комментарий к заказу</label>
+          <textarea
+            className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm min-h-[72px]"
+            placeholder="Например: без лука, позвонить перед доставкой"
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+          />
+        </div>
 
         <div className="bg-white rounded-2xl p-3 shadow-sm space-y-3">
           <div className="text-sm font-semibold text-slate-900">Контакты</div>

@@ -35,6 +35,7 @@ def _to_dto(order: Order) -> OrderDto:
         userId=order.user_id,
         deliveryAddress=order.delivery_address,
         tableNumber=order.table_number,
+        comment=order.comment,
         restaurantId=order.restaurant_id,
         createdAt=order.created_at,
         updatedAt=order.updated_at,
@@ -303,11 +304,17 @@ async def checkout(
         )
 
     tn = (body.tableNumber.strip() if body.tableNumber else None) or None
+    comment = (body.comment.strip() if body.comment else None) or None
+    if body.orderType == OrderType.DELIVERY.value and not (body.deliveryAddress or "").strip():
+        raise HTTPException(400, "Укажите адрес доставки (доставка только внутри Фуд Сити).")
+    if body.orderType == OrderType.DINE_IN.value and not tn:
+        raise HTTPException(400, "Укажите номер стола для заказа в зале.")
     order = Order(
         status=OrderStatus.CREATED,
         user_id=customer.id,
         delivery_address=body.deliveryAddress,
         table_number=tn,
+        comment=comment,
         restaurant_id=body.restaurantId,
         created_at=datetime.now(),
         updated_at=datetime.now(),
@@ -367,6 +374,8 @@ async def update_order(
         existing.status = OrderStatus(dto.status)
     if dto.deliveryAddress is not None:
         existing.delivery_address = dto.deliveryAddress
+    if dto.comment is not None:
+        existing.comment = dto.comment
     if dto.courierId is not None:
         existing.courier_id = dto.courierId
     if dto.orderType is not None:
@@ -420,7 +429,8 @@ async def patch_paid(
     order_id: int,
     body: OrderPaidPatchDto,
     db: AsyncSession = Depends(get_db),
-    x_telegram_init_data: str = Header(..., alias="X-Telegram-Init-Data"),
+    x_telegram_init_data: str | None = Header(None, alias="X-Telegram-Init-Data"),
+    x_kulcha_internal_secret: str | None = Header(None, alias="X-Kulcha-Internal-Secret"),
 ):
     result = await db.execute(
         select(Order)
@@ -430,8 +440,14 @@ async def patch_paid(
     order = result.unique().scalars().first()
     if not order:
         raise HTTPException(404, "Order not found")
-    admin = await _require_admin_user(db, x_telegram_init_data)
-    await staff_access.require_restaurant_staff(db, admin.id, order.restaurant_id)
+    settings = get_settings()
+    if settings.internal_api_secret and x_kulcha_internal_secret == settings.internal_api_secret:
+        pass
+    else:
+        if not x_telegram_init_data:
+            raise HTTPException(401, "X-Telegram-Init-Data is required")
+        admin = await _require_admin_user(db, x_telegram_init_data)
+        await staff_access.require_restaurant_staff(db, admin.id, order.restaurant_id)
     order.is_paid = body.isPaid
     order.updated_at = datetime.now()
     await db.flush()

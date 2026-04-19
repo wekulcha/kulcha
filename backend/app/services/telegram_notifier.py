@@ -125,21 +125,23 @@ def _format_admin_new_order(order: Order, lines: list[OrderPosition]) -> str:
     status_ru = _status_ru(order.status)
     paid = "✅ Оплачен" if getattr(order, "is_paid", False) else "❌ Не оплачен"
     if _enum_key(order.order_type) == "DINE_IN":
-        place = f"🪑 Стол: <b>{_esc(order.table_number or '—')}</b>"
+        place = f"Стол: <b>{_esc(order.table_number or '—')}</b>"
     else:
-        place = f"🚚 {_esc(order.delivery_address or 'Адрес не указан')}"
+        place = f"Адрес: {_esc(order.delivery_address or '—')}"
     parts = [
         "🔔 <b>Новый заказ</b>",
         "━━━━━━━━━━━━━━",
         f"№ <code>{order.id}</code> · <b>{status_ru}</b>",
         f"👤 {uname} · {phone}",
-        f"🧾 {_order_type_ru(order.order_type)} · {place}",
+        f"{place}",
         f"💰 <b>{order.total} ₽</b> · {paid}",
         "",
         "<b>Позиции:</b>",
     ]
     for p in lines:
         parts.append(f"• {_esc(p.meal.name)} × {p.quantity}")
+    if order.comment:
+        parts.append(f"\n💬 Комментарий: {_esc(order.comment)}")
     parts.append("\n<i>Статус ещё не меняли</i>")
     return "\n".join(parts)
 

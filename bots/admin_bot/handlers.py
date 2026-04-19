@@ -28,6 +28,7 @@ STATUS_FROM_CB = {
     "DEL": "DELIVERY",
     "DON": "DONE",
     "CAN": "CANCELLED",
+    "PAY": "PAID",
 }
 
 STATUS_RU = {
@@ -45,21 +46,32 @@ def _apply_status_change_meta(
     *,
     order_id: int,
     status_ru: str,
+    paid_ru: str,
     actor: str,
 ) -> str:
     lines = source_html.split("\n")
     updated: list[str] = []
     replaced_number = False
+    replaced_paid = False
     for ln in lines:
+        if "Новый заказ" in ln:
+            continue
         if ln.startswith(f"№ <code>{order_id}</code>"):
             updated.append(f"№ <code>{order_id}</code> · <b>{status_ru}</b>")
             replaced_number = True
+            continue
+        if ln.startswith("💰 "):
+            left = ln.split("·")[0].strip()
+            updated.append(f"{left} · {paid_ru}")
+            replaced_paid = True
             continue
         if "Статус ещё не меняли" in ln or "Статус изменил:" in ln or "Выберите статус ниже" in ln:
             continue
         updated.append(ln)
     if not replaced_number:
         updated.insert(2, f"№ <code>{order_id}</code> · <b>{status_ru}</b>")
+    if not replaced_paid:
+        updated.append(f"💰 · {paid_ru}")
     updated.append(f"<i>Статус изменил: {html.escape(actor)}</i>")
     return "\n".join(updated)
 
@@ -129,21 +141,32 @@ async def order_status_callback(query: CallbackQuery):
         return
     try:
         async with httpx.AsyncClient(timeout=15.0) as client:
-            r = await client.patch(
-                f"{API_BASE}/orders/{order_id}/status",
-                headers={
-                    "X-Kulcha-Internal-Secret": INTERNAL_API_SECRET,
-                    "Content-Type": "application/json",
-                },
-                json={"status": status},
-            )
+            if status == "PAID":
+                r = await client.patch(
+                    f"{API_BASE}/orders/{order_id}/paid",
+                    headers={
+                        "X-Kulcha-Internal-Secret": INTERNAL_API_SECRET,
+                        "Content-Type": "application/json",
+                    },
+                    json={"isPaid": True},
+                )
+            else:
+                r = await client.patch(
+                    f"{API_BASE}/orders/{order_id}/status",
+                    headers={
+                        "X-Kulcha-Internal-Secret": INTERNAL_API_SECRET,
+                        "Content-Type": "application/json",
+                    },
+                    json={"status": status},
+                )
         if r.status_code == 200:
-            await query.answer("Статус обновлён ✓")
+            await query.answer("Оплата отмечена ✓" if status == "PAID" else "Статус обновлён ✓")
             if query.message:
                 try:
                     data = r.json() if r.content else {}
                     st = str(data.get("status") or "")
-                    new_kb = order_status_keyboard(order_id, st)
+                    is_paid = bool(data.get("isPaid"))
+                    new_kb = order_status_keyboard(order_id, st, is_paid)
                     who = query.from_user
                     who_name = f"@{who.username}" if who and who.username else f"id:{who.id if who else '—'}"
                     base_text = query.message.html_text or query.message.text or ""
@@ -152,6 +175,7 @@ async def order_status_callback(query: CallbackQuery):
                             base_text,
                             order_id=order_id,
                             status_ru=STATUS_RU.get(st, st),
+                            paid_ru="✅ Оплачен" if is_paid else "❌ Не оплачен",
                             actor=who_name,
                         )
                         await query.message.edit_text(new_text, reply_markup=new_kb)
