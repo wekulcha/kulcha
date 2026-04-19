@@ -1,4 +1,5 @@
 import hashlib
+import html
 import hmac as _hmac
 import time
 
@@ -37,6 +38,30 @@ STATUS_RU = {
     "DONE": "Выполнен",
     "CANCELLED": "Отменён",
 }
+
+
+def _apply_status_change_meta(
+    source_html: str,
+    *,
+    order_id: int,
+    status_ru: str,
+    actor: str,
+) -> str:
+    lines = source_html.split("\n")
+    updated: list[str] = []
+    replaced_number = False
+    for ln in lines:
+        if ln.startswith(f"№ <code>{order_id}</code>"):
+            updated.append(f"№ <code>{order_id}</code> · <b>{status_ru}</b>")
+            replaced_number = True
+            continue
+        if "Статус ещё не меняли" in ln or "Статус изменил:" in ln or "Выберите статус ниже" in ln:
+            continue
+        updated.append(ln)
+    if not replaced_number:
+        updated.insert(2, f"№ <code>{order_id}</code> · <b>{status_ru}</b>")
+    updated.append(f"<i>Статус изменил: {html.escape(actor)}</i>")
+    return "\n".join(updated)
 
 
 @router.message(CommandStart())
@@ -119,18 +144,19 @@ async def order_status_callback(query: CallbackQuery):
                     data = r.json() if r.content else {}
                     st = str(data.get("status") or "")
                     new_kb = order_status_keyboard(order_id, st)
-                    await query.message.edit_reply_markup(reply_markup=new_kb)
                     who = query.from_user
-                    who_name = (
-                        f"@{who.username}" if who and who.username else f"id:{who.id if who else '—'}"
-                    )
-                    await query.message.answer(
-                        "<b>Статус обновлён</b>\n"
-                        "━━━━━━━━━━━━━━\n"
-                        f"Заказ № <code>{order_id}</code>\n"
-                        f"Новый статус: <b>{STATUS_RU.get(st, st)}</b>\n"
-                        f"Изменил: <b>{who_name}</b>"
-                    )
+                    who_name = f"@{who.username}" if who and who.username else f"id:{who.id if who else '—'}"
+                    base_text = query.message.html_text or query.message.text or ""
+                    if base_text:
+                        new_text = _apply_status_change_meta(
+                            base_text,
+                            order_id=order_id,
+                            status_ru=STATUS_RU.get(st, st),
+                            actor=who_name,
+                        )
+                        await query.message.edit_text(new_text, reply_markup=new_kb)
+                    else:
+                        await query.message.edit_reply_markup(reply_markup=new_kb)
                 except Exception:
                     pass
         else:

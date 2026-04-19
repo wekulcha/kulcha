@@ -186,12 +186,12 @@ export const AdminRestaurantSettingsTab: React.FC<Props> = ({ restaurantId }) =>
             <input
               type="text"
               className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
-              placeholder="-1001234567890"
+              placeholder="3982157166"
               value={groupChatId}
               onChange={(e) => setGroupChatId(e.target.value)}
             />
             <p className="text-[10px] text-slate-500">
-              Если заполнено, новые заказы будут приходить только в эту группу.
+              Введите ID группы без -100, система добавит префикс автоматически.
             </p>
           </div>
 

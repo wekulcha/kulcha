@@ -19,6 +19,15 @@ from app.services.telegram_auth import verify_telegram_init_data
 router = APIRouter(prefix="/api/v1/restaurants", tags=["restaurants"])
 
 
+def _normalize_group_chat_id(chat_id: int | None) -> int | None:
+    if chat_id is None:
+        return None
+    if chat_id > 0:
+        # Админ вводит peer/group id без префикса, Telegram Bot API ожидает -100...
+        return -int(f"100{chat_id}")
+    return chat_id
+
+
 def _to_dto(r: Restaurant) -> RestaurantDto:
     return RestaurantDto(
         id=r.id,
@@ -113,7 +122,7 @@ async def patch_restaurant(
         v = body.ordersAcceptTo.strip() or None
         r.orders_accept_to = v
     if "telegramGroupChatId" in body.model_fields_set:
-        r.telegram_group_chat_id = body.telegramGroupChatId
+        r.telegram_group_chat_id = _normalize_group_chat_id(body.telegramGroupChatId)
     await db.flush()
     return _to_dto(r)
 

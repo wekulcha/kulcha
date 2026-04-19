@@ -122,24 +122,25 @@ def _format_admin_new_order(order: Order, lines: list[OrderPosition]) -> str:
     user = order.user
     uname = _user_tg_link(user.username, user.id)
     phone = _phone_clickable(user.phone)
+    status_ru = _status_ru(order.status)
+    paid = "✅ Оплачен" if getattr(order, "is_paid", False) else "❌ Не оплачен"
+    if _enum_key(order.order_type) == "DINE_IN":
+        place = f"🪑 Стол: <b>{_esc(order.table_number or '—')}</b>"
+    else:
+        place = f"🚚 {_esc(order.delivery_address or 'Адрес не указан')}"
     parts = [
         "🔔 <b>Новый заказ</b>",
         "━━━━━━━━━━━━━━",
-        f"№ <code>{order.id}</code>",
+        f"№ <code>{order.id}</code> · <b>{status_ru}</b>",
         f"👤 {uname} · {phone}",
-        f"📍 {_esc(order.restaurant.name)}",
-        f"🧾 {_order_type_ru(order.order_type)}",
-        f"💰 <b>{order.total} ₽</b>",
+        f"🧾 {_order_type_ru(order.order_type)} · {place}",
+        f"💰 <b>{order.total} ₽</b> · {paid}",
         "",
         "<b>Позиции:</b>",
     ]
     for p in lines:
         parts.append(f"• {_esc(p.meal.name)} × {p.quantity}")
-    if order.delivery_address:
-        parts.append(f"\n🚚 {_esc(order.delivery_address)}")
-    if order.table_number:
-        parts.append(f"\n🪑 Стол: <b>{_esc(order.table_number)}</b>")
-    parts.append("\n<i>Выберите статус ниже ↓</i>")
+    parts.append("\n<i>Статус ещё не меняли</i>")
     return "\n".join(parts)
 
 
