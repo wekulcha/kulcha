@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import html
+import logging
 from decimal import Decimal
 
 from sqlalchemy import select
@@ -12,6 +13,8 @@ from app.models.order import Order
 from app.models.order_position import OrderPosition
 from app.models.staff import Staff
 from app.services import telegram_bot_client
+
+logger = logging.getLogger(__name__)
 
 
 _STATUS_RU: dict[str, str] = {
@@ -186,10 +189,16 @@ async def notify_order_placed(db: AsyncSession, order_id: int) -> None:
 
         group_chat_id = getattr(order.restaurant, "telegram_group_chat_id", None)
         if group_chat_id is not None:
-            await telegram_bot_client.send_message(
+            sent_mid = await telegram_bot_client.send_message(
                 admin_token, int(group_chat_id), admin_html, reply_markup=keyboard
             )
-            return
+            if sent_mid is not None:
+                return
+            logger.warning(
+                "Failed to send order %s to restaurant group chat_id=%s; fallback to staff DMs",
+                order.id,
+                group_chat_id,
+            )
 
         staff_result = await db.execute(
             select(Staff)
