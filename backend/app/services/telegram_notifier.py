@@ -79,12 +79,12 @@ def _phone_clickable(phone: str | None) -> str:
 
 
 def _user_tg_link(username: str | None, telegram_id: int) -> str:
-    """Ссылка на пользователя для курьера: t.me/username или tg://user?id=…"""
+    """Возвращает упоминание без web-preview карточки."""
     if username:
         u = username.strip().lstrip("@")
         if u:
-            return f'<a href="https://t.me/{_esc(u)}">@{_esc(u)}</a>'
-    return f'<a href="tg://user?id={telegram_id}">id:{telegram_id}</a>'
+            return f"@{_esc(u)}"
+    return f"id:{telegram_id}"
 
 
 def _format_user_order_block(
