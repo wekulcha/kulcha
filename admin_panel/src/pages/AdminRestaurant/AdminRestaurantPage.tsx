@@ -110,7 +110,11 @@ export const AdminRestaurantPage: React.FC = () => {
       />
 
       <main className="flex-1 overflow-y-auto px-4 pt-2 pb-6 bg-gradient-to-b from-slate-50 to-slate-100">
-        <AdminOrdersTab restaurantId={restaurantId} hideTitle />
+        <AdminOrdersTab
+          restaurantId={restaurantId}
+          restaurantName={restaurantName}
+          hideTitle
+        />
       </main>
     </>
   );

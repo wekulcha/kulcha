@@ -79,7 +79,7 @@ user_panel/
 ├── package-lock.json               # NPM lock file
 ├── postcss.config.js               # PostCSS configuration
 ├── PROJECT_STRUCTURE.md            # This file
-├── README.md                       # Project readme
+├── USER_PANEL_README.md            # Project readme
 ├── tailwind.config.js              # TailwindCSS configuration
 ├── tsconfig.json                   # TypeScript configuration (base)
 ├── tsconfig.app.json               # TypeScript configuration (app)

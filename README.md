@@ -1,31 +1,71 @@
-# KULCHA
+# KULCHA Platform
 
-Telegram-based ordering platform for small restaurants/cafes (Food City, Moscow).
+Платформа приема заказов для кафе и небольших ресторанов с Telegram-интеграцией:
 
-## Structure
+- клиентский `user_panel` (Mini App);
+- `admin_panel` для персонала ресторана (Mini App);
+- `superadmin_panel` для управления платформой;
+- `backend` на FastAPI;
+- 4 Telegram-бота в `bots/`.
 
-- **user_panel/** — Customer Telegram Mini App (restaurants, menu, cart, checkout, profile)
-- **admin_panel/** — Restaurant admin Mini App (orders, menu, analytics)
-- **superadmin_panel/** — Platform dashboard (restaurants, users, orders, tools)
-- **backend_/** — Java Spring Boot API (port 8080, `/api/v1`)
-- **backend/** — Legacy Python FastAPI prototype (optional)
-- **bots/** — Telegram bots (user_bot, admin_bot, superadmin_bot)
+## Актуальная структура
 
-## Quick start
+- `backend/` — основной API-сервер (FastAPI + SQLAlchemy async + Alembic)
+- `user_panel/` — клиентский интерфейс заказа
+- `admin_panel/` — панель ресторана (заказы, меню, аналитика)
+- `superadmin_panel/` — панель суперадмина
+- `bots/` — `user_bot`, `admin_bot`, `superadmin_bot`, `support_bot`
+- `deploy/` — Dockerfiles, Caddy gateway, скрипты
+- `scripts/` — утилиты эксплуатации и миграций
 
-**Backend (Java):**
+## Быстрый старт (локально)
+
+### 1) Backend
+
 ```bash
-cd backend_ && ./mvnw spring-boot:run
+cd backend
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+alembic upgrade head
+uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
 ```
 
-**User panel:** `cd user_panel && npm install && npm run dev`  
-**Admin panel:** `cd admin_panel && npm install && npm run dev`  
-**Superadmin panel:** `cd superadmin_panel && npm install && npm run dev`
+Проверка: `http://localhost:8000/health`
 
-Set `VITE_API_URL=http://localhost:8080/api/v1` for frontends (or use default in code).
+### 2) Frontend-панели
 
-**Рекомендуемые доработки backend_ (Phase 6):**
-- Эндпоинт деталей заказа с позициями и названиями блюд (например `GET /orders/{id}/details`) для админки и суперадмина.
-- Аналитика по ресторану: today/7d/30d сводка и дневная серия (сейчас считается на фронте в admin_panel).
-- Поддержка `telegram_id` у пользователя и эндпоинт регистрации/поиска по telegram_id для User Bot.
-- Webhook или очередь для уведомлений ботов (новый заказ, смена статуса).
+```bash
+cd user_panel && npm install && npm run dev
+cd admin_panel && npm install && npm run dev
+cd superadmin_panel && npm install && npm run dev
+```
+
+Для панелей используется `VITE_API_URL` (обычно `http://localhost:8000/api/v1` локально или `PUBLIC_API_URL` в docker-сборке).
+
+### 3) Telegram-боты
+
+```bash
+cd bots/user_bot && python -m venv venv && source venv/bin/activate && pip install -r requirements.txt && python main.py
+cd bots/admin_bot && python -m venv venv && source venv/bin/activate && pip install -r requirements.txt && python main.py
+cd bots/superadmin_bot && python -m venv venv && source venv/bin/activate && pip install -r requirements.txt && python main.py
+cd bots/support_bot && python -m venv venv && source venv/bin/activate && pip install -r requirements.txt && python main.py
+```
+
+## Запуск в Docker Compose
+
+```bash
+docker compose up -d
+```
+
+Сервисы поднимутся по `docker-compose.yml`: PostgreSQL, backend, 3 панели, 4 бота и Caddy gateway.
+
+## Документация по модулям
+
+- `backend/BACKEND_README.md` — API, переменные окружения, миграции.
+- `bots/BOTS_README.md` — запуск и конфиги всех ботов.
+- `user_panel/USER_PANEL_README.md` — клиентский Mini App.
+- `admin_panel/ADMIN_PANEL_README.md` — панель ресторана.
+- `superadmin_panel/SUPERADMIN_PANEL_README.md` — панель суперадмина.
+- `scripts/SCRIPTS_README.md` — утилиты и env для dev/ops.
+- `THESIS_README.md` — материал для подготовки ВКР.

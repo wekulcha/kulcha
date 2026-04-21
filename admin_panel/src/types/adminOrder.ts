@@ -21,6 +21,8 @@ export interface AdminOrder {
   total: number;
   orderType: "DELIVERY" | "DINE_IN";
   deliveryAddress: string | null;
+  tableNumber?: string | null;
+  comment?: string | null;
   userId: number;
   restaurantId: number;
   itemsTotal?: number;

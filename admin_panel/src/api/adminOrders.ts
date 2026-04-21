@@ -12,6 +12,8 @@ interface OrderDto {
   status: AdminOrderStatusCode;
   userId: number;
   deliveryAddress: string | null;
+  tableNumber: string | null;
+  comment: string | null;
   restaurantId: number;
   createdAt: string;
   updatedAt: string | null;
@@ -32,6 +34,8 @@ function toAdminOrder(d: OrderDto): AdminOrder {
     total: Number(d.total),
     orderType: d.orderType,
     deliveryAddress: d.deliveryAddress,
+    tableNumber: d.tableNumber,
+    comment: d.comment,
     userId: d.userId,
     restaurantId: d.restaurantId,
     itemsTotal: Number(d.itemsTotal),
@@ -88,6 +92,8 @@ export async function updateAdminOrderStatus(
     status,
     userId: currentOrder.userId,
     deliveryAddress: currentOrder.deliveryAddress,
+    tableNumber: currentOrder.tableNumber ?? null,
+    comment: currentOrder.comment ?? null,
     restaurantId: currentOrder.restaurantId,
     createdAt: currentOrder.createdAt,
     updatedAt: currentOrder.updatedAt ?? null,
@@ -119,15 +125,17 @@ export async function fetchOrderPositions(orderId: number): Promise<{ meal_id: n
   const positions = (await resp.json()) as { id: number; mealId: number; orderId: number; quantity: number; unitPrice: number; totalPrice: number }[];
   const mealIds = [...new Set(positions.map((p) => p.mealId))];
   const nameMap = new Map<number, string>();
-  for (const mid of mealIds) {
-    const mResp = await fetch(`${BASE_URL}/meals/${mid}`);
-    if (mResp.ok) {
-      const meal = (await mResp.json()) as { name: string };
-      nameMap.set(mid, meal.name);
-    } else {
-      nameMap.set(mid, `#${mid}`);
-    }
-  }
+  await Promise.all(
+    mealIds.map(async (mid) => {
+      const mResp = await fetch(`${BASE_URL}/meals/${mid}`);
+      if (mResp.ok) {
+        const meal = (await mResp.json()) as { name: string };
+        nameMap.set(mid, meal.name);
+      } else {
+        nameMap.set(mid, `#${mid}`);
+      }
+    })
+  );
   const result: { meal_id: number; name: string; quantity: number }[] = positions.map((p) => ({
     meal_id: p.mealId,
     name: nameMap.get(p.mealId) ?? `#${p.mealId}`,
