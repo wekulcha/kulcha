@@ -81,7 +81,7 @@ const CreateMealModal: React.FC<CreateMealModalProps> = ({
       onClick={onCancel}
     >
       <form
-        className="bg-white rounded-3xl p-4 w-full max-w-sm space-y-3 max-h-[90vh] overflow-y-auto"
+        className="bg-white rounded-3xl p-4 w-full max-w-lg space-y-3 max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
         onSubmit={handleSubmit}
       >
@@ -206,7 +206,7 @@ const CreateMealModal: React.FC<CreateMealModalProps> = ({
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           <div className="space-y-1">
             <label className="text-[11px] text-slate-600">Вес, г</label>
             <input
@@ -431,8 +431,8 @@ export const AdminMenuTab: React.FC<AdminMenuTabProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-3xl p-3 shadow-sm border border-slate-100 space-y-3">
-      <div className="flex items-center justify-between">
+    <div className="bg-white rounded-3xl p-3 md:p-4 shadow-sm border border-slate-100 space-y-3">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div className="text-sm font-semibold text-slate-900">
           Меню ресторана
         </div>
@@ -485,7 +485,7 @@ export const AdminMenuTab: React.FC<AdminMenuTabProps> = ({
             ))}
           </div>
 
-          <div ref={scrollRootRef} className="max-h-[70vh] overflow-y-auto pr-1 space-y-4">
+          <div ref={scrollRootRef} className="max-h-[calc(100dvh-18rem)] min-h-[18rem] overflow-y-auto pr-1 space-y-4">
             {categoriesPresent.map((cat) => (
               <div
                 key={cat}
@@ -498,7 +498,7 @@ export const AdminMenuTab: React.FC<AdminMenuTabProps> = ({
                 <div className="text-[11px] font-semibold text-slate-500 mb-2 sticky top-0 bg-white/95 py-1 z-[5]">
                   {mealCategoryLabel(cat)}
                 </div>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-2">
                   {sortedMeals
                     .filter((m) => m.category === cat)
                     .map((meal) => (

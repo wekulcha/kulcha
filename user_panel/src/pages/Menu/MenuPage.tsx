@@ -20,6 +20,7 @@ export function MenuPage() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const categoryRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const isCategoryKey = (value: string | null): value is string => Boolean(value);
 
   useEffect(() => {
     if (!restaurantId) {
@@ -55,7 +56,7 @@ export function MenuPage() {
 
   // Compute categories from filtered meals
   const categories = Array.from(
-    new Set(mealsAfterSearch.map((m) => m.category).filter(Boolean))
+    new Set(mealsAfterSearch.map((m) => m.category).filter(isCategoryKey))
   ).sort();
 
   // Group meals by category

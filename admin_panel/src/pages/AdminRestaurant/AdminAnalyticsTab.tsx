@@ -56,7 +56,7 @@ const AnalyticsSummaryCards: React.FC<AnalyticsSummaryCardsProps> = ({
   const dineInShare = Math.round((dine_in_orders / totalOrders) * 100);
 
   return (
-    <div className="grid grid-cols-2 gap-2">
+    <div className="grid grid-cols-2 xl:grid-cols-4 gap-2">
       {/* Revenue */}
       <div className="bg-emerald-50 rounded-2xl p-3 border border-emerald-100 shadow-sm flex flex-col gap-1">
         <div className="text-[10px] text-emerald-700 uppercase font-semibold">
@@ -402,7 +402,7 @@ export const AdminAnalyticsTab: React.FC<AdminAnalyticsTabProps> = ({
           onClick={() => setSelectedOrder(null)}
         >
           <div
-            className="bg-white rounded-3xl p-4 w-full max-w-sm shadow-lg space-y-3 max-h-[85vh] overflow-y-auto"
+            className="bg-white rounded-3xl p-4 w-full max-w-xl shadow-lg space-y-3 max-h-[85vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <TodayOrderDetailBody

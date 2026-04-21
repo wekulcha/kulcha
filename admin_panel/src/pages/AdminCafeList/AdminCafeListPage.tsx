@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { AdminHeader } from "../../layout/AdminHeader";
 import { useAuth } from "../../context/AuthContext";
 import { AdminRestaurant } from "../../types/adminRestaurant";
+import { hasFullRestaurantAccess } from "../../types/staffAccess";
 
 export const AdminCafeListPage: React.FC = () => {
   const navigate = useNavigate();
@@ -29,7 +30,7 @@ export const AdminCafeListPage: React.FC = () => {
         onSearchClick={() => setIsSearchOpen((prev) => !prev)}
       />
 
-      <main className="flex-1 overflow-y-auto px-4 pt-3 pb-6 bg-gradient-to-b from-slate-50 to-slate-100">
+      <main className="flex-1 overflow-y-auto px-4 md:px-6 lg:px-8 pt-3 md:pt-4 pb-6 bg-gradient-to-b from-slate-50 to-slate-100">
         {!authReady && (
           <div className="text-sm text-slate-500">Проверка доступа...</div>
         )}
@@ -58,7 +59,7 @@ export const AdminCafeListPage: React.FC = () => {
           </div>
         )}
 
-        <div className="space-y-3">
+        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
           {visibleRestaurants.map((r) => (
             <button
               key={r.id}
@@ -72,8 +73,15 @@ export const AdminCafeListPage: React.FC = () => {
             >
               <div className="flex items-center justify-between">
                 <div className="text-sm font-semibold text-slate-900">{r.name}</div>
-                <div className="text-[10px] px-2 py-1 rounded-full bg-emerald-50 text-emerald-700 font-semibold">
-                  Управление
+                <div
+                  className={
+                    "text-[10px] px-2 py-1 rounded-full font-semibold " +
+                    (hasFullRestaurantAccess(r.permissions)
+                      ? "bg-emerald-50 text-emerald-700"
+                      : "bg-slate-100 text-slate-600")
+                  }
+                >
+                  {hasFullRestaurantAccess(r.permissions) ? "Полный доступ" : "Ограниченный доступ"}
                 </div>
               </div>
 

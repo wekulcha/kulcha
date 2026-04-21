@@ -6,8 +6,7 @@ export interface Meal {
   weight: number | null;
   calorie: number | null;
   image_link: string;
-  category: string;    // corresponds to DB ENUM
+  category: string | null;
   price: number;
   is_available: boolean;
 }
-

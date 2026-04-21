@@ -4,17 +4,17 @@ import {
   fetchRestaurantStaff,
   removeRestaurantStaff,
   type StaffMember,
-  type StaffPermission,
 } from "../../api/staff";
+import {
+  FULL_ACCESS_PERMISSION,
+  LIMITED_ACCESS_PERMISSION,
+  STAFF_PERMISSION_LABELS,
+  type StaffPermission,
+} from "../../types/staffAccess";
 
 interface AdminStaffTabProps {
   restaurantId: number;
 }
-
-const PERM_LABEL: Record<StaffPermission, string> = {
-  CAN_EDIT_MENU: "Редактирование меню",
-  CAN_LOOK_ORDERS: "Просмотр заказов",
-};
 
 export const AdminStaffTab: React.FC<AdminStaffTabProps> = ({ restaurantId }) => {
   const [list, setList] = useState<StaffMember[]>([]);
@@ -23,7 +23,7 @@ export const AdminStaffTab: React.FC<AdminStaffTabProps> = ({ restaurantId }) =>
   const [tgInput, setTgInput] = useState("");
   const [phoneInput, setPhoneInput] = useState("");
   const [addMode, setAddMode] = useState<"id" | "phone">("id");
-  const [perm, setPerm] = useState<StaffPermission>("CAN_LOOK_ORDERS");
+  const [perm, setPerm] = useState<StaffPermission>(FULL_ACCESS_PERMISSION);
   const [adding, setAdding] = useState(false);
 
   const load = async () => {
@@ -87,7 +87,7 @@ export const AdminStaffTab: React.FC<AdminStaffTabProps> = ({ restaurantId }) =>
   };
 
   return (
-    <div className="bg-white rounded-3xl p-3 shadow-sm border border-slate-100 space-y-3">
+    <div className="bg-white rounded-3xl p-3 md:p-4 shadow-sm border border-slate-100 space-y-3">
       <div className="text-sm font-semibold text-slate-900">Команда ресторана</div>
       <p className="text-[11px] text-slate-500">
         Добавьте Telegram ID сотрудника (число из профиля Telegram). Сначала пусть
@@ -96,8 +96,8 @@ export const AdminStaffTab: React.FC<AdminStaffTabProps> = ({ restaurantId }) =>
 
       {error && <div className="text-[11px] text-red-500">{error}</div>}
 
-      <div className="space-y-2 rounded-2xl border border-slate-100 p-2 bg-slate-50/80">
-        <div className="flex gap-1">
+      <div className="space-y-3 rounded-2xl border border-slate-100 p-3 bg-slate-50/80">
+        <div className="flex gap-1 md:max-w-sm">
           <button
             type="button"
             className={
@@ -119,47 +119,63 @@ export const AdminStaffTab: React.FC<AdminStaffTabProps> = ({ restaurantId }) =>
             По телефону
           </button>
         </div>
-        {addMode === "id" ? (
-          <>
-            <label className="text-[11px] text-slate-600">Telegram ID</label>
-            <input
-              type="number"
-              className="w-full rounded-xl border border-slate-200 px-2 py-1.5 text-[11px]"
-              placeholder="например 123456789"
-              value={tgInput}
-              onChange={(e) => setTgInput(e.target.value)}
-            />
-          </>
-        ) : (
-          <>
-            <label className="text-[11px] text-slate-600">Телефон (как в профиле, без +7)</label>
-            <input
-              type="tel"
-              inputMode="numeric"
-              className="w-full rounded-xl border border-slate-200 px-2 py-1.5 text-[11px]"
-              placeholder="9001234567"
-              value={phoneInput}
-              onChange={(e) => setPhoneInput(e.target.value.replace(/\D/g, "").slice(0, 10))}
-            />
-          </>
-        )}
-        <label className="text-[11px] text-slate-600">Права</label>
-        <select
-          className="w-full rounded-xl border border-slate-200 px-2 py-1.5 text-[11px] bg-white"
-          value={perm}
-          onChange={(e) => setPerm(e.target.value as StaffPermission)}
-        >
-          <option value="CAN_LOOK_ORDERS">{PERM_LABEL.CAN_LOOK_ORDERS}</option>
-          <option value="CAN_EDIT_MENU">{PERM_LABEL.CAN_EDIT_MENU}</option>
-        </select>
-        <button
-          type="button"
-          disabled={adding}
-          onClick={() => void handleAdd()}
-          className="w-full rounded-2xl bg-emerald-600 text-white text-xs font-semibold py-2 disabled:opacity-60"
-        >
-          {adding ? "Добавляем..." : "Добавить сотрудника"}
-        </button>
+        <div className="grid gap-3 md:grid-cols-[minmax(0,1.6fr)_minmax(220px,1fr)] md:items-end">
+          <div className="space-y-3">
+            {addMode === "id" ? (
+              <div className="space-y-1">
+                <label className="text-[11px] text-slate-600">Telegram ID</label>
+                <input
+                  type="number"
+                  className="w-full rounded-xl border border-slate-200 px-2 py-1.5 text-[11px]"
+                  placeholder="например 123456789"
+                  value={tgInput}
+                  onChange={(e) => setTgInput(e.target.value)}
+                />
+              </div>
+            ) : (
+              <div className="space-y-1">
+                <label className="text-[11px] text-slate-600">Телефон (как в профиле, без +7)</label>
+                <input
+                  type="tel"
+                  inputMode="numeric"
+                  className="w-full rounded-xl border border-slate-200 px-2 py-1.5 text-[11px]"
+                  placeholder="9001234567"
+                  value={phoneInput}
+                  onChange={(e) => setPhoneInput(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                />
+              </div>
+            )}
+          </div>
+
+          <div className="space-y-3">
+            <div className="space-y-1">
+              <label className="text-[11px] text-slate-600">Доступ</label>
+              <select
+                className="w-full rounded-xl border border-slate-200 px-2 py-1.5 text-[11px] bg-white"
+                value={perm}
+                onChange={(e) => setPerm(e.target.value as StaffPermission)}
+              >
+                <option value={FULL_ACCESS_PERMISSION}>
+                  {STAFF_PERMISSION_LABELS[FULL_ACCESS_PERMISSION]}
+                </option>
+                <option value={LIMITED_ACCESS_PERMISSION}>
+                  {STAFF_PERMISSION_LABELS[LIMITED_ACCESS_PERMISSION]}
+                </option>
+              </select>
+              <p className="text-[10px] text-slate-500">
+                Полный доступ: меню, настройки, команда, аналитика и заказы. Ограниченный: только заказы.
+              </p>
+            </div>
+            <button
+              type="button"
+              disabled={adding}
+              onClick={() => void handleAdd()}
+              className="w-full rounded-2xl bg-emerald-600 text-white text-xs font-semibold py-2 disabled:opacity-60"
+            >
+              {adding ? "Добавляем..." : "Добавить сотрудника"}
+            </button>
+          </div>
+        </div>
       </div>
 
       {loading && <div className="text-xs text-slate-500">Загрузка...</div>}
@@ -168,7 +184,7 @@ export const AdminStaffTab: React.FC<AdminStaffTabProps> = ({ restaurantId }) =>
         <div className="text-xs text-slate-500">Пока только вы в команде.</div>
       )}
 
-      <ul className="space-y-2">
+      <ul className="grid gap-2 md:grid-cols-2">
         {list.map((m) => (
           <li
             key={m.staffId}
@@ -180,7 +196,7 @@ export const AdminStaffTab: React.FC<AdminStaffTabProps> = ({ restaurantId }) =>
                 TG: {m.userId} · {m.phone}
               </div>
               <div className="text-[10px] text-emerald-700 font-medium mt-0.5">
-                {PERM_LABEL[m.permission]}
+                {STAFF_PERMISSION_LABELS[m.permission]}
               </div>
             </div>
             <button

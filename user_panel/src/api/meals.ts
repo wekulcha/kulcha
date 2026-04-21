@@ -10,7 +10,7 @@ interface MealDto {
   weight: number | null;
   calorie: number | null;
   imageLink: string;
-  category: string;
+  category: string | null;
   price: number;
   available: boolean;
 }
@@ -24,7 +24,7 @@ function toMeal(d: MealDto): Meal {
     weight: d.weight,
     calorie: d.calorie,
     image_link: d.imageLink ?? '',
-    category: d.category,
+    category: d.category ?? 'OTHER',
     price: Number(d.price),
     is_available: d.available ?? true,
   };
@@ -38,4 +38,3 @@ export async function fetchMealsByRestaurant(restaurantId: number): Promise<Meal
   const data = (await resp.json()) as MealDto[];
   return data.map(toMeal);
 }
-

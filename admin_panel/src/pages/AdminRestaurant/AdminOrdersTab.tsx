@@ -361,7 +361,7 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-3xl p-4 w-full max-w-sm shadow-lg space-y-3"
+        className="bg-white rounded-3xl p-4 w-full max-w-xl shadow-lg space-y-3"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-start justify-between gap-2">
@@ -602,7 +602,7 @@ export const AdminOrdersTab: React.FC<AdminOrdersTabProps> = ({
       className={
         hideTitle
           ? "space-y-3"
-          : "bg-white rounded-3xl p-3 shadow-sm border border-slate-100 space-y-3"
+          : "bg-white rounded-3xl p-3 md:p-4 shadow-sm border border-slate-100 space-y-3"
       }
     >
       {!hideTitle && (
@@ -644,7 +644,7 @@ export const AdminOrdersTab: React.FC<AdminOrdersTabProps> = ({
         </div>
       )}
 
-      <div className="grid grid-cols-1 min-[360px]:grid-cols-2 gap-2.5">
+      <div className="grid grid-cols-1 min-[360px]:grid-cols-2 xl:grid-cols-3 gap-2.5">
         {orders.map((order) => (
           <OrderCard
             key={order.id}

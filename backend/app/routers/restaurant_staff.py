@@ -18,12 +18,41 @@ from app.services.telegram_auth import verify_telegram_init_data
 router = APIRouter(prefix="/api/v1/restaurants/{restaurant_id}/staff", tags=["restaurant-staff"])
 
 
+def _effective_permission(assignments: list[Staff]) -> StaffPermission:
+    for assignment in assignments:
+        if assignment.permission == StaffPermission.CAN_EDIT_MENU:
+            return StaffPermission.CAN_EDIT_MENU
+    return StaffPermission.CAN_LOOK_ORDERS
+
+
 def _to_member(s: Staff) -> StaffMemberDto:
     return StaffMemberDto(
         staffId=s.id, userId=s.user.id,
         username=s.user.username, phone=s.user.phone,
         permission=s.permission.value,
     )
+
+
+def _group_staff(items: list[Staff]) -> list[StaffMemberDto]:
+    grouped: dict[tuple[int, int], list[Staff]] = {}
+    for item in items:
+        grouped.setdefault((item.user_id, item.restaurant_id), []).append(item)
+
+    members: list[StaffMemberDto] = []
+    for assignments in grouped.values():
+        assignments.sort(key=lambda assignment: assignment.id)
+        primary = assignments[0]
+        members.append(
+            StaffMemberDto(
+                staffId=primary.id,
+                userId=primary.user.id,
+                username=primary.user.username,
+                phone=primary.user.phone,
+                permission=_effective_permission(assignments).value,
+            )
+        )
+    members.sort(key=lambda member: (member.username or "", member.userId))
+    return members
 
 
 async def _require_admin_actor(
@@ -50,13 +79,13 @@ async def list_staff(
     db: AsyncSession = Depends(get_db),
     x_telegram_init_data: str = Header(..., alias="X-Telegram-Init-Data"),
 ):
-    await _require_admin_actor(db, x_telegram_init_data, restaurant_id, False)
+    await _require_admin_actor(db, x_telegram_init_data, restaurant_id, True)
     result = await db.execute(
         select(Staff)
         .options(joinedload(Staff.user))
         .where(Staff.restaurant_id == restaurant_id)
     )
-    return [_to_member(s) for s in result.unique().scalars().all()]
+    return _group_staff(result.unique().scalars().all())
 
 
 @router.post("", status_code=201)
@@ -89,14 +118,18 @@ async def add_staff(
         raise HTTPException(400, f"Invalid permission: {body.permission}")
 
     existing = await db.execute(
-        select(Staff).where(
+        select(Staff)
+        .where(
             Staff.user_id == target.id,
             Staff.restaurant_id == restaurant_id,
-            Staff.permission == perm,
         )
+        .order_by(Staff.id.asc())
     )
-    if existing.scalars().first():
-        raise HTTPException(409, "Уже есть такая роль")
+    existing_assignments = existing.scalars().all()
+    if existing_assignments and _effective_permission(existing_assignments) == perm:
+        raise HTTPException(409, "У сотрудника уже установлен такой доступ")
+    for assignment in existing_assignments:
+        await db.delete(assignment)
 
     staff = Staff(user_id=target.id, restaurant_id=restaurant_id, permission=perm)
     db.add(staff)
@@ -130,4 +163,11 @@ async def remove_staff(
         raise HTTPException(404, "Staff not found")
     if s.user_id == db_user_id:
         raise HTTPException(400, "Нельзя удалить самого себя")
-    await db.delete(s)
+    assignments = await db.execute(
+        select(Staff).where(
+            Staff.user_id == s.user_id,
+            Staff.restaurant_id == restaurant_id,
+        )
+    )
+    for assignment in assignments.scalars().all():
+        await db.delete(assignment)

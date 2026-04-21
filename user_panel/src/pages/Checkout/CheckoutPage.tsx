@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createOrder } from '../../api/orders';
+import { ApiError } from '../../api/client';
 import { updateUserProfile } from '../../api/users';
 import { useAppContext } from '../../context/AppContext';
 import { useAuth } from '../../context/AuthContext';
@@ -149,7 +150,11 @@ export function CheckoutPage() {
       }, 1500);
     } catch (error) {
       console.error(error);
-      setErrorMessage('Не удалось оформить заказ. Попробуйте позже.');
+      if (error instanceof ApiError && error.body.trim()) {
+        setErrorMessage(error.body.trim());
+      } else {
+        setErrorMessage('Не удалось оформить заказ. Попробуйте позже.');
+      }
     } finally {
       setSubmitting(false);
     }

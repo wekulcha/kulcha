@@ -1,13 +1,14 @@
 import { BASE_URL } from "./baseUrl";
 import { AdminRestaurant } from "../types/adminRestaurant";
 import { buildAdminApiJsonHeaders } from "../telegram/initTelegram";
+import type { StaffPermission } from "../types/staffAccess";
 
 /** Backend UserRestaurantDto (camelCase) */
 interface UserRestaurantDto {
   id: number;
   name: string;
   address: string;
-  permissions: string[];
+  permissions: StaffPermission[];
 }
 
 function toAdminRestaurant(d: UserRestaurantDto): AdminRestaurant {

@@ -7,6 +7,8 @@ import { AdminAnalyticsTab } from "./AdminAnalyticsTab";
 import { AdminStaffTab } from "./AdminStaffTab";
 import { AdminRestaurantSettingsTab } from "./AdminRestaurantSettingsTab";
 import { fetchRestaurant, type RestaurantDetail } from "../../api/adminRestaurant";
+import { useAuth } from "../../context/AuthContext";
+import { hasFullRestaurantAccess } from "../../types/staffAccess";
 
 type MainView = "orders" | "hub";
 type HubTab = "about" | "menu" | "team" | "analytics";
@@ -21,6 +23,7 @@ export const AdminRestaurantPage: React.FC = () => {
   const location = useLocation();
   const state = location.state as LocationState | null;
 
+  const { restaurants } = useAuth();
   const restaurantId = useMemo(
     () => (params.id ? Number(params.id) : NaN),
     [params.id]
@@ -29,6 +32,11 @@ export const AdminRestaurantPage: React.FC = () => {
   const [mainView, setMainView] = useState<MainView>("orders");
   const [hubTab, setHubTab] = useState<HubTab>("about");
   const [detail, setDetail] = useState<RestaurantDetail | null>(null);
+  const restaurantAccess = useMemo(
+    () => restaurants.find((restaurant) => restaurant.id === restaurantId) ?? null,
+    [restaurants, restaurantId]
+  );
+  const canOpenHub = hasFullRestaurantAccess(restaurantAccess?.permissions);
   const restaurantName =
     detail?.name ??
     state?.restaurantName ??
@@ -47,14 +55,28 @@ export const AdminRestaurantPage: React.FC = () => {
     };
   }, [restaurantId]);
 
+  useEffect(() => {
+    if (mainView === "hub" && !canOpenHub) {
+      setMainView("orders");
+      setHubTab("about");
+    }
+  }, [canOpenHub, mainView]);
+
   const hubButton = (
     <button
       type="button"
       onClick={() => {
+        if (!canOpenHub) return;
         setMainView("hub");
         setHubTab("about");
       }}
-      className="w-9 h-9 rounded-full bg-slate-200 flex items-center justify-center text-slate-800 hover:bg-slate-300"
+      disabled={!canOpenHub}
+      className={
+        "w-9 h-9 rounded-full flex items-center justify-center transition-colors " +
+        (canOpenHub
+          ? "bg-slate-200 text-slate-800 hover:bg-slate-300"
+          : "bg-slate-200 text-slate-400 cursor-not-allowed")
+      }
       title="Ресторан"
       aria-label="Настройки ресторана"
     >
@@ -78,7 +100,7 @@ export const AdminRestaurantPage: React.FC = () => {
           onBackClick={() => setMainView("orders")}
           showSearch={false}
         />
-        <main className="flex-1 overflow-y-auto px-4 pt-3 pb-6 bg-gradient-to-b from-slate-50 to-slate-100">
+        <main className="flex-1 overflow-y-auto px-4 md:px-6 lg:px-8 pt-3 md:pt-4 pb-6 bg-gradient-to-b from-slate-50 to-slate-100">
           <p className="text-sm font-semibold text-slate-900 mb-1">{restaurantName}</p>
           <p className="text-xs text-slate-500 mb-3 line-clamp-2">{detail?.address ?? "—"}</p>
           <div className="flex flex-wrap gap-1.5 mb-4">
@@ -87,7 +109,7 @@ export const AdminRestaurantPage: React.FC = () => {
             <HubChip label="Команда" active={hubTab === "team"} onClick={() => setHubTab("team")} />
             <HubChip label="Аналитика" active={hubTab === "analytics"} onClick={() => setHubTab("analytics")} />
           </div>
-          <div className="space-y-3">
+          <div className="space-y-3 max-w-6xl">
             {hubTab === "about" && <AdminRestaurantSettingsTab restaurantId={restaurantId} />}
             {hubTab === "menu" && <AdminMenuTab restaurantId={restaurantId} />}
             {hubTab === "team" && <AdminStaffTab restaurantId={restaurantId} />}
@@ -109,7 +131,12 @@ export const AdminRestaurantPage: React.FC = () => {
         rightSlot={hubButton}
       />
 
-      <main className="flex-1 overflow-y-auto px-4 pt-2 pb-6 bg-gradient-to-b from-slate-50 to-slate-100">
+      <main className="flex-1 overflow-y-auto px-4 md:px-6 lg:px-8 pt-2 md:pt-4 pb-6 bg-gradient-to-b from-slate-50 to-slate-100">
+        {!canOpenHub && (
+          <div className="mb-3 rounded-2xl border border-slate-200 bg-slate-100 px-3 py-2 text-xs text-slate-600 max-w-3xl">
+            Доступ к разделу «Ресторан» ограничен. Для настроек, команды, меню и аналитики нужен полный доступ.
+          </div>
+        )}
         <AdminOrdersTab
           restaurantId={restaurantId}
           restaurantName={restaurantName}

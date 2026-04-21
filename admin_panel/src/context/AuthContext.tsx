@@ -12,6 +12,7 @@ import {
   waitForTelegramInitData,
 } from "../telegram/initTelegram";
 import type { AdminRestaurant } from "../types/adminRestaurant";
+import type { StaffPermission } from "../types/staffAccess";
 
 interface AdminUser {
   id: number;
@@ -41,7 +42,7 @@ interface SessionResponse {
     id: number;
     name: string;
     address: string;
-    permissions: string[];
+    permissions: StaffPermission[];
   }[];
 }
 

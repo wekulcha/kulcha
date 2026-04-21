@@ -1,7 +1,6 @@
 import { BASE_URL } from "./baseUrl";
 import { buildAdminApiJsonHeaders } from "../telegram/initTelegram";
-
-export type StaffPermission = "CAN_EDIT_MENU" | "CAN_LOOK_ORDERS";
+import type { StaffPermission } from "../types/staffAccess";
 
 export interface StaffMember {
   staffId: number;

@@ -100,7 +100,7 @@ export const AdminRestaurantSettingsTab: React.FC<Props> = ({ restaurantId }) =>
   };
 
   return (
-    <div className="bg-white rounded-3xl p-3 shadow-sm border border-slate-100 space-y-3">
+    <div className="bg-white rounded-3xl p-3 md:p-4 shadow-sm border border-slate-100 space-y-4">
       <div className="text-sm font-semibold text-slate-900">О ресторане</div>
       {loading && <div className="text-xs text-slate-500">Загрузка…</div>}
       {err && <div className="text-[11px] text-red-500">{err}</div>}
@@ -108,26 +108,29 @@ export const AdminRestaurantSettingsTab: React.FC<Props> = ({ restaurantId }) =>
 
       {!loading && (
         <>
-          <div className="space-y-1">
-            <label className="text-[11px] text-slate-600">Название</label>
-            <input
-              type="text"
-              className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-          </div>
-          <div className="space-y-1">
-            <label className="text-[11px] text-slate-600">Адрес / как найти</label>
-            <input
-              type="text"
-              className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-            />
+          <div className="grid gap-3 lg:grid-cols-2">
+            <div className="space-y-1">
+              <label className="text-[11px] text-slate-600">Название</label>
+              <input
+                type="text"
+                className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-[11px] text-slate-600">Адрес / как найти</label>
+              <input
+                type="text"
+                className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+              />
+            </div>
           </div>
 
-          <div className="space-y-2 rounded-2xl border border-slate-100 p-3 bg-slate-50/80">
+          <div className="grid gap-3 xl:grid-cols-2">
+            <div className="space-y-2 rounded-2xl border border-slate-100 p-3 bg-slate-50/80">
             <div className="text-[11px] font-semibold text-slate-800">Время работы (для гостей)</div>
             <div className="grid grid-cols-2 gap-2">
               <div>
@@ -150,86 +153,88 @@ export const AdminRestaurantSettingsTab: React.FC<Props> = ({ restaurantId }) =>
               </div>
             </div>
             <p className="text-[10px] text-slate-500">Формат ЧЧ:ММ (по Москве).</p>
-          </div>
-
-          <div className="space-y-2 rounded-2xl border border-slate-100 p-3 bg-slate-50/80">
-            <div className="text-[11px] font-semibold text-slate-800">Приём заказов</div>
-            <div className="grid grid-cols-2 gap-2">
-              <div>
-                <label className="text-[10px] text-slate-500">С</label>
-                <input
-                  className="w-full rounded-xl border border-slate-200 px-2 py-1.5 text-sm"
-                  placeholder="10:00"
-                  value={ordersFrom}
-                  onChange={(e) => setOrdersFrom(e.target.value)}
-                />
-              </div>
-              <div>
-                <label className="text-[10px] text-slate-500">До</label>
-                <input
-                  className="w-full rounded-xl border border-slate-200 px-2 py-1.5 text-sm"
-                  placeholder="17:00"
-                  value={ordersTo}
-                  onChange={(e) => setOrdersTo(e.target.value)}
-                />
-              </div>
             </div>
-            <p className="text-[10px] text-slate-500">
-              Вне этого окна гости не смогут оформить заказ. Оставьте пустым — без ограничения.
-            </p>
-          </div>
 
-          <div className="space-y-1">
-            <label className="text-[11px] text-slate-600">
-              Telegram Group Chat ID для заказов
-            </label>
-            <input
-              type="text"
-              className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
-              placeholder="3982157166"
-              value={groupChatId}
-              onChange={(e) => setGroupChatId(e.target.value)}
-            />
-            <p className="text-[10px] text-slate-500">
-              Введите ID группы без -100, система добавит префикс автоматически.
-            </p>
-          </div>
-
-          <div className="flex gap-3 items-start">
-            <div className="w-24 h-24 rounded-2xl bg-slate-100 overflow-hidden flex-shrink-0 border border-slate-100">
-              {detail?.imageLink ? (
-                <img src={coverPreview(detail.imageLink)} alt="" className="w-full h-full object-cover" />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-[10px] text-slate-400 p-1 text-center">
-                  нет обложки
+            <div className="space-y-2 rounded-2xl border border-slate-100 p-3 bg-slate-50/80">
+              <div className="text-[11px] font-semibold text-slate-800">Приём заказов</div>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="text-[10px] text-slate-500">С</label>
+                  <input
+                    className="w-full rounded-xl border border-slate-200 px-2 py-1.5 text-sm"
+                    placeholder="10:00"
+                    value={ordersFrom}
+                    onChange={(e) => setOrdersFrom(e.target.value)}
+                  />
                 </div>
-              )}
+                <div>
+                  <label className="text-[10px] text-slate-500">До</label>
+                  <input
+                    className="w-full rounded-xl border border-slate-200 px-2 py-1.5 text-sm"
+                    placeholder="17:00"
+                    value={ordersTo}
+                    onChange={(e) => setOrdersTo(e.target.value)}
+                  />
+                </div>
+              </div>
+              <p className="text-[10px] text-slate-500">
+                Вне этого окна гости не смогут оформить заказ. Оставьте пустым — без ограничения.
+              </p>
             </div>
-            <div className="flex-1 min-w-0 space-y-1">
-              <label className="text-[11px] text-slate-600">Обложка (JPG, PNG)</label>
+          </div>
+
+          <div className="grid gap-3 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
+            <div className="space-y-1">
+              <label className="text-[11px] text-slate-600">
+                Telegram Group Chat ID для заказов
+              </label>
               <input
-                type="file"
-                accept="image/jpeg,image/png,image/jpg"
-                disabled={uploading}
-                className="text-[11px] w-full"
-                onChange={async (e) => {
-                  const file = e.target.files?.[0];
-                  if (!file || !restaurantId) return;
-                  setErr(null);
-                  setUploading(true);
-                  try {
-                    const path = await uploadRestaurantCover(restaurantId, file);
-                    const next = await patchRestaurant(restaurantId, { imageLink: path });
-                    setDetail(next);
-                  } catch {
-                    setErr("Не удалось загрузить фото.");
-                  } finally {
-                    setUploading(false);
-                    e.target.value = "";
-                  }
-                }}
+                type="text"
+                className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
+                placeholder="3982157166"
+                value={groupChatId}
+                onChange={(e) => setGroupChatId(e.target.value)}
               />
-              {uploading && <span className="text-[10px] text-slate-500">Загрузка…</span>}
+              <p className="text-[10px] text-slate-500">
+                Введите ID группы без -100, система добавит префикс автоматически.
+              </p>
+            </div>
+            <div className="flex flex-col gap-3 sm:flex-row lg:flex-col xl:flex-row items-start">
+              <div className="w-24 h-24 rounded-2xl bg-slate-100 overflow-hidden flex-shrink-0 border border-slate-100">
+                {detail?.imageLink ? (
+                  <img src={coverPreview(detail.imageLink)} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-[10px] text-slate-400 p-1 text-center">
+                    нет обложки
+                  </div>
+                )}
+              </div>
+              <div className="flex-1 min-w-0 space-y-1">
+                <label className="text-[11px] text-slate-600">Обложка (JPG, PNG)</label>
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/jpg"
+                  disabled={uploading}
+                  className="text-[11px] w-full"
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file || !restaurantId) return;
+                    setErr(null);
+                    setUploading(true);
+                    try {
+                      const path = await uploadRestaurantCover(restaurantId, file);
+                      const next = await patchRestaurant(restaurantId, { imageLink: path });
+                      setDetail(next);
+                    } catch {
+                      setErr("Не удалось загрузить фото.");
+                    } finally {
+                      setUploading(false);
+                      e.target.value = "";
+                    }
+                  }}
+                />
+                {uploading && <span className="text-[10px] text-slate-500">Загрузка…</span>}
+              </div>
             </div>
           </div>
 
