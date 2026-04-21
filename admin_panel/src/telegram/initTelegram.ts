@@ -5,6 +5,14 @@ declare global {
         ready: () => void;
         expand?: () => void;
         initData?: string;
+        platform?: string;
+        openLink?: (
+          url: string,
+          options?: {
+            try_browser?: string;
+            try_instant_view?: boolean;
+          }
+        ) => void;
         themeParams?: Record<string, string | undefined>;
       };
     };
@@ -40,6 +48,39 @@ export function getTelegramInitData(): string {
     /* ignore */
   }
   return '';
+}
+
+export function getTelegramPlatform(): string {
+  if (typeof window === "undefined") return "";
+  return window.Telegram?.WebApp?.platform ?? "";
+}
+
+export function isTelegramDesktopLike(): boolean {
+  const platform = getTelegramPlatform().toLowerCase();
+  if (platform === "tdesktop" || platform === "macos") {
+    return true;
+  }
+
+  if (typeof navigator === "undefined") return false;
+  const userAgent = navigator.userAgent.toLowerCase();
+  return userAgent.includes("telegram-desktop") || userAgent.includes("telegramdesktop");
+}
+
+export function openTelegramExternalLink(url: string): boolean {
+  if (typeof window === "undefined") return false;
+
+  const openLink = window.Telegram?.WebApp?.openLink;
+  if (typeof openLink === "function") {
+    try {
+      openLink(url, { try_browser: "chrome" });
+      return true;
+    } catch {
+      /* ignore */
+    }
+  }
+
+  const opened = window.open(url, "_blank", "noopener,noreferrer");
+  return opened != null;
 }
 
 /** Wait until initData is available (Telegram can populate it shortly after load). */

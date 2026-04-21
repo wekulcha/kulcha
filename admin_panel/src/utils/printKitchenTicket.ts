@@ -1,4 +1,12 @@
 import type { AdminOrderItem } from "../types/adminOrder";
+import {
+  isTelegramDesktopLike,
+  openTelegramExternalLink,
+} from "../telegram/initTelegram";
+
+const ATOL_PAPER_WIDTH_MM = 80;
+const ATOL_PAGE_MARGIN_MM = 3;
+const ATOL_CONTENT_WIDTH_MM = ATOL_PAPER_WIDTH_MM - ATOL_PAGE_MARGIN_MM * 2;
 
 interface KitchenTicketPayload {
   restaurantName?: string;
@@ -14,6 +22,10 @@ interface KitchenTicketPayload {
   items: AdminOrderItem[];
   customerUsername?: string | null;
   customerPhone?: string | null;
+}
+
+interface RenderKitchenTicketOptions {
+  showPrintButton?: boolean;
 }
 
 function escapeHtml(value: string): string {
@@ -35,7 +47,41 @@ function formatPrintedDate(iso: string): string {
   return `${day}.${month}.${year} ${hh}:${mm}`;
 }
 
-function buildTicketHtml(payload: KitchenTicketPayload): string {
+function toBase64Url(value: string): string {
+  const encoded = btoa(unescape(encodeURIComponent(value)));
+  return encoded.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+}
+
+function fromBase64Url(value: string): string {
+  const normalized = value.replace(/-/g, "+").replace(/_/g, "/");
+  const padded = normalized.padEnd(Math.ceil(normalized.length / 4) * 4, "=");
+  return decodeURIComponent(escape(atob(padded)));
+}
+
+export function encodeKitchenTicketPayload(payload: KitchenTicketPayload): string {
+  return toBase64Url(JSON.stringify(payload));
+}
+
+export function decodeKitchenTicketPayload(search: string): KitchenTicketPayload {
+  const params = new URLSearchParams(search);
+  const raw = params.get("payload");
+  if (!raw) {
+    throw new Error("В ссылке печати отсутствуют данные заказа.");
+  }
+  return JSON.parse(fromBase64Url(raw)) as KitchenTicketPayload;
+}
+
+export function buildKitchenTicketPrintUrl(payload: KitchenTicketPayload): string {
+  const url = new URL("/print-ticket", window.location.origin);
+  url.searchParams.set("payload", encodeKitchenTicketPayload(payload));
+  url.searchParams.set("autoprint", "1");
+  return url.toString();
+}
+
+export function renderKitchenTicketDocument(
+  payload: KitchenTicketPayload,
+  options: RenderKitchenTicketOptions = {}
+): string {
   const placeLabel =
     payload.orderType === "DINE_IN"
       ? payload.tableNumber
@@ -80,6 +126,14 @@ function buildTicketHtml(payload: KitchenTicketPayload): string {
       `
     : "";
 
+  const controlsMarkup = options.showPrintButton
+    ? `
+      <div class="print-controls">
+        <button type="button" class="print-button" onclick="window.print()">Печать</button>
+      </div>
+    `
+    : "";
+
   return `<!doctype html>
 <html lang="ru">
   <head>
@@ -87,8 +141,8 @@ function buildTicketHtml(payload: KitchenTicketPayload): string {
     <title>Заказ №${payload.orderId}</title>
     <style>
       @page {
-        size: 80mm auto;
-        margin: 6mm;
+        size: ${ATOL_PAPER_WIDTH_MM}mm auto;
+        margin: ${ATOL_PAGE_MARGIN_MM}mm;
       }
 
       * {
@@ -100,105 +154,128 @@ function buildTicketHtml(payload: KitchenTicketPayload): string {
         padding: 0;
         color: #0f172a;
         background: #ffffff;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        font-size: 12px;
-        line-height: 1.35;
+        font-family: "Courier New", "Liberation Mono", monospace;
+        font-size: 11px;
+        line-height: 1.25;
       }
 
       body {
         padding: 0;
+        width: ${ATOL_CONTENT_WIDTH_MM}mm;
+      }
+
+      .print-controls {
+        width: ${ATOL_CONTENT_WIDTH_MM}mm;
+        margin: 0 auto 12px;
+        display: flex;
+        justify-content: center;
+      }
+
+      .print-button {
+        appearance: none;
+        border: 1px solid #cbd5e1;
+        border-radius: 999px;
+        background: #0f172a;
+        color: #ffffff;
+        cursor: pointer;
+        font: inherit;
+        font-size: 12px;
+        font-weight: 700;
+        padding: 8px 16px;
       }
 
       .ticket {
-        width: 100%;
+        width: ${ATOL_CONTENT_WIDTH_MM}mm;
+        margin: 0 auto;
       }
 
       .header {
         border-bottom: 1px dashed #94a3b8;
-        padding-bottom: 8px;
-        margin-bottom: 10px;
+        padding-bottom: 6px;
+        margin-bottom: 8px;
       }
 
       .restaurant {
-        font-size: 13px;
+        font-size: 12px;
         font-weight: 700;
+        text-transform: uppercase;
       }
 
       .order-number {
-        margin-top: 4px;
-        font-size: 22px;
+        margin-top: 3px;
+        font-size: 20px;
         font-weight: 800;
       }
 
       .meta {
-        margin-top: 6px;
+        margin-top: 5px;
         display: grid;
-        gap: 3px;
+        gap: 2px;
       }
 
       .meta-line {
         display: flex;
         justify-content: space-between;
-        gap: 8px;
+        gap: 6px;
       }
 
       .label {
         color: #475569;
-        font-size: 10px;
+        font-size: 9px;
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.04em;
-        margin-bottom: 4px;
+        margin-bottom: 3px;
       }
 
       .section {
-        margin-bottom: 10px;
+        margin-bottom: 8px;
       }
 
       .value {
-        font-size: 12px;
+        font-size: 11px;
         word-break: break-word;
       }
 
       .comment {
-        font-size: 14px;
+        font-size: 13px;
         font-weight: 700;
       }
 
       .items {
         border-top: 1px dashed #94a3b8;
         border-bottom: 1px dashed #94a3b8;
-        padding: 8px 0;
-        margin-bottom: 10px;
+        padding: 6px 0;
+        margin-bottom: 8px;
       }
 
       .item-row {
         display: flex;
         align-items: flex-start;
         justify-content: space-between;
-        gap: 8px;
-        padding: 4px 0;
+        gap: 6px;
+        padding: 3px 0;
       }
 
       .item-name {
-        font-size: 14px;
+        font-size: 13px;
         font-weight: 700;
         flex: 1;
       }
 
       .item-qty {
-        font-size: 16px;
+        font-size: 15px;
         font-weight: 800;
         white-space: nowrap;
       }
 
       .summary {
         display: grid;
-        gap: 4px;
+        gap: 3px;
       }
 
       .total {
-        font-size: 16px;
+        font-size: 15px;
         font-weight: 800;
       }
 
@@ -207,13 +284,22 @@ function buildTicketHtml(payload: KitchenTicketPayload): string {
       }
 
       @media print {
+        html, body {
+          width: ${ATOL_CONTENT_WIDTH_MM}mm;
+        }
+
+        .print-controls {
+          display: none;
+        }
+
         .ticket {
-          width: auto;
+          width: ${ATOL_CONTENT_WIDTH_MM}mm;
         }
       }
     </style>
   </head>
   <body>
+    ${controlsMarkup}
     <div class="ticket">
       <div class="header">
         <div class="restaurant">${escapeHtml(payload.restaurantName || "KULCHA")}</div>
@@ -263,7 +349,16 @@ function printWithPopup(html: string, title: string): void {
 }
 
 export async function printKitchenTicket(payload: KitchenTicketPayload): Promise<void> {
-  const html = buildTicketHtml(payload);
+  if (isTelegramDesktopLike()) {
+    const externalUrl = buildKitchenTicketPrintUrl(payload);
+    const opened = openTelegramExternalLink(externalUrl);
+    if (!opened) {
+      throw new Error("Не удалось открыть страницу печати во внешнем браузере.");
+    }
+    return;
+  }
+
+  const html = renderKitchenTicketDocument(payload);
   const title = `Заказ №${payload.orderId}`;
 
   const iframe = document.createElement("iframe");

@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthContextProvider } from "./context/AuthContext";
 import { AdminAppShell } from "./layout/AdminAppShell";
+import { PrintTicketPage } from "./pages/PrintTicket/PrintTicketPage";
 
 const AdminCafeListPage = lazy(() =>
   import("./pages/AdminCafeList/AdminCafeListPage").then((m) => ({ default: m.AdminCafeListPage }))
@@ -25,6 +26,10 @@ const queryClient = new QueryClient({
 });
 
 export const App: React.FC = () => {
+  if (typeof window !== "undefined" && window.location.pathname === "/print-ticket") {
+    return <PrintTicketPage />;
+  }
+
   return (
     <QueryClientProvider client={queryClient}>
       <AuthContextProvider>
@@ -43,4 +48,3 @@ export const App: React.FC = () => {
     </QueryClientProvider>
   );
 };
-

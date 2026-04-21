@@ -74,7 +74,7 @@ function formatDateTime(iso: string): string {
 
 function statusPillClass(status: AdminOrderStatusCode): string {
   return (
-    "inline-flex items-center gap-1 px-2 py-1 rounded-full border text-[9px] font-semibold " +
+    "inline-flex items-center gap-1 px-2 py-1 rounded-full border text-[9px] font-semibold whitespace-nowrap " +
     STATUS_COLOR_CLASSES[status]
   );
 }
@@ -103,6 +103,13 @@ function paidBadgeClass(isPaid: boolean): string {
   return isPaid
     ? "bg-emerald-50 text-emerald-700 border-emerald-200"
     : "bg-rose-50 text-rose-700 border-rose-200";
+}
+
+function primaryActionLabel(order: AdminOrder): string {
+  if (order.status === "DONE") {
+    return order.isPaid ? "Заказ оплачен" : "Оплачен";
+  }
+  return nextStatusLabel(order.status);
 }
 
 function PrinterIcon({ className = "w-4 h-4" }: { className?: string }) {
@@ -177,23 +184,10 @@ const OrderCard: React.FC<OrderCardProps> = ({
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <div className="text-xs font-semibold text-slate-900">№{order.id}</div>
-          <div className="mt-1">
+          <div className="mt-1 flex flex-col items-start gap-1">
             <span className={statusPillClass(order.status)}>
               <span className="w-1.5 h-1.5 rounded-full bg-current" />
               {statusLabel(order.status)}
-            </span>
-          </div>
-        </div>
-        <div className="flex flex-col items-end gap-1 text-right">
-          <span className="text-[10px] text-slate-500">
-            {formatTime(order.createdAt)}
-          </span>
-          <span className="text-[10px] text-slate-500">
-            {order.orderType === "DINE_IN" ? "В зале" : "Доставка"}
-          </span>
-          <div className="flex flex-wrap justify-end gap-1">
-            <span className="text-sm font-bold text-slate-900">
-              {Math.round(order.total)} ₽
             </span>
             <span
               className={
@@ -206,6 +200,17 @@ const OrderCard: React.FC<OrderCardProps> = ({
             </span>
           </div>
         </div>
+        <div className="flex flex-col items-end gap-1 text-right">
+          <span className="text-[10px] text-slate-500">
+            {formatTime(order.createdAt)}
+          </span>
+          <span className="text-[10px] text-slate-500">
+            {order.orderType === "DINE_IN" ? "В зале" : "Доставка"}
+          </span>
+          <span className="text-sm font-bold text-slate-900">
+            {Math.round(order.total)} ₽
+          </span>
+        </div>
       </div>
 
       <div className="rounded-xl bg-slate-50 px-2.5 py-2">
@@ -215,26 +220,35 @@ const OrderCard: React.FC<OrderCardProps> = ({
         >
           {placeLabel(order)}
         </div>
-        {order.comment ? (
-          <div className="mt-1 text-[10px] text-slate-500 break-words">
-            Комментарий: {order.comment}
-          </div>
-        ) : null}
       </div>
 
       <div className="flex items-center gap-2 pt-0.5">
         <button
           type="button"
-          className="flex-1 rounded-xl px-2 py-1.5 text-[11px] font-medium bg-slate-900 text-white"
-          onClick={(e) => {
+          className={
+            order.status === "DONE" && order.isPaid
+              ? "flex-1 rounded-xl px-2 py-1.5 text-[11px] font-medium text-slate-500 text-left"
+              : "flex-1 rounded-xl px-2 py-1.5 text-[11px] font-medium bg-slate-900 text-white"
+          }
+          onClick={async (e) => {
             e.stopPropagation();
+            if (order.status === "DONE") {
+              if (order.isPaid) return;
+              try {
+                const u = await patchOrderPaid(order.id, true);
+                onPaidUpdated(u);
+              } catch {
+                alert("Не удалось обновить оплату");
+              }
+              return;
+            }
             if (nextStatus) {
               onChangeStatus(nextStatus);
             }
           }}
-          disabled={!nextStatus || isUpdating}
+          disabled={(order.status !== "DONE" && !nextStatus) || isUpdating}
         >
-          {nextStatusLabel(order.status)}
+          {primaryActionLabel(order)}
         </button>
 
         {printable && (
@@ -250,26 +264,6 @@ const OrderCard: React.FC<OrderCardProps> = ({
             aria-label="Печать заказа"
           >
             <PrinterIcon />
-          </button>
-        )}
-
-        {order.status === "DONE" && (
-          <button
-            type="button"
-            className="rounded-xl px-2 py-1.5 text-[11px] font-medium border border-emerald-200 bg-emerald-50 text-emerald-900"
-            onClick={async (e) => {
-              e.stopPropagation();
-              try {
-                const u = await patchOrderPaid(order.id, !order.isPaid);
-                onPaidUpdated(u);
-              } catch {
-                alert("Не удалось обновить оплату");
-              }
-            }}
-            disabled={isUpdating}
-            title="Оплата"
-          >
-            💰
           </button>
         )}
         <div className="relative" ref={pickerRef}>
