@@ -82,6 +82,7 @@ export function renderKitchenTicketDocument(
   payload: KitchenTicketPayload,
   options: RenderKitchenTicketOptions = {}
 ): string {
+  const orderTypeLabel = payload.orderType === "DINE_IN" ? "В зале" : "Доставка";
   const placeLabel =
     payload.orderType === "DINE_IN"
       ? payload.tableNumber
@@ -237,6 +238,23 @@ export function renderKitchenTicketDocument(
         word-break: break-word;
       }
 
+      .place-block {
+        margin-bottom: 10px;
+      }
+
+      .place-value {
+        font-size: 18px;
+        line-height: 1.15;
+        font-weight: 800;
+        word-break: break-word;
+      }
+
+      .place-note {
+        margin-top: 4px;
+        font-size: 10px;
+        color: #64748b;
+      }
+
       .comment {
         font-size: 13px;
         font-weight: 700;
@@ -258,13 +276,13 @@ export function renderKitchenTicketDocument(
       }
 
       .item-name {
-        font-size: 13px;
+        font-size: 15px;
         font-weight: 700;
         flex: 1;
       }
 
       .item-qty {
-        font-size: 15px;
+        font-size: 17px;
         font-weight: 800;
         white-space: nowrap;
       }
@@ -306,19 +324,18 @@ export function renderKitchenTicketDocument(
         <div class="order-number">Заказ №${payload.orderId}</div>
         <div class="meta">
           <div class="meta-line"><span>${escapeHtml(formatPrintedDate(payload.createdAt))}</span><span>${escapeHtml(payload.statusLabel)}</span></div>
-          <div class="meta-line"><span>${payload.orderType === "DINE_IN" ? "В зале" : "Доставка"}</span><span>${payload.isPaid ? "Оплачен" : "Не оплачен"}</span></div>
         </div>
       </div>
 
-      <div class="section">
+      <div class="place-block">
         <div class="label">Куда отдать</div>
-        <div class="value">${escapeHtml(placeLabel)}</div>
+        <div class="place-value">${escapeHtml(placeLabel)}</div>
+        <div class="place-note">${escapeHtml(orderTypeLabel)}</div>
       </div>
 
       ${customerMarkup}
 
       <div class="section">
-        <div class="label">Позиции</div>
         <div class="items">${itemsMarkup}</div>
       </div>
 
