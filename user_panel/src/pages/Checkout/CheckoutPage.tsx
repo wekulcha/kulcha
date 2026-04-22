@@ -9,7 +9,11 @@ import { useCart } from '../../context/CartContext';
 import { Header } from '../../layout/Header';
 import { MiniAppShell } from '../../layout/MiniAppShell';
 import type { CreateOrderPayload, PaymentMethod } from '../../types/order';
-import { formatLocationParts, parseLocationParts } from '../../utils/locationFormat';
+import {
+  formatLocationParts,
+  formatLocationShort,
+  parseLocationParts,
+} from '../../utils/locationFormat';
 
 function phoneDigitsToLocal10(stored: string | null): string {
   if (!stored || stored.startsWith('tg-')) return '';
@@ -93,7 +97,7 @@ export function CheckoutPage() {
     }
 
     if (!isRegisteredPhone(currentUser.phone)) {
-      setErrorMessage('Сначала зарегистрируйтесь в боте KULCHA и отправьте номер телефона кнопкой «Отправить номер».');
+      setErrorMessage('Вы не зарегистрировались. Зайдите в бот KULCHA, отправьте /start и поделитесь контактом.');
       return;
     }
 
@@ -161,6 +165,7 @@ export function CheckoutPage() {
   };
 
   const phoneDigitsOk = phoneLocal.replace(/\D/g, '').length === 10;
+  const savedDeliveryAddress = formatLocationShort(currentUser?.address ?? null);
   const submitDisabled =
     submitting ||
     total <= 0 ||
@@ -220,6 +225,7 @@ export function CheckoutPage() {
             <div className="text-sm font-semibold text-slate-900">Локация на рынке</div>
             <p className="text-[11px] text-slate-500">
               Доставка осуществляется только внутри Фуд Сити.
+              {savedDeliveryAddress ? ` Текущий адрес: ${savedDeliveryAddress}.` : ''}
             </p>
             <div className="grid grid-cols-3 gap-2">
               <div>
@@ -228,9 +234,8 @@ export function CheckoutPage() {
                 </label>
                 <input
                   type="text"
-                  inputMode="numeric"
                   className="w-full rounded-xl border border-slate-200 px-2 py-2 text-sm text-center placeholder:text-slate-300"
-                  placeholder="—"
+                  placeholder="Например: 2А"
                   value={floor}
                   onChange={(e) => setFloor(e.target.value)}
                 />
@@ -242,7 +247,7 @@ export function CheckoutPage() {
                 <input
                   type="text"
                   className="w-full rounded-xl border border-slate-200 px-2 py-2 text-sm text-center placeholder:text-slate-300"
-                  placeholder="—"
+                  placeholder="Например: 17Б"
                   value={line}
                   onChange={(e) => setLine(e.target.value)}
                 />
@@ -254,7 +259,7 @@ export function CheckoutPage() {
                 <input
                   type="text"
                   className="w-full rounded-xl border border-slate-200 px-2 py-2 text-sm text-center placeholder:text-slate-300"
-                  placeholder="—"
+                  placeholder="Например: 057А"
                   value={pavilion}
                   onChange={(e) => setPavilion(e.target.value)}
                 />

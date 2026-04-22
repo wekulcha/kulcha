@@ -212,7 +212,7 @@ export function ProfilePage() {
                       <span className="text-[10px] text-slate-400 block mb-0.5">Этаж</span>
                       <input
                         className="w-full rounded-xl border border-slate-200 px-2 py-1.5 text-sm text-center read-only:bg-slate-50 read-only:text-slate-600"
-                        placeholder="—"
+                        placeholder="Например: 2А"
                         value={floor}
                         readOnly={!editingAddress}
                         onChange={(e) => {
@@ -225,7 +225,7 @@ export function ProfilePage() {
                       <span className="text-[10px] text-slate-400 block mb-0.5">Линия</span>
                       <input
                         className="w-full rounded-xl border border-slate-200 px-2 py-1.5 text-sm text-center read-only:bg-slate-50 read-only:text-slate-600"
-                        placeholder="—"
+                        placeholder="Например: 17Б"
                         value={line}
                         readOnly={!editingAddress}
                         onChange={(e) => {
@@ -238,7 +238,7 @@ export function ProfilePage() {
                       <span className="text-[10px] text-slate-400 block mb-0.5">Павильон</span>
                       <input
                         className="w-full rounded-xl border border-slate-200 px-2 py-1.5 text-sm text-center read-only:bg-slate-50 read-only:text-slate-600"
-                        placeholder="—"
+                        placeholder="Например: 057А"
                         value={pavilion}
                         readOnly={!editingAddress}
                         onChange={(e) => {

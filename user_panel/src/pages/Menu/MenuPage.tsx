@@ -4,15 +4,18 @@ import { MiniAppShell } from '../../layout/MiniAppShell';
 import { Header } from '../../layout/Header';
 import { BottomBarCart } from '../../layout/BottomBarCart';
 import { useAppContext } from '../../context/AppContext';
+import { useAuth } from '../../context/AuthContext';
 import { fetchMealsByRestaurant } from '../../api/meals';
 import { MenuItemCard } from '../../components/menu/MenuItemCard';
 import type { Meal } from '../../types/meal';
 import { mealCategoryLabel, mealCategoryRank } from '../../utils/mealCategoryLabels';
+import { formatLocationShort } from '../../utils/locationFormat';
 
 export function MenuPage() {
   const { restaurantId } = useParams<{ restaurantId: string }>();
   const navigate = useNavigate();
   const { serviceType, setServiceType, selectedRestaurant } = useAppContext();
+  const { currentUser } = useAuth();
   const [meals, setMeals] = useState<Meal[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -21,6 +24,7 @@ export function MenuPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const categoryRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const isCategoryKey = (value: string | null): value is string => Boolean(value);
+  const deliveryAddressLabel = formatLocationShort(currentUser?.address ?? null);
 
   useEffect(() => {
     if (!restaurantId) {
@@ -215,7 +219,7 @@ export function MenuPage() {
         {serviceType === 'DELIVERY' && (
           <div className="bg-slate-100 rounded-full px-4 py-2">
             <span className="text-sm text-slate-700">
-              Доставка: укажите адрес позже
+              Доставка: {deliveryAddressLabel || 'адрес не указан'}
             </span>
           </div>
         )}

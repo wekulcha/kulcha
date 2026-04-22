@@ -264,7 +264,7 @@ async def checkout(
     if not is_proper_registered_phone(customer.phone):
         raise HTTPException(
             403,
-            "Сначала зарегистрируйтесь через бота KULCHA и поделитесь номером телефона.",
+            "Вы не зарегистрировались. Зайдите в бот KULCHA, отправьте /start и поделитесь контактом.",
         )
 
     if not body.items:

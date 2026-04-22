@@ -36,6 +36,17 @@ def _bot_headers() -> dict:
     return h
 
 
+def _has_registered_phone(phone: str | None) -> bool:
+    if not phone or phone.startswith("tg-"):
+        return False
+    digits = "".join(ch for ch in phone if ch.isdigit())
+    if len(digits) == 10 and digits.startswith("9"):
+        return True
+    if len(digits) == 11 and digits.startswith(("7", "8")):
+        return True
+    return False
+
+
 @router.message(CommandStart())
 async def cmd_start(message: Message):
     user_id = message.from_user.id
@@ -44,11 +55,21 @@ async def cmd_start(message: Message):
         try:
             r = await client.get(f"{API_BASE}/users", params={"telegramId": user_id})
             if r.status_code == 200 and r.json():
+                user = r.json()[0]
+                if _has_registered_phone(user.get("phone")):
+                    await message.answer(
+                        "<b>Добро пожаловать в KULCHA!</b>\n"
+                        "━━━━━━━━━━━━━━\n"
+                        "Рады снова вас видеть. Откройте корзину или профиль кнопками ниже.",
+                        reply_markup=main_menu_keyboard(),
+                    )
+                    return
                 await message.answer(
-                    "<b>Добро пожаловать в KULCHA!</b>\n"
+                    "<b>KULCHA</b> · доставка и зал\n"
                     "━━━━━━━━━━━━━━\n"
-                    "Рады снова вас видеть. Откройте корзину или профиль кнопками ниже.",
-                    reply_markup=main_menu_keyboard(),
+                    "Чтобы оформлять заказы, нужно завершить регистрацию: нажмите /start и "
+                    "поделитесь <b>номером телефона</b> кнопкой ниже.",
+                    reply_markup=request_phone_keyboard(),
                 )
                 return
         except Exception:

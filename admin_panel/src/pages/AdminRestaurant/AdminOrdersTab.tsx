@@ -644,7 +644,7 @@ export const AdminOrdersTab: React.FC<AdminOrdersTabProps> = ({
         </div>
       )}
 
-      <div className="grid justify-start gap-2.5 [grid-template-columns:repeat(auto-fit,minmax(280px,320px))]">
+      <div className="grid grid-cols-2 gap-2 min-[520px]:justify-start min-[520px]:[grid-template-columns:repeat(auto-fit,10.5rem)]">
         {orders.map((order) => (
           <OrderCard
             key={order.id}

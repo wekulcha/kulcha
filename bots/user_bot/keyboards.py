@@ -44,5 +44,5 @@ def request_phone_keyboard() -> ReplyKeyboardMarkup:
             [KeyboardButton(text="📱 Отправить номер", request_contact=True)],
         ],
         resize_keyboard=True,
-        one_time_keyboard=True,
+        input_field_placeholder="Поделитесь номером телефона",
     )

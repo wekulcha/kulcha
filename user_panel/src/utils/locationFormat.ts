@@ -21,3 +21,11 @@ export function formatLocationParts(floor: string, line: string, pavilion: strin
     .filter(Boolean)
     .join(LOCATION_PARTS_SEP);
 }
+
+export function formatLocationShort(address: string | null | undefined): string {
+  const { floor, line, pavilion } = parseLocationParts(address);
+  return [floor, line, pavilion]
+    .map((value) => value.trim())
+    .filter(Boolean)
+    .join('-');
+}

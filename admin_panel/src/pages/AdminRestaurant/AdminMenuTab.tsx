@@ -386,7 +386,9 @@ export const AdminMenuTab: React.FC<AdminMenuTabProps> = ({
   }, [sortedMeals]);
 
   const [activeCat, setActiveCat] = useState<string | null>(null);
+  const tabBarRef = useRef<HTMLDivElement | null>(null);
   const catAnchorRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const catTitleRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   useEffect(() => {
     if (categoriesPresent.length && !activeCat) {
@@ -396,25 +398,49 @@ export const AdminMenuTab: React.FC<AdminMenuTabProps> = ({
 
   useEffect(() => {
     if (categoriesPresent.length === 0) return;
-    const obs = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((e) => e.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
-        const first = visible[0];
-        if (first?.target) {
-          const cat = (first.target as HTMLElement).dataset["cat"];
-          if (cat) setActiveCat(cat);
-        }
-      },
-      { root: null, threshold: [0, 0.15, 0.35], rootMargin: "-120px 0px -55% 0px" }
-    );
-    for (const c of categoriesPresent) {
-      const el = catAnchorRefs.current[c];
-      if (el) obs.observe(el);
+
+    const tabBar = tabBarRef.current;
+    if (!tabBar) return;
+
+    let scrollParent: HTMLElement | Window = window;
+    let parent = tabBar.parentElement;
+    while (parent) {
+      const style = window.getComputedStyle(parent);
+      if (/(auto|scroll)/.test(style.overflowY)) {
+        scrollParent = parent;
+        break;
+      }
+      parent = parent.parentElement;
     }
-    return () => obs.disconnect();
-  }, [categoriesPresent, sortedMeals.length]);
+
+    const updateActiveCategory = () => {
+      const triggerY = (tabBarRef.current?.getBoundingClientRect().bottom ?? 0) + 1;
+      let nextActive = categoriesPresent[0] ?? null;
+
+      for (const category of categoriesPresent) {
+        const title = catTitleRefs.current[category];
+        if (!title) continue;
+        if (title.getBoundingClientRect().top <= triggerY) {
+          nextActive = category;
+        } else {
+          break;
+        }
+      }
+
+      setActiveCat((prev) => (prev === nextActive ? prev : nextActive));
+    };
+
+    updateActiveCategory();
+
+    const target = scrollParent === window ? window : scrollParent;
+    target.addEventListener("scroll", updateActiveCategory, { passive: true });
+    window.addEventListener("resize", updateActiveCategory);
+
+    return () => {
+      target.removeEventListener("scroll", updateActiveCategory);
+      window.removeEventListener("resize", updateActiveCategory);
+    };
+  }, [categoriesPresent]);
 
   const scrollToCategory = (cat: string) => {
     const el = catAnchorRefs.current[cat];
@@ -465,7 +491,10 @@ export const AdminMenuTab: React.FC<AdminMenuTabProps> = ({
 
       {!loading && !error && meals.length > 0 && (
         <>
-          <div className="sticky top-0 z-30 -mx-3 md:-mx-4 px-3 md:px-4 py-2 bg-white/95 backdrop-blur-sm border-b border-slate-100 shadow-[0_1px_0_rgba(148,163,184,0.08)]">
+          <div
+            ref={tabBarRef}
+            className="sticky top-0 z-30 -mx-3 md:-mx-4 px-3 md:px-4 py-2 bg-white/95 backdrop-blur-sm border-b border-slate-100 shadow-[0_1px_0_rgba(148,163,184,0.08)]"
+          >
             <div className="flex gap-1 overflow-x-auto no-scrollbar">
               {categoriesPresent.map((cat) => (
                 <button
@@ -496,24 +525,29 @@ export const AdminMenuTab: React.FC<AdminMenuTabProps> = ({
                 ref={(el) => {
                   catAnchorRefs.current[cat] = el;
                 }}
-                className="scroll-mt-28"
+                className="scroll-mt-24"
               >
-                <div className="text-[11px] font-semibold text-slate-500 mb-2">
+                <div
+                  ref={(el) => {
+                    catTitleRefs.current[cat] = el;
+                  }}
+                  className="text-[11px] font-semibold text-slate-500 mb-2"
+                >
                   {mealCategoryLabel(cat)}
                 </div>
-                <div className="grid justify-start gap-2.5 [grid-template-columns:repeat(auto-fit,minmax(260px,320px))]">
+                <div className="grid grid-cols-2 gap-2 min-[520px]:justify-start min-[520px]:[grid-template-columns:repeat(auto-fit,10.5rem)]">
                   {sortedMeals
                     .filter((m) => m.category === cat)
                     .map((meal) => (
             <div
               key={meal.id}
               className={
-                "bg-white rounded-2xl p-3 border border-slate-100 shadow-sm flex flex-col gap-2.5 min-h-[124px] " +
+                "bg-white rounded-2xl p-2.5 border border-slate-100 shadow-sm flex flex-col gap-2 min-h-[122px] " +
                 (meal.is_available ? "" : "opacity-60")
               }
             >
               <div className="flex items-start justify-between gap-2">
-                <div className="w-14 h-14 rounded-xl bg-slate-100 overflow-hidden flex-shrink-0 border border-slate-100">
+                <div className="w-12 h-12 rounded-xl bg-slate-100 overflow-hidden flex-shrink-0 border border-slate-100">
                   {meal.image_link ? (
                     <img
                       src={mealImageUrl(meal.image_link)}
@@ -527,7 +561,7 @@ export const AdminMenuTab: React.FC<AdminMenuTabProps> = ({
                   )}
                 </div>
                 <div className="flex-1 min-w-0 space-y-0.5">
-                  <div className="text-[13px] font-semibold text-slate-900 line-clamp-2">
+                  <div className="text-xs font-semibold text-slate-900 line-clamp-2">
                     {meal.name}
                   </div>
                   <div className="text-[10px] text-slate-500">
