@@ -59,7 +59,7 @@ export const AdminCafeListPage: React.FC = () => {
           </div>
         )}
 
-        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+        <div className="grid justify-start gap-3 [grid-template-columns:repeat(auto-fit,minmax(280px,320px))]">
           {visibleRestaurants.map((r) => (
             <button
               key={r.id}

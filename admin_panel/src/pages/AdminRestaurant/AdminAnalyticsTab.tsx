@@ -56,7 +56,7 @@ const AnalyticsSummaryCards: React.FC<AnalyticsSummaryCardsProps> = ({
   const dineInShare = Math.round((dine_in_orders / totalOrders) * 100);
 
   return (
-    <div className="grid grid-cols-2 xl:grid-cols-4 gap-2">
+    <div className="grid justify-start gap-2 [grid-template-columns:repeat(auto-fit,minmax(190px,220px))]">
       {/* Revenue */}
       <div className="bg-emerald-50 rounded-2xl p-3 border border-emerald-100 shadow-sm flex flex-col gap-1">
         <div className="text-[10px] text-emerald-700 uppercase font-semibold">

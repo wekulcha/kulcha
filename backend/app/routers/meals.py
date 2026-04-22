@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from fastapi import APIRouter, Depends, Header, HTTPException
 from sqlalchemy import func, select
+from sqlalchemy.exc import DBAPIError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
@@ -17,6 +18,16 @@ from app.services import staff_access
 from app.services.telegram_auth import verify_telegram_init_data
 
 router = APIRouter(prefix="/api/v1/meals", tags=["meals"])
+
+
+def _raise_meal_category_db_error(exc: DBAPIError) -> None:
+    message = str(exc).lower()
+    if "invalid input value for enum" in message or "mealcategory" in message:
+        raise HTTPException(
+            400,
+            "Категория блюда не поддерживается текущей схемой БД. Примените последние миграции backend.",
+        ) from exc
+    raise exc
 
 
 def _to_dto(m: Meal) -> MealDto:
@@ -104,7 +115,10 @@ async def create_meal(
         price=dto.price, is_available=dto.available if dto.available is not None else True,
     )
     db.add(meal)
-    await db.flush()
+    try:
+        await db.flush()
+    except DBAPIError as exc:
+        _raise_meal_category_db_error(exc)
     return _to_dto(meal)
 
 
@@ -142,7 +156,10 @@ async def update_meal(
     if dto.restaurantId is not None:
         existing.restaurant_id = dto.restaurantId
 
-    await db.flush()
+    try:
+        await db.flush()
+    except DBAPIError as exc:
+        _raise_meal_category_db_error(exc)
     return _to_dto(existing)
 
 

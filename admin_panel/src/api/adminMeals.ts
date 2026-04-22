@@ -2,6 +2,28 @@ import { BASE_URL } from "./baseUrl";
 import { Meal, AdminMealCreate } from "../types/adminMeal";
 import { buildAdminApiJsonHeaders, getTelegramInitData } from "../telegram/initTelegram";
 
+async function readApiError(resp: Response, fallback: string): Promise<never> {
+  let detail = "";
+  try {
+    const text = (await resp.text()).trim();
+    if (text) {
+      try {
+        const parsed = JSON.parse(text) as { detail?: unknown };
+        if (typeof parsed.detail === "string") {
+          detail = parsed.detail;
+        } else {
+          detail = text;
+        }
+      } catch {
+        detail = text;
+      }
+    }
+  } catch {
+    // ignore body parse issues
+  }
+  throw new Error(detail || fallback);
+}
+
 /** Backend MealDto (camelCase) */
 interface MealDto {
   id: number;
@@ -85,7 +107,7 @@ export async function createAdminMeal(
     body: JSON.stringify(body),
   });
   if (!resp.ok) {
-    throw new Error(`Failed to create meal: ${resp.status}`);
+    await readApiError(resp, `Failed to create meal: ${resp.status}`);
   }
   const d = (await resp.json()) as MealDto;
   return toMeal(d);
@@ -126,7 +148,7 @@ export async function updateAdminMeal(
     body: JSON.stringify(body),
   });
   if (!resp.ok) {
-    throw new Error(`Failed to update meal: ${resp.status}`);
+    await readApiError(resp, `Failed to update meal: ${resp.status}`);
   }
   const d = (await resp.json()) as MealDto;
   return toMeal(d);

@@ -8,7 +8,11 @@ import {
   updateMealAvailability,
   uploadMealImage,
 } from "../../api/adminMeals";
-import { MEAL_CATEGORY_OPTIONS, mealCategoryLabel } from "../../utils/mealCategory";
+import {
+  MEAL_CATEGORY_OPTIONS,
+  mealCategoryLabel,
+  mealCategoryRank,
+} from "../../utils/mealCategory";
 import { mealImageUrl } from "../../utils/mealImageUrl";
 
 interface AdminMenuTabProps {
@@ -305,7 +309,7 @@ export const AdminMenuTab: React.FC<AdminMenuTabProps> = ({
       setIsCreateOpen(false);
     } catch (err) {
       console.error(err);
-      setCreateError("Не удалось создать блюдо. Попробуйте ещё раз.");
+      setCreateError(err instanceof Error ? err.message : "Не удалось создать блюдо. Попробуйте ещё раз.");
     } finally {
       setCreateLoading(false);
     }
@@ -330,7 +334,7 @@ export const AdminMenuTab: React.FC<AdminMenuTabProps> = ({
       setEditMeal(null);
     } catch (err) {
       console.error(err);
-      setEditError("Не удалось сохранить блюдо.");
+      setEditError(err instanceof Error ? err.message : "Не удалось сохранить блюдо.");
     } finally {
       setEditLoading(false);
     }
@@ -358,8 +362,7 @@ export const AdminMenuTab: React.FC<AdminMenuTabProps> = ({
   };
 
   const categoryRank = useCallback((cat: string) => {
-    const i = MEAL_CATEGORY_OPTIONS.findIndex((o) => o.value === cat);
-    return i === -1 ? 999 : i;
+    return mealCategoryRank(cat);
   }, []);
 
   const sortedMeals = useMemo(() => {
@@ -383,7 +386,6 @@ export const AdminMenuTab: React.FC<AdminMenuTabProps> = ({
   }, [sortedMeals]);
 
   const [activeCat, setActiveCat] = useState<string | null>(null);
-  const scrollRootRef = useRef<HTMLDivElement>(null);
   const catAnchorRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   useEffect(() => {
@@ -393,8 +395,7 @@ export const AdminMenuTab: React.FC<AdminMenuTabProps> = ({
   }, [categoriesPresent, activeCat]);
 
   useEffect(() => {
-    const root = scrollRootRef.current;
-    if (!root || categoriesPresent.length === 0) return;
+    if (categoriesPresent.length === 0) return;
     const obs = new IntersectionObserver(
       (entries) => {
         const visible = entries
@@ -406,7 +407,7 @@ export const AdminMenuTab: React.FC<AdminMenuTabProps> = ({
           if (cat) setActiveCat(cat);
         }
       },
-      { root, threshold: [0, 0.15, 0.35], rootMargin: "-12% 0px -55% 0px" }
+      { root: null, threshold: [0, 0.15, 0.35], rootMargin: "-120px 0px -55% 0px" }
     );
     for (const c of categoriesPresent) {
       const el = catAnchorRefs.current[c];
@@ -431,7 +432,7 @@ export const AdminMenuTab: React.FC<AdminMenuTabProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-3xl p-3 md:p-4 shadow-sm border border-slate-100 space-y-3">
+    <div className="bg-white rounded-3xl p-3 md:p-4 shadow-sm border border-slate-100 space-y-4">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div className="text-sm font-semibold text-slate-900">
           Меню ресторана
@@ -485,7 +486,7 @@ export const AdminMenuTab: React.FC<AdminMenuTabProps> = ({
             ))}
           </div>
 
-          <div ref={scrollRootRef} className="max-h-[calc(100dvh-18rem)] min-h-[18rem] overflow-y-auto pr-1 space-y-4">
+          <div className="space-y-5">
             {categoriesPresent.map((cat) => (
               <div
                 key={cat}
@@ -495,22 +496,22 @@ export const AdminMenuTab: React.FC<AdminMenuTabProps> = ({
                 }}
                 className="scroll-mt-28"
               >
-                <div className="text-[11px] font-semibold text-slate-500 mb-2 sticky top-0 bg-white/95 py-1 z-[5]">
+                <div className="text-[11px] font-semibold text-slate-500 mb-2 sticky top-10 bg-white/95 py-1 z-[5]">
                   {mealCategoryLabel(cat)}
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-2">
+                <div className="grid justify-start gap-2.5 [grid-template-columns:repeat(auto-fit,minmax(260px,320px))]">
                   {sortedMeals
                     .filter((m) => m.category === cat)
                     .map((meal) => (
             <div
               key={meal.id}
               className={
-                "bg-white rounded-2xl p-3 border border-slate-100 shadow-sm flex flex-col gap-2 " +
+                "bg-white rounded-2xl p-3 border border-slate-100 shadow-sm flex flex-col gap-2.5 min-h-[124px] " +
                 (meal.is_available ? "" : "opacity-60")
               }
             >
               <div className="flex items-start justify-between gap-2">
-                <div className="w-12 h-12 rounded-xl bg-slate-100 overflow-hidden flex-shrink-0 border border-slate-100">
+                <div className="w-14 h-14 rounded-xl bg-slate-100 overflow-hidden flex-shrink-0 border border-slate-100">
                   {meal.image_link ? (
                     <img
                       src={mealImageUrl(meal.image_link)}
@@ -523,13 +524,18 @@ export const AdminMenuTab: React.FC<AdminMenuTabProps> = ({
                     </div>
                   )}
                 </div>
-                <div className="flex-1 min-w-0">
-                  <div className="text-xs font-semibold text-slate-900 truncate">
+                <div className="flex-1 min-w-0 space-y-0.5">
+                  <div className="text-[13px] font-semibold text-slate-900 line-clamp-2">
                     {meal.name}
                   </div>
                   <div className="text-[10px] text-slate-500">
                     {mealCategoryLabel(meal.category)} · {Math.round(meal.price)} ₽
                   </div>
+                  {meal.description ? (
+                    <div className="text-[10px] text-slate-400 line-clamp-2">
+                      {meal.description}
+                    </div>
+                  ) : null}
                 </div>
 
                 <button
@@ -542,7 +548,7 @@ export const AdminMenuTab: React.FC<AdminMenuTabProps> = ({
                 </button>
               </div>
 
-              <div className="flex items-center justify-between mt-1">
+              <div className="flex items-center justify-between mt-auto pt-1">
                 <div className="flex items-center gap-1">
                   <input
                     type="checkbox"

@@ -184,7 +184,7 @@ export const AdminStaffTab: React.FC<AdminStaffTabProps> = ({ restaurantId }) =>
         <div className="text-xs text-slate-500">Пока только вы в команде.</div>
       )}
 
-      <ul className="grid gap-2 md:grid-cols-2">
+      <ul className="grid justify-start gap-2 [grid-template-columns:repeat(auto-fit,minmax(260px,320px))]">
         {list.map((m) => (
           <li
             key={m.staffId}

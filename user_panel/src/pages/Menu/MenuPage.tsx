@@ -7,7 +7,7 @@ import { useAppContext } from '../../context/AppContext';
 import { fetchMealsByRestaurant } from '../../api/meals';
 import { MenuItemCard } from '../../components/menu/MenuItemCard';
 import type { Meal } from '../../types/meal';
-import { mealCategoryLabel } from '../../utils/mealCategoryLabels';
+import { mealCategoryLabel, mealCategoryRank } from '../../utils/mealCategoryLabels';
 
 export function MenuPage() {
   const { restaurantId } = useParams<{ restaurantId: string }>();
@@ -57,7 +57,11 @@ export function MenuPage() {
   // Compute categories from filtered meals
   const categories = Array.from(
     new Set(mealsAfterSearch.map((m) => m.category).filter(isCategoryKey))
-  ).sort();
+  ).sort((a, b) => {
+    const rankDiff = mealCategoryRank(a) - mealCategoryRank(b);
+    if (rankDiff !== 0) return rankDiff;
+    return a.localeCompare(b, 'ru');
+  });
 
   // Group meals by category
   type CategoryKey = string;
