@@ -222,7 +222,7 @@ export function MenuPage() {
 
         {/* Sticky category tabs */}
         {!loading && !error && categories.length > 0 && (
-          <div className="sticky top-16 z-10 bg-slate-50 pb-2 pt-2 -mx-4 px-4">
+          <div className="sticky top-14 z-20 -mx-4 px-4 py-2 bg-neutral-50/95 backdrop-blur-sm border-b border-slate-200">
             <div className="flex gap-2 overflow-x-auto scrollbar-hide">
               {categories.map((cat) => {
                 const isActive = selectedCategory === cat;

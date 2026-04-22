@@ -432,7 +432,7 @@ export const AdminMenuTab: React.FC<AdminMenuTabProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-3xl p-3 md:p-4 shadow-sm border border-slate-100 space-y-4">
+    <div className="bg-white rounded-3xl p-3 md:p-4 shadow-sm border border-slate-100 space-y-4 overflow-visible">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div className="text-sm font-semibold text-slate-900">
           Меню ресторана
@@ -465,7 +465,7 @@ export const AdminMenuTab: React.FC<AdminMenuTabProps> = ({
 
       {!loading && !error && meals.length > 0 && (
         <>
-          <div className="sticky top-0 z-20 -mx-3 md:-mx-4 px-3 md:px-4 py-2 bg-white/95 backdrop-blur-sm border-b border-slate-100">
+          <div className="sticky top-0 z-30 -mx-3 md:-mx-4 px-3 md:px-4 py-2 bg-white/95 backdrop-blur-sm border-b border-slate-100 shadow-[0_1px_0_rgba(148,163,184,0.08)]">
             <div className="flex gap-1 overflow-x-auto no-scrollbar">
               {categoriesPresent.map((cat) => (
                 <button

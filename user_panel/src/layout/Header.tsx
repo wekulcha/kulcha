@@ -41,7 +41,7 @@ export function Header({
   const rightHasHome = Boolean(onHomeClick);
 
   return (
-    <header className="h-14 flex items-center justify-between px-2 border-b border-slate-200 bg-white rounded-t-lg">
+    <header className="sticky top-0 z-30 h-14 flex items-center justify-between px-2 border-b border-slate-200 bg-white/95 backdrop-blur-sm rounded-t-lg">
       <button
         type="button"
         onClick={handleLeftClick}
