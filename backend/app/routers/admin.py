@@ -42,7 +42,7 @@ def _meal_dto(m: Meal) -> MealDto:
     return MealDto(
         id=m.id, restaurantId=m.restaurant_id, name=m.name,
         description=m.description, weight=m.weight, calorie=m.calorie,
-        imageLink=m.image_link, category=m.category.value if m.category else None,
+        imageLink=m.image_link, category=m.category,
         price=m.price, available=m.is_available,
     )
 

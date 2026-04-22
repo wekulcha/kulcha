@@ -46,7 +46,7 @@ def _meal_dto(m: Meal) -> MealDto:
     return MealDto(
         id=m.id, restaurantId=m.restaurant_id, name=m.name,
         description=m.description, weight=m.weight, calorie=m.calorie,
-        imageLink=m.image_link, category=m.category.value if m.category else None,
+        imageLink=m.image_link, category=m.category,
         price=m.price, available=m.is_available,
     )
 
@@ -175,7 +175,7 @@ async def get_meals(
             cat = MealCategory(category)
         except ValueError:
             raise HTTPException(400, f"Invalid category: {category}")
-        query = query.where(Meal.category == cat)
+        query = query.where(Meal.category == cat.value)
 
     result = await db.execute(query)
     return [_meal_dto(m) for m in result.scalars().all()]

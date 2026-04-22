@@ -465,25 +465,27 @@ export const AdminMenuTab: React.FC<AdminMenuTabProps> = ({
 
       {!loading && !error && meals.length > 0 && (
         <>
-          <div className="flex gap-1 overflow-x-auto no-scrollbar pb-1 sticky top-0 z-10 bg-white/95 py-1 -mx-1 px-1">
-            {categoriesPresent.map((cat) => (
-              <button
-                key={cat}
-                type="button"
-                onClick={() => {
-                  setActiveCat(cat);
-                  scrollToCategory(cat);
-                }}
-                className={
-                  "px-3 py-1.5 rounded-full text-[10px] font-medium border whitespace-nowrap shrink-0 transition-colors " +
-                  (activeCat === cat
-                    ? "bg-slate-900 text-white border-slate-900"
-                    : "bg-slate-50 text-slate-700 border-slate-200")
-                }
-              >
-                {mealCategoryLabel(cat)}
-              </button>
-            ))}
+          <div className="sticky top-0 z-20 -mx-3 md:-mx-4 px-3 md:px-4 py-2 bg-white/95 backdrop-blur-sm border-b border-slate-100">
+            <div className="flex gap-1 overflow-x-auto no-scrollbar">
+              {categoriesPresent.map((cat) => (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => {
+                    setActiveCat(cat);
+                    scrollToCategory(cat);
+                  }}
+                  className={
+                    "px-3 py-1.5 rounded-full text-[10px] font-medium border whitespace-nowrap shrink-0 transition-colors " +
+                    (activeCat === cat
+                      ? "bg-slate-900 text-white border-slate-900"
+                      : "bg-slate-50 text-slate-700 border-slate-200")
+                  }
+                >
+                  {mealCategoryLabel(cat)}
+                </button>
+              ))}
+            </div>
           </div>
 
           <div className="space-y-5">
@@ -496,7 +498,7 @@ export const AdminMenuTab: React.FC<AdminMenuTabProps> = ({
                 }}
                 className="scroll-mt-28"
               >
-                <div className="text-[11px] font-semibold text-slate-500 mb-2 sticky top-10 bg-white/95 py-1 z-[5]">
+                <div className="text-[11px] font-semibold text-slate-500 mb-2">
                   {mealCategoryLabel(cat)}
                 </div>
                 <div className="grid justify-start gap-2.5 [grid-template-columns:repeat(auto-fit,minmax(260px,320px))]">

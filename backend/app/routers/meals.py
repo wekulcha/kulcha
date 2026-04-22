@@ -34,7 +34,7 @@ def _to_dto(m: Meal) -> MealDto:
     return MealDto(
         id=m.id, restaurantId=m.restaurant_id, name=m.name,
         description=m.description, weight=m.weight, calorie=m.calorie,
-        imageLink=m.image_link, category=m.category.value if m.category else None,
+        imageLink=m.image_link, category=m.category,
         price=m.price, available=m.is_available,
     )
 
@@ -70,7 +70,7 @@ async def get_all(
             select(Meal).where(
                 Meal.restaurant_id == restaurantId,
                 Meal.is_available == True,  # noqa: E712
-                Meal.category == cat,
+                Meal.category == cat.value,
             )
         )
         return [_to_dto(m) for m in result.scalars().all()]
@@ -107,11 +107,12 @@ async def create_meal(
     x_telegram_init_data: str = Header(..., alias="X-Telegram-Init-Data"),
 ):
     await _require_menu_editor(db, x_telegram_init_data, dto.restaurantId)
+    category_value = MealCategory(dto.category).value if dto.category else None
     meal = Meal(
         restaurant_id=dto.restaurantId, name=dto.name,
         description=dto.description, weight=dto.weight, calorie=dto.calorie,
         image_link=dto.imageLink,
-        category=MealCategory(dto.category) if dto.category else None,
+        category=category_value,
         price=dto.price, is_available=dto.available if dto.available is not None else True,
     )
     db.add(meal)
@@ -148,7 +149,7 @@ async def update_meal(
     if dto.imageLink is not None:
         existing.image_link = dto.imageLink
     if dto.category is not None:
-        existing.category = MealCategory(dto.category)
+        existing.category = MealCategory(dto.category).value
     if dto.price is not None:
         existing.price = dto.price
     if dto.available is not None:
