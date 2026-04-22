@@ -22,7 +22,12 @@ router = APIRouter(prefix="/api/v1/meals", tags=["meals"])
 
 def _raise_meal_category_db_error(exc: DBAPIError) -> None:
     message = str(exc).lower()
-    if "invalid input value for enum" in message or "mealcategory" in message:
+    if (
+        "invalid input value for enum" in message
+        or "mealcategory" in message
+        or "meal_category_check" in message
+        or "checkviolationerror" in message
+    ):
         raise HTTPException(
             400,
             "Категория блюда не поддерживается текущей схемой БД. Примените последние миграции backend.",
