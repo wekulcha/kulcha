@@ -13,6 +13,7 @@ def main_menu_keyboard() -> ReplyKeyboardMarkup:
     return ReplyKeyboardMarkup(
         keyboard=[
             [_orders_button()],
+            [KeyboardButton(text="📊 Итоги за сегодня")],
             [KeyboardButton(text="💬 Поддержка", url=SUPPORT_LINK)],
         ],
         resize_keyboard=True,

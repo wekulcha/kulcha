@@ -5,12 +5,20 @@ import time
 
 import httpx
 from aiogram import Router, F
-from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
+from aiogram.types import (
+    BufferedInputFile,
+    CallbackQuery,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    Message,
+    WebAppInfo,
+)
 from aiogram.filters import CommandStart
 
 from config import ADMIN_MINI_APP_URL, API_BASE, BOT_TOKEN, INTERNAL_API_SECRET, SUPPORT_LINK
 from keyboards import main_menu_keyboard
 from order_keyboard import order_status_keyboard
+from reporting import build_today_report_messages, build_today_report_pdf
 
 
 def _generate_bot_auth_token(telegram_id: int, ttl: int = 600) -> str:
@@ -149,6 +157,52 @@ async def active_orders(message: Message):
 @router.message(F.text == "💬 Поддержка")
 async def support(message: Message):
     await message.answer(f"<b>Поддержка</b>\n━━━━━━━━━━━━━━\n{SUPPORT_LINK}")
+
+
+@router.message(F.text == "📊 Итоги за сегодня")
+async def today_summary(message: Message):
+    if not BOT_TOKEN:
+        await message.answer("Не задан токен админ-бота. Отчёт недоступен.")
+        return
+
+    token = _generate_bot_auth_token(message.from_user.id)
+    try:
+        async with httpx.AsyncClient(timeout=45.0) as client:
+            response = await client.get(
+                f"{API_BASE}/orders/today-summary",
+                headers={"X-Kulcha-Bot-Auth": token},
+            )
+    except Exception as exc:
+        await message.answer(f"Не удалось получить отчёт: {html.escape(str(exc))}")
+        return
+
+    if response.status_code != 200:
+        detail = ""
+        try:
+            payload = response.json()
+            detail = str(payload.get("detail") or "")
+        except Exception:
+            detail = response.text[:300]
+        suffix = f"\n{html.escape(detail)}" if detail else ""
+        await message.answer(
+            "<b>Итоги за сегодня</b>\n"
+            "━━━━━━━━━━━━━━\n"
+            f"Ошибка API: {response.status_code}{suffix}"
+        )
+        return
+
+    summary = response.json()
+    for chunk in build_today_report_messages(summary):
+        await message.answer(chunk)
+
+    pdf_bytes = build_today_report_pdf(summary)
+    if pdf_bytes:
+        report_date = str(summary.get("reportDate") or "today")
+        filename = f"kulcha-today-summary-{report_date}.pdf"
+        await message.answer_document(
+            BufferedInputFile(pdf_bytes, filename=filename),
+            caption="PDF-версия отчёта за сегодня",
+        )
 
 
 @router.callback_query(F.data.startswith("k:"))

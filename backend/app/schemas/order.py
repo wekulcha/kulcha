@@ -50,3 +50,50 @@ class OrderStatusPatchDto(BaseModel):
 
 class OrderPaidPatchDto(BaseModel):
     isPaid: bool
+
+
+class DailyOrderPositionSummaryDto(BaseModel):
+    mealName: str
+    quantity: int
+    totalPrice: Decimal
+
+
+class DailyOrderTypeSummaryDto(BaseModel):
+    orderType: str
+    ordersCount: int
+    revenue: Decimal
+    paidOrdersCount: int
+    unpaidOrdersCount: int
+    paidRevenue: Decimal
+    unpaidRevenue: Decimal
+    cancelledOrdersCount: int
+    cancelledRevenue: Decimal
+    avgCheck: Decimal
+    itemsTotal: Decimal
+    deliveryFeeTotal: Decimal
+    serviceFeeTotal: Decimal
+    courierAssignedOrdersCount: int
+    positions: list[DailyOrderPositionSummaryDto] = []
+
+
+class DailyRestaurantSummaryDto(BaseModel):
+    restaurantId: int
+    restaurantName: str
+    totalOrdersCount: int
+    totalRevenue: Decimal
+    paidOrdersCount: int
+    unpaidOrdersCount: int
+    paidRevenue: Decimal
+    unpaidRevenue: Decimal
+    cancelledOrdersCount: int
+    cancelledRevenue: Decimal
+    avgCheck: Decimal
+    dineIn: DailyOrderTypeSummaryDto
+    delivery: DailyOrderTypeSummaryDto
+
+
+class DailyStaffSummaryDto(BaseModel):
+    reportDate: str
+    timezone: str
+    generatedAt: datetime
+    restaurants: list[DailyRestaurantSummaryDto] = []

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections import defaultdict
 from datetime import datetime
 from decimal import Decimal
 
@@ -15,8 +16,18 @@ from app.models.meal import Meal
 from app.models.order import Order
 from app.models.restaurant import Restaurant
 from app.models.order_position import OrderPosition
+from app.models.staff import Staff
 from app.models.user import User
-from app.schemas.order import OrderCheckoutRequest, OrderDto, OrderPaidPatchDto, OrderStatusPatchDto
+from app.schemas.order import (
+    DailyOrderPositionSummaryDto,
+    DailyOrderTypeSummaryDto,
+    DailyRestaurantSummaryDto,
+    DailyStaffSummaryDto,
+    OrderCheckoutRequest,
+    OrderDto,
+    OrderPaidPatchDto,
+    OrderStatusPatchDto,
+)
 from app.deps.superadmin import assert_superadmin
 from app.services import staff_access
 from app.services.session_auth import ensure_customer, get_user_from_bearer
@@ -95,6 +106,88 @@ async def _require_admin_user(db: AsyncSession, init_data: str) -> User:
     if not user:
         raise HTTPException(403, "Unknown user")
     return user
+
+
+async def _require_admin_or_bot_user(
+    db: AsyncSession,
+    init_data: str,
+    bot_auth_token: str | None,
+) -> User:
+    settings = get_settings()
+    telegram_id: int | None = None
+
+    if init_data:
+        tg = verify_telegram_init_data(init_data, settings.admin_bot_token)
+        if tg and tg.get("id") is not None:
+            telegram_id = int(tg["id"])
+
+    if telegram_id is None and bot_auth_token:
+        telegram_id = verify_bot_link_token(bot_auth_token, settings.admin_bot_token)
+
+    if telegram_id is None:
+        raise HTTPException(401, "Telegram init data or bot auth token is required")
+
+    result = await db.execute(select(User).where(User.id == telegram_id))
+    user = result.scalars().first()
+    if not user:
+        raise HTTPException(403, "Unknown user")
+    return user
+
+
+def _empty_type_summary(order_type: str) -> dict[str, object]:
+    return {
+        "orderType": order_type,
+        "ordersCount": 0,
+        "revenue": Decimal("0"),
+        "paidOrdersCount": 0,
+        "unpaidOrdersCount": 0,
+        "paidRevenue": Decimal("0"),
+        "unpaidRevenue": Decimal("0"),
+        "cancelledOrdersCount": 0,
+        "cancelledRevenue": Decimal("0"),
+        "avgCheck": Decimal("0"),
+        "itemsTotal": Decimal("0"),
+        "deliveryFeeTotal": Decimal("0"),
+        "serviceFeeTotal": Decimal("0"),
+        "courierAssignedOrdersCount": 0,
+        "positions": defaultdict(lambda: {"quantity": 0, "totalPrice": Decimal("0")}),
+    }
+
+
+def _build_type_summary(data: dict[str, object]) -> DailyOrderTypeSummaryDto:
+    orders_count = int(data["ordersCount"])
+    revenue = Decimal(data["revenue"])
+    positions_raw = data["positions"]
+    assert isinstance(positions_raw, defaultdict)
+    positions = [
+        DailyOrderPositionSummaryDto(
+            mealName=meal_name,
+            quantity=int(values["quantity"]),
+            totalPrice=Decimal(values["totalPrice"]),
+        )
+        for meal_name, values in sorted(
+            positions_raw.items(),
+            key=lambda item: (-int(item[1]["quantity"]), item[0].lower()),
+        )
+    ]
+    avg_check = (revenue / orders_count) if orders_count > 0 else Decimal("0")
+    return DailyOrderTypeSummaryDto(
+        orderType=str(data["orderType"]),
+        ordersCount=orders_count,
+        revenue=revenue,
+        paidOrdersCount=int(data["paidOrdersCount"]),
+        unpaidOrdersCount=int(data["unpaidOrdersCount"]),
+        paidRevenue=Decimal(data["paidRevenue"]),
+        unpaidRevenue=Decimal(data["unpaidRevenue"]),
+        cancelledOrdersCount=int(data["cancelledOrdersCount"]),
+        cancelledRevenue=Decimal(data["cancelledRevenue"]),
+        avgCheck=avg_check,
+        itemsTotal=Decimal(data["itemsTotal"]),
+        deliveryFeeTotal=Decimal(data["deliveryFeeTotal"]),
+        serviceFeeTotal=Decimal(data["serviceFeeTotal"]),
+        courierAssignedOrdersCount=int(data["courierAssignedOrdersCount"]),
+        positions=positions,
+    )
 
 
 @router.get("")
@@ -182,6 +275,147 @@ async def get_all(
         .order_by(Order.created_at.desc())
     )
     return [_to_dto(order) for order in result.unique().scalars().all()]
+
+
+@router.get("/today-summary", response_model=DailyStaffSummaryDto)
+async def get_today_summary(
+    db: AsyncSession = Depends(get_db),
+    x_telegram_init_data: str | None = Header(None, alias="X-Telegram-Init-Data"),
+    x_init_data: str | None = Header(None, alias="X-Init-Data"),
+    x_kulcha_bot_auth: str | None = Header(None, alias="X-Kulcha-Bot-Auth"),
+):
+    init_data = (x_telegram_init_data or x_init_data or "").strip()
+    actor = await _require_admin_or_bot_user(db, init_data, x_kulcha_bot_auth)
+
+    staff_result = await db.execute(
+        select(Staff)
+        .options(joinedload(Staff.restaurant))
+        .where(Staff.user_id == actor.id)
+    )
+    staff_list = staff_result.unique().scalars().all()
+    restaurants_by_id: dict[int, Restaurant] = {}
+    for assignment in staff_list:
+        restaurant = assignment.restaurant
+        if restaurant and restaurant.is_active:
+            restaurants_by_id[restaurant.id] = restaurant
+
+    if not restaurants_by_id:
+        raise HTTPException(403, "Нет доступа к ресторанам")
+
+    start, end = msk_today_utc_naive_bounds()
+    restaurant_ids = sorted(restaurants_by_id)
+
+    orders_result = await db.execute(
+        select(Order)
+        .options(joinedload(Order.restaurant))
+        .where(
+            Order.restaurant_id.in_(restaurant_ids),
+            Order.created_at >= start,
+            Order.created_at < end,
+        )
+        .order_by(Order.created_at.asc(), Order.id.asc())
+    )
+    orders = orders_result.unique().scalars().all()
+    order_ids = [order.id for order in orders]
+
+    positions_by_order_id: dict[int, list[OrderPosition]] = defaultdict(list)
+    if order_ids:
+        positions_result = await db.execute(
+            select(OrderPosition)
+            .options(joinedload(OrderPosition.meal))
+            .where(OrderPosition.order_id.in_(order_ids))
+        )
+        for position in positions_result.unique().scalars().all():
+            positions_by_order_id[position.order_id].append(position)
+
+    restaurant_buckets: dict[int, dict[str, object]] = {}
+    for restaurant_id, restaurant in restaurants_by_id.items():
+        restaurant_buckets[restaurant_id] = {
+            "restaurantId": restaurant_id,
+            "restaurantName": restaurant.name,
+            "totalOrdersCount": 0,
+            "totalRevenue": Decimal("0"),
+            "paidOrdersCount": 0,
+            "unpaidOrdersCount": 0,
+            "paidRevenue": Decimal("0"),
+            "unpaidRevenue": Decimal("0"),
+            "cancelledOrdersCount": 0,
+            "cancelledRevenue": Decimal("0"),
+            "dineIn": _empty_type_summary("DINE_IN"),
+            "delivery": _empty_type_summary("DELIVERY"),
+        }
+
+    for order in orders:
+        bucket = restaurant_buckets[order.restaurant_id]
+        bucket["totalOrdersCount"] = int(bucket["totalOrdersCount"]) + 1
+        bucket["totalRevenue"] = Decimal(bucket["totalRevenue"]) + order.total
+        if order.is_paid:
+            bucket["paidOrdersCount"] = int(bucket["paidOrdersCount"]) + 1
+            bucket["paidRevenue"] = Decimal(bucket["paidRevenue"]) + order.total
+        else:
+            bucket["unpaidOrdersCount"] = int(bucket["unpaidOrdersCount"]) + 1
+            bucket["unpaidRevenue"] = Decimal(bucket["unpaidRevenue"]) + order.total
+        if order.status == OrderStatus.CANCELLED:
+            bucket["cancelledOrdersCount"] = int(bucket["cancelledOrdersCount"]) + 1
+            bucket["cancelledRevenue"] = Decimal(bucket["cancelledRevenue"]) + order.total
+
+        section_key = "delivery" if order.order_type == OrderType.DELIVERY else "dineIn"
+        section = bucket[section_key]
+        assert isinstance(section, dict)
+        section["ordersCount"] = int(section["ordersCount"]) + 1
+        section["revenue"] = Decimal(section["revenue"]) + order.total
+        section["itemsTotal"] = Decimal(section["itemsTotal"]) + order.items_total
+        section["deliveryFeeTotal"] = Decimal(section["deliveryFeeTotal"]) + order.delivery_fee
+        section["serviceFeeTotal"] = Decimal(section["serviceFeeTotal"]) + order.service_fee
+        if order.is_paid:
+            section["paidOrdersCount"] = int(section["paidOrdersCount"]) + 1
+            section["paidRevenue"] = Decimal(section["paidRevenue"]) + order.total
+        else:
+            section["unpaidOrdersCount"] = int(section["unpaidOrdersCount"]) + 1
+            section["unpaidRevenue"] = Decimal(section["unpaidRevenue"]) + order.total
+        if order.status == OrderStatus.CANCELLED:
+            section["cancelledOrdersCount"] = int(section["cancelledOrdersCount"]) + 1
+            section["cancelledRevenue"] = Decimal(section["cancelledRevenue"]) + order.total
+            continue
+        if order.order_type == OrderType.DELIVERY and order.courier_id is not None:
+            section["courierAssignedOrdersCount"] = int(section["courierAssignedOrdersCount"]) + 1
+        positions = section["positions"]
+        assert isinstance(positions, defaultdict)
+        for position in positions_by_order_id.get(order.id, []):
+            meal_name = position.meal.name if position.meal else f"Блюдо #{position.meal_id}"
+            entry = positions[meal_name]
+            entry["quantity"] += position.quantity
+            entry["totalPrice"] += position.total_price
+
+    restaurant_summaries: list[DailyRestaurantSummaryDto] = []
+    for restaurant_id in restaurant_ids:
+        bucket = restaurant_buckets[restaurant_id]
+        total_orders = int(bucket["totalOrdersCount"])
+        total_revenue = Decimal(bucket["totalRevenue"])
+        restaurant_summaries.append(
+            DailyRestaurantSummaryDto(
+                restaurantId=restaurant_id,
+                restaurantName=str(bucket["restaurantName"]),
+                totalOrdersCount=total_orders,
+                totalRevenue=total_revenue,
+                paidOrdersCount=int(bucket["paidOrdersCount"]),
+                unpaidOrdersCount=int(bucket["unpaidOrdersCount"]),
+                paidRevenue=Decimal(bucket["paidRevenue"]),
+                unpaidRevenue=Decimal(bucket["unpaidRevenue"]),
+                cancelledOrdersCount=int(bucket["cancelledOrdersCount"]),
+                cancelledRevenue=Decimal(bucket["cancelledRevenue"]),
+                avgCheck=(total_revenue / total_orders) if total_orders > 0 else Decimal("0"),
+                dineIn=_build_type_summary(bucket["dineIn"]),
+                delivery=_build_type_summary(bucket["delivery"]),
+            )
+        )
+
+    return DailyStaffSummaryDto(
+        reportDate=start.date().isoformat(),
+        timezone="Europe/Moscow",
+        generatedAt=datetime.now(),
+        restaurants=restaurant_summaries,
+    )
 
 
 @router.get("/my")
