@@ -523,3 +523,28 @@ async def delete_restaurant(
     if not r:
         raise HTTPException(404, "Restaurant not found")
     await db.delete(r)
+
+
+@router.delete("/restaurants/{restaurant_id}/analytics", status_code=204)
+async def reset_restaurant_analytics(
+    restaurant_id: int,
+    db: AsyncSession = Depends(get_db),
+    _caller: User = Depends(require_superadmin),
+):
+    restaurant = (
+        await db.execute(select(Restaurant).where(Restaurant.id == restaurant_id))
+    ).scalars().first()
+    if not restaurant:
+        raise HTTPException(404, "Restaurant not found")
+
+    order_ids = list(
+        (
+            await db.execute(select(Order.id).where(Order.restaurant_id == restaurant_id))
+        )
+        .scalars()
+        .all()
+    )
+
+    if order_ids:
+        await db.execute(delete(OrderPosition).where(OrderPosition.order_id.in_(order_ids)))
+        await db.execute(delete(Order).where(Order.id.in_(order_ids)))

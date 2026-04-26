@@ -162,6 +162,27 @@ export async function updateMealAvailability(
   return updateAdminMeal(mealId, meal, { is_available: isAvailable });
 }
 
+export async function updateCategoryAvailability(
+  restaurantId: number,
+  category: string,
+  isAvailable: boolean
+): Promise<Meal[]> {
+  const resp = await fetch(`${BASE_URL}/meals/category-availability`, {
+    method: "PATCH",
+    headers: buildAdminApiJsonHeaders(),
+    body: JSON.stringify({
+      restaurantId,
+      category,
+      available: isAvailable,
+    }),
+  });
+  if (!resp.ok) {
+    await readApiError(resp, `Failed to update category availability: ${resp.status}`);
+  }
+  const data = (await resp.json()) as MealDto[];
+  return data.map(toMeal);
+}
+
 export async function deleteMeal(mealId: number): Promise<void> {
   const resp = await fetch(`${BASE_URL}/meals/${mealId}`, {
     method: "DELETE",

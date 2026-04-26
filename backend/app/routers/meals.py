@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends, Header, HTTPException
-from sqlalchemy import func, select
+from sqlalchemy import func, select, update
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
@@ -13,7 +13,7 @@ from app.models.meal import Meal
 from app.models.order_position import OrderPosition
 from app.models.restaurant import Restaurant
 from app.models.user import User
-from app.schemas.meal import MealDto
+from app.schemas.meal import MealCategoryAvailabilityPatchDto, MealDto
 from app.services import staff_access
 from app.services.telegram_auth import verify_telegram_init_data
 
@@ -167,6 +167,36 @@ async def update_meal(
     except DBAPIError as exc:
         _raise_meal_category_db_error(exc)
     return _to_dto(existing)
+
+
+@router.patch("/category-availability")
+async def update_category_availability(
+    dto: MealCategoryAvailabilityPatchDto,
+    db: AsyncSession = Depends(get_db),
+    x_telegram_init_data: str = Header(..., alias="X-Telegram-Init-Data"),
+):
+    await _require_menu_editor(db, x_telegram_init_data, dto.restaurantId)
+    try:
+        category_value = MealCategory(dto.category).value
+    except ValueError as exc:
+        raise HTTPException(400, f"Invalid category: {dto.category}") from exc
+
+    await db.execute(
+        update(Meal)
+        .where(
+            Meal.restaurant_id == dto.restaurantId,
+            Meal.category == category_value,
+        )
+        .values(is_available=dto.available)
+    )
+
+    result = await db.execute(
+        select(Meal).where(
+            Meal.restaurant_id == dto.restaurantId,
+            Meal.category == category_value,
+        )
+    )
+    return [_to_dto(meal) for meal in result.scalars().all()]
 
 
 @router.delete("/{meal_id}", status_code=204)

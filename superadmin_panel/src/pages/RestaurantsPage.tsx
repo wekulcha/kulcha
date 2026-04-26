@@ -4,6 +4,7 @@ import {
   createRestaurant,
   deleteAdminRestaurant,
   fetchAdminRestaurants,
+  resetAdminRestaurantAnalytics,
   setRestaurantActive,
 } from "../api/admin";
 import { ApiError } from "../api/client";
@@ -62,6 +63,14 @@ export function RestaurantsPage() {
 
   const deleteMutation = useMutation({
     mutationFn: (id: number) => deleteAdminRestaurant(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "restaurants"] });
+      setDetail(null);
+    },
+  });
+
+  const resetAnalyticsMutation = useMutation({
+    mutationFn: (id: number) => resetAdminRestaurantAnalytics(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "restaurants"] });
       setDetail(null);
@@ -185,9 +194,11 @@ export function RestaurantsPage() {
         <p className="text-sm text-slate-500">Ничего не найдено.</p>
       )}
 
-      {(toggleMutation.isError || deleteMutation.isError) && (
+      {(toggleMutation.isError || deleteMutation.isError || resetAnalyticsMutation.isError) && (
         <p className="text-xs text-red-600" role="alert">
-          {formatApiFailure(toggleMutation.error ?? deleteMutation.error)}
+          {formatApiFailure(
+            toggleMutation.error ?? deleteMutation.error ?? resetAnalyticsMutation.error
+          )}
         </p>
       )}
 
@@ -237,7 +248,11 @@ export function RestaurantsPage() {
             <div className="flex flex-wrap gap-2 mt-4 pt-3 border-t border-slate-100">
               <button
                 type="button"
-                disabled={toggleMutation.isPending || deleteMutation.isPending}
+                disabled={
+                  toggleMutation.isPending ||
+                  deleteMutation.isPending ||
+                  resetAnalyticsMutation.isPending
+                }
                 onClick={() =>
                   toggleMutation.mutate({
                     id: detail.id,
@@ -250,7 +265,39 @@ export function RestaurantsPage() {
               </button>
               <button
                 type="button"
-                disabled={toggleMutation.isPending || deleteMutation.isPending}
+                disabled={
+                  toggleMutation.isPending ||
+                  deleteMutation.isPending ||
+                  resetAnalyticsMutation.isPending
+                }
+                onClick={() => {
+                  if (
+                    !window.confirm(
+                      `Сбросить всю аналитику ресторана «${detail.name}»? Будут удалены выручка, продажи и история заказов.`
+                    )
+                  ) {
+                    return;
+                  }
+                  if (
+                    !window.confirm(
+                      "Подтвердите ещё раз: действие необратимо."
+                    )
+                  ) {
+                    return;
+                  }
+                  resetAnalyticsMutation.mutate(detail.id);
+                }}
+                className="flex-1 min-w-[120px] rounded-xl bg-amber-50 px-3 py-2 text-xs font-medium text-amber-800 disabled:opacity-50"
+              >
+                {resetAnalyticsMutation.isPending ? "Сбрасываем..." : "Сбросить аналитику"}
+              </button>
+              <button
+                type="button"
+                disabled={
+                  toggleMutation.isPending ||
+                  deleteMutation.isPending ||
+                  resetAnalyticsMutation.isPending
+                }
                 onClick={() => {
                   if (
                     !window.confirm(

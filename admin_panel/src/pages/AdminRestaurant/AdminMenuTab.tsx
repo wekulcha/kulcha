@@ -5,6 +5,7 @@ import {
   deleteMeal,
   fetchAdminMeals,
   updateAdminMeal,
+  updateCategoryAvailability,
   updateMealAvailability,
   uploadMealImage,
 } from "../../api/adminMeals";
@@ -276,6 +277,7 @@ export const AdminMenuTab: React.FC<AdminMenuTabProps> = ({
   const [editMeal, setEditMeal] = useState<Meal | null>(null);
   const [editLoading, setEditLoading] = useState(false);
   const [editError, setEditError] = useState<string | null>(null);
+  const [categoryLoading, setCategoryLoading] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     if (!restaurantId || Number.isNaN(restaurantId)) return;
@@ -356,6 +358,29 @@ export const AdminMenuTab: React.FC<AdminMenuTabProps> = ({
     }
   };
 
+  const handleToggleCategoryAvailability = async (
+    category: string,
+    isAvailable: boolean
+  ) => {
+    try {
+      setCategoryLoading((prev) => ({ ...prev, [category]: true }));
+      const updatedMeals = await updateCategoryAvailability(
+        restaurantId,
+        category,
+        isAvailable
+      );
+      const updatedById = new Map(updatedMeals.map((meal) => [meal.id, meal]));
+      setMeals((prev) =>
+        prev.map((meal) => updatedById.get(meal.id) ?? meal)
+      );
+    } catch (err) {
+      console.error(err);
+      alert("Не удалось изменить доступность категории");
+    } finally {
+      setCategoryLoading((prev) => ({ ...prev, [category]: false }));
+    }
+  };
+
   const openEditModal = (meal: Meal) => {
     setEditError(null);
     setEditMeal(meal);
@@ -384,6 +409,15 @@ export const AdminMenuTab: React.FC<AdminMenuTabProps> = ({
     }
     return order;
   }, [sortedMeals]);
+
+  const categoryAvailability = useMemo(() => {
+    const result: Record<string, boolean> = {};
+    for (const category of categoriesPresent) {
+      const categoryMeals = sortedMeals.filter((meal) => meal.category === category);
+      result[category] = categoryMeals.length > 0 && categoryMeals.every((meal) => meal.is_available);
+    }
+    return result;
+  }, [categoriesPresent, sortedMeals]);
 
   const [activeCat, setActiveCat] = useState<string | null>(null);
   const tabBarRef = useRef<HTMLDivElement | null>(null);
@@ -531,9 +565,25 @@ export const AdminMenuTab: React.FC<AdminMenuTabProps> = ({
                   ref={(el) => {
                     catTitleRefs.current[cat] = el;
                   }}
-                  className="text-[11px] font-semibold text-slate-500 mb-2"
+                  className="mb-2 flex items-center justify-between gap-2"
                 >
-                  {mealCategoryLabel(cat)}
+                  <div className="text-[11px] font-semibold text-slate-500">
+                    {mealCategoryLabel(cat)}
+                  </div>
+                  <label className="flex items-center gap-1.5 text-[10px] text-slate-600">
+                    <input
+                      type="checkbox"
+                      checked={categoryAvailability[cat] ?? false}
+                      disabled={categoryLoading[cat]}
+                      onChange={async (e) => {
+                        await handleToggleCategoryAvailability(cat, e.target.checked);
+                      }}
+                      className="h-3.5 w-3.5 rounded border-slate-300"
+                    />
+                    <span>
+                      {categoryLoading[cat] ? "Сохраняем..." : "В наличии"}
+                    </span>
+                  </label>
                 </div>
                 <div className="grid grid-cols-2 gap-2 min-[520px]:justify-start min-[520px]:[grid-template-columns:repeat(auto-fit,10.5rem)]">
                   {sortedMeals
@@ -589,6 +639,7 @@ export const AdminMenuTab: React.FC<AdminMenuTabProps> = ({
                   <input
                     type="checkbox"
                     checked={meal.is_available}
+                    disabled={categoryLoading[cat]}
                     onChange={async (e) => {
                       const newVal = e.target.checked;
                       await handleToggleAvailability(meal.id, meal, newVal);

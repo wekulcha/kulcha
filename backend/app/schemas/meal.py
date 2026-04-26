@@ -16,3 +16,9 @@ class MealDto(BaseModel):
     category: str | None = None
     price: Decimal | None = None
     available: bool | None = None
+
+
+class MealCategoryAvailabilityPatchDto(BaseModel):
+    restaurantId: int
+    category: str
+    available: bool

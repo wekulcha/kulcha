@@ -74,3 +74,11 @@ export async function setRestaurantActive(restaurantId: number, isActive: boolea
 export async function deleteAdminRestaurant(restaurantId: number): Promise<void> {
   await apiFetchJson(`/admin/restaurants/${restaurantId}`, { method: "DELETE" }, { auth: true });
 }
+
+export async function resetAdminRestaurantAnalytics(restaurantId: number): Promise<void> {
+  await apiFetchJson(
+    `/admin/restaurants/${restaurantId}/analytics`,
+    { method: "DELETE" },
+    { auth: true }
+  );
+}
