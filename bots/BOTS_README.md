@@ -1,11 +1,12 @@
 # KULCHA Bots (`bots`)
 
-В проекте используются 4 Telegram-бота на `aiogram 3.x`:
+В проекте используются Telegram-боты на `aiogram 3.x`:
 
 - `user_bot` — клиентский бот (регистрация, переход в Mini App, статус заказа);
 - `admin_bot` — бот персонала ресторана;
 - `superadmin_bot` — бот платформы и служебных команд;
 - `support_bot` — бот поддержки с интеграцией в Telegram-группу.
+- `channel_subscriptions_bot` — автономный бот для уведомлений о подписках и отписках в канале.
 
 ## Общие требования
 
@@ -23,7 +24,7 @@ pip install -r requirements.txt
 python main.py
 ```
 
-`<bot_name>`: `user_bot`, `admin_bot`, `superadmin_bot`, `support_bot`.
+`<bot_name>`: `user_bot`, `admin_bot`, `superadmin_bot`, `support_bot`, `channel_subscriptions_bot`.
 
 ## Переменные окружения
 
@@ -59,12 +60,19 @@ python main.py
 - `KULCHA_INTERNAL_API_SECRET` (должен совпадать с backend)
 - `KULCHA_SUPPORT_GROUP_ID` (ID супергруппы для тикетов)
 
+### `channel_subscriptions_bot`
+
+- `KULCHA_CHANNEL_SUBSCRIPTIONS_BOT_TOKEN` (по умолчанию задан в `config.py`)
+- `KULCHA_CHANNEL_SUBSCRIPTIONS_DB` (опционально)
+- `KULCHA_CHANNEL_SUBSCRIPTIONS_TZ` (опционально, по умолчанию `Europe/Moscow`)
+
 ## Что делает каждый бот
 
 - `user_bot`: онбординг клиента, запрос контакта, открытие клиентского Mini App, запрос статуса заказа.
 - `admin_bot`: быстрый вход в admin Mini App, сервисные действия по заказам.
 - `superadmin_bot`: команды мониторинга (`/health`, `/stats`) и выборка сущностей (`/order`, `/restaurant`, `/user`).
 - `support_bot`: создание/сопровождение тикетов и пересылка в группу поддержки.
+- `channel_subscriptions_bot`: запоминает владельца через `/start`, привязывается к каналу после добавления администратором и отправляет владельцу события подписки/отписки.
 
 ## Проверка работоспособности
 
