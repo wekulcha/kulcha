@@ -132,6 +132,162 @@ class Storage:
                 (owner_user_id,),
             ).fetchall()
 
+    def list_known_users(self) -> list[sqlite3.Row]:
+        with self.connect() as connection:
+            return connection.execute(
+                """
+                WITH seen AS (
+                    SELECT
+                        user_id,
+                        username,
+                        trim(coalesce(first_name, '') || ' ' || coalesce(last_name, '')) AS full_name,
+                        registered_at AS seen_at
+                    FROM owners
+                    UNION ALL
+                    SELECT
+                        user_id,
+                        username,
+                        full_name,
+                        event_time_utc AS seen_at
+                    FROM events
+                ),
+                seen_range AS (
+                    SELECT user_id, min(seen_at) AS first_seen, max(seen_at) AS last_seen
+                    FROM seen
+                    GROUP BY user_id
+                ),
+                latest_events AS (
+                    SELECT e.user_id, e.event_type, e.event_time_utc
+                    FROM events e
+                    JOIN (
+                        SELECT user_id, max(id) AS max_id
+                        FROM events
+                        GROUP BY user_id
+                    ) latest ON latest.max_id = e.id
+                ),
+                active_subscriptions AS (
+                    SELECT e.user_id, count(*) AS active_subscriptions_count
+                    FROM events e
+                    JOIN (
+                        SELECT user_id, chat_id, max(id) AS max_id
+                        FROM events
+                        GROUP BY user_id, chat_id
+                    ) latest ON latest.max_id = e.id
+                    WHERE e.event_type = 'subscribe'
+                    GROUP BY e.user_id
+                )
+                SELECT
+                    seen_range.user_id,
+                    coalesce((
+                        SELECT username
+                        FROM seen s
+                        WHERE s.user_id = seen_range.user_id
+                          AND username IS NOT NULL
+                          AND username != ''
+                        ORDER BY seen_at DESC
+                        LIMIT 1
+                    ), '') AS username,
+                    coalesce((
+                        SELECT full_name
+                        FROM seen s
+                        WHERE s.user_id = seen_range.user_id
+                          AND full_name IS NOT NULL
+                          AND full_name != ''
+                        ORDER BY seen_at DESC
+                        LIMIT 1
+                    ), '') AS full_name,
+                    seen_range.first_seen,
+                    seen_range.last_seen,
+                    CASE
+                        WHEN owners.user_id IS NULL THEN 0
+                        ELSE 1
+                    END AS is_owner,
+                    coalesce((
+                        SELECT count(*)
+                        FROM events e
+                        WHERE e.user_id = seen_range.user_id
+                    ), 0) AS events_count,
+                    coalesce(active_subscriptions.active_subscriptions_count, 0) AS active_subscriptions_count,
+                    latest_events.event_type AS last_event_type,
+                    latest_events.event_time_utc AS last_event_time
+                FROM seen_range
+                LEFT JOIN owners ON owners.user_id = seen_range.user_id
+                LEFT JOIN latest_events ON latest_events.user_id = seen_range.user_id
+                LEFT JOIN active_subscriptions ON active_subscriptions.user_id = seen_range.user_id
+                ORDER BY seen_range.last_seen DESC
+                """
+            ).fetchall()
+
+    def get_known_user(self, user_id: int) -> sqlite3.Row | None:
+        with self.connect() as connection:
+            return connection.execute(
+                """
+                WITH seen AS (
+                    SELECT
+                        user_id,
+                        username,
+                        trim(coalesce(first_name, '') || ' ' || coalesce(last_name, '')) AS full_name,
+                        registered_at AS seen_at
+                    FROM owners
+                    WHERE user_id = ?
+                    UNION ALL
+                    SELECT
+                        user_id,
+                        username,
+                        full_name,
+                        event_time_utc AS seen_at
+                    FROM events
+                    WHERE user_id = ?
+                )
+                SELECT
+                    user_id,
+                    coalesce((
+                        SELECT username
+                        FROM seen s
+                        WHERE username IS NOT NULL AND username != ''
+                        ORDER BY seen_at DESC
+                        LIMIT 1
+                    ), '') AS username,
+                    coalesce((
+                        SELECT full_name
+                        FROM seen s
+                        WHERE full_name IS NOT NULL AND full_name != ''
+                        ORDER BY seen_at DESC
+                        LIMIT 1
+                    ), '') AS full_name,
+                    min(seen_at) AS first_seen,
+                    max(seen_at) AS last_seen
+                FROM seen
+                GROUP BY user_id
+                """,
+                (user_id, user_id),
+            ).fetchone()
+
+    def list_user_subscriptions(self, user_id: int) -> list[sqlite3.Row]:
+        with self.connect() as connection:
+            return connection.execute(
+                """
+                SELECT
+                    e.chat_id,
+                    channels.title,
+                    channels.username,
+                    e.event_time_utc AS subscribed_at,
+                    e.old_status,
+                    e.new_status
+                FROM events e
+                JOIN (
+                    SELECT chat_id, max(id) AS max_id
+                    FROM events
+                    WHERE user_id = ?
+                    GROUP BY chat_id
+                ) latest ON latest.max_id = e.id
+                LEFT JOIN channels ON channels.chat_id = e.chat_id
+                WHERE e.event_type = 'subscribe'
+                ORDER BY e.event_time_utc DESC
+                """,
+                (user_id,),
+            ).fetchall()
+
     def record_event(
         self,
         chat_id: int,

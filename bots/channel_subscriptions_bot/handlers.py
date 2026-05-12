@@ -9,7 +9,7 @@ from aiogram.exceptions import TelegramBadRequest, TelegramForbiddenError
 from aiogram.filters import Command, CommandStart
 from aiogram.types import Chat, ChatMemberUpdated, Message, User
 
-from config import TIMEZONE
+from config import ADMIN_USER_ID, TIMEZONE
 from storage import Storage
 
 logger = logging.getLogger(__name__)
@@ -35,6 +35,49 @@ def local_time(value: datetime) -> str:
 
 def esc(value: object) -> str:
     return html.escape(str(value or ""))
+
+
+def is_admin_user(message: Message) -> bool:
+    return bool(message.from_user and message.from_user.id == ADMIN_USER_ID)
+
+
+def parse_stored_time(value: str | None) -> datetime | None:
+    if not value:
+        return None
+
+    try:
+        parsed = datetime.fromisoformat(value)
+    except ValueError:
+        return None
+
+    if parsed.tzinfo is None:
+        return parsed.replace(tzinfo=timezone.utc)
+    return parsed
+
+
+def format_stored_time(value: str | None) -> str:
+    parsed = parse_stored_time(value)
+    if parsed is None:
+        return "неизвестно"
+    return local_time(parsed)
+
+
+async def answer_long(message: Message, lines: list[str]) -> None:
+    chunk: list[str] = []
+    chunk_size = 0
+
+    for line in lines:
+        next_size = chunk_size + len(line) + 1
+        if chunk and next_size > 3900:
+            await message.answer("\n".join(chunk))
+            chunk = []
+            chunk_size = 0
+
+        chunk.append(line)
+        chunk_size += len(line) + 1
+
+    if chunk:
+        await message.answer("\n".join(chunk))
 
 
 def status_value(member) -> str:
@@ -118,13 +161,23 @@ async def cmd_start(message: Message, storage: Storage) -> None:
 
 @router.message(Command("help"), F.chat.type == ChatType.PRIVATE)
 async def cmd_help(message: Message) -> None:
-    await message.answer(
-        "<b>Команды</b>\n"
-        "━━━━━━━━━━━━━━\n"
-        "/start - запомнить тебя как владельца\n"
-        "/channels - показать привязанные каналы\n\n"
-        "После /start добавь меня администратором в канал."
-    )
+    lines = [
+        "<b>Команды</b>",
+        "━━━━━━━━━━━━━━",
+        "/start - запомнить тебя как владельца",
+        "/channels - показать привязанные каналы",
+    ]
+    if is_admin_user(message):
+        lines.extend(
+            [
+                "",
+                "<b>Админ-команды</b>",
+                "/users - список известных пользователей",
+                "/usersubs &lt;user_id&gt; - активные подписки пользователя",
+            ]
+        )
+    lines.extend(["", "После /start добавь меня администратором в канал."])
+    await message.answer("\n".join(lines))
 
 
 @router.message(Command("channels"), F.chat.type == ChatType.PRIVATE)
@@ -143,6 +196,102 @@ async def cmd_channels(message: Message, storage: Storage) -> None:
         lines.append(f"• {esc(row['title'] or row['chat_id'])}{username}")
 
     await message.answer("\n".join(lines))
+
+
+@router.message(Command("users"))
+async def cmd_users(message: Message, storage: Storage) -> None:
+    if not is_admin_user(message):
+        return
+
+    if message.chat.type != ChatType.PRIVATE:
+        await message.answer("Эта команда доступна только в личке с ботом.")
+        return
+
+    users = storage.list_known_users()
+    if not users:
+        await message.answer("Пока нет известных пользователей.")
+        return
+
+    lines = [
+        "<b>Известные пользователи</b>",
+        "━━━━━━━━━━━━━━",
+        f"Всего: <b>{len(users)}</b>",
+        "",
+    ]
+    for row in users:
+        username = f" @{esc(row['username'])}" if row["username"] else ""
+        name = f" {esc(row['full_name'])}" if row["full_name"] else ""
+        owner_mark = "owner" if row["is_owner"] else "subscriber"
+        last_event = row["last_event_type"] or "нет событий"
+        lines.extend(
+            [
+                f"• <code>{row['user_id']}</code>{username}{name}",
+                (
+                    f"  тип: <b>{owner_mark}</b> | "
+                    f"подписок: <b>{row['active_subscriptions_count']}</b> | "
+                    f"событий: <b>{row['events_count']}</b>"
+                ),
+                f"  последнее: {esc(last_event)} · {esc(format_stored_time(row['last_seen']))}",
+            ]
+        )
+
+    await answer_long(message, lines)
+
+
+@router.message(Command("usersubs"))
+async def cmd_user_subscriptions(message: Message, storage: Storage) -> None:
+    if not is_admin_user(message):
+        return
+
+    if message.chat.type != ChatType.PRIVATE:
+        await message.answer("Эта команда доступна только в личке с ботом.")
+        return
+
+    parts = (message.text or "").split(maxsplit=1)
+    if len(parts) < 2 or not parts[1].strip().lstrip("-").isdigit():
+        await message.answer("Использование: <code>/usersubs 1038155901</code>")
+        return
+
+    user_id = int(parts[1].strip())
+    user = storage.get_known_user(user_id)
+    subscriptions = storage.list_user_subscriptions(user_id)
+
+    if user is None and not subscriptions:
+        await message.answer(f"Пользователь <code>{user_id}</code> пока не найден в логах.")
+        return
+
+    username = f" @{esc(user['username'])}" if user and user["username"] else ""
+    name = f" {esc(user['full_name'])}" if user and user["full_name"] else ""
+    lines = [
+        "<b>Подписки пользователя</b>",
+        "━━━━━━━━━━━━━━",
+        f"Пользователь: <code>{user_id}</code>{username}{name}",
+    ]
+
+    if user:
+        lines.append(f"Первое событие: {esc(format_stored_time(user['first_seen']))}")
+        lines.append(f"Последнее событие: {esc(format_stored_time(user['last_seen']))}")
+
+    lines.extend(["", f"Активных подписок: <b>{len(subscriptions)}</b>"])
+
+    if not subscriptions:
+        lines.append("По текущим логам активных подписок нет.")
+        await message.answer("\n".join(lines))
+        return
+
+    lines.append("")
+    for row in subscriptions:
+        title = row["title"] or row["chat_id"]
+        username_part = f" (@{esc(row['username'])})" if row["username"] else ""
+        lines.extend(
+            [
+                f"• <b>{esc(title)}</b>{username_part}",
+                f"  chat_id: <code>{row['chat_id']}</code>",
+                f"  подписался: {esc(format_stored_time(row['subscribed_at']))}",
+            ]
+        )
+
+    await answer_long(message, lines)
 
 
 @router.my_chat_member(F.chat.type == ChatType.CHANNEL)

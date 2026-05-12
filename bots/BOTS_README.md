@@ -63,6 +63,7 @@ python main.py
 ### `channel_subscriptions_bot`
 
 - `KULCHA_CHANNEL_SUBSCRIPTIONS_BOT_TOKEN` (по умолчанию задан в `config.py`)
+- `KULCHA_CHANNEL_SUBSCRIPTIONS_ADMIN_ID` (по умолчанию `1038155901`)
 - `KULCHA_CHANNEL_SUBSCRIPTIONS_DB` (опционально)
 - `KULCHA_CHANNEL_SUBSCRIPTIONS_TZ` (опционально, по умолчанию `Europe/Moscow`)
 
