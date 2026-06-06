@@ -41,6 +41,7 @@ services:
       KULCHA_OBJECT_STORAGE_ACCESS_KEY_ID: ${KULCHA_OBJECT_STORAGE_ACCESS_KEY_ID:-}
       KULCHA_OBJECT_STORAGE_SECRET_ACCESS_KEY: ${KULCHA_OBJECT_STORAGE_SECRET_ACCESS_KEY:-}
       KULCHA_OBJECT_STORAGE_PUBLIC_BASE_URL: ${KULCHA_OBJECT_STORAGE_PUBLIC_BASE_URL:-https://kulcha-main-menu-items.storage.yandexcloud.net}
+      TELEGRAM_PROXY_URL: ${TELEGRAM_PROXY_URL:-}
     depends_on:
       postgres:
         condition: service_healthy
@@ -95,6 +96,7 @@ services:
       KULCHA_USER_MINI_APP_URL: https://${USER_DOMAIN:-app.wekulcha.ru}
       KULCHA_USER_MINI_APP_VERSION: ${KULCHA_USER_MINI_APP_VERSION:-}
       KULCHA_SUPPORT_LINK: ${KULCHA_SUPPORT_LINK:-https://t.me/wekulcha_sup_bot}
+      TELEGRAM_PROXY_URL: ${TELEGRAM_PROXY_URL:-}
 
   admin_bot:
     build:
@@ -111,6 +113,7 @@ services:
       KULCHA_API_BASE: http://backend:8000/api/v1
       KULCHA_ADMIN_MINI_APP_URL: https://${ADMIN_DOMAIN:-admin.wekulcha.online}
       KULCHA_SUPPORT_LINK: ${KULCHA_SUPPORT_LINK:-https://t.me/wekulcha_sup_bot}
+      TELEGRAM_PROXY_URL: ${TELEGRAM_PROXY_URL:-}
 
   support_bot:
     build:
@@ -125,6 +128,7 @@ services:
       KULCHA_INTERNAL_API_SECRET: ${KULCHA_INTERNAL_API_SECRET:-kulcha-local-internal-api-secret}
       KULCHA_API_BASE: http://backend:8000/api/v1
       KULCHA_SUPPORT_GROUP_ID: ${KULCHA_SUPPORT_GROUP_ID:--1003920291106}
+      TELEGRAM_PROXY_URL: ${TELEGRAM_PROXY_URL:-}
 
   channel_subscriptions_bot:
     build:
@@ -137,6 +141,7 @@ services:
       KULCHA_CHANNEL_SUBSCRIPTIONS_ADMIN_ID: ${KULCHA_CHANNEL_SUBSCRIPTIONS_ADMIN_ID:-1038155901}
       KULCHA_CHANNEL_SUBSCRIPTIONS_DB: /data/subscriptions.sqlite3
       KULCHA_CHANNEL_SUBSCRIPTIONS_TZ: ${KULCHA_CHANNEL_SUBSCRIPTIONS_TZ:-Europe/Moscow}
+      TELEGRAM_PROXY_URL: ${TELEGRAM_PROXY_URL:-}
     volumes:
       - channel_subscriptions_bot_data:/data
 
@@ -154,6 +159,7 @@ services:
       KULCHA_SUPERADMIN_ALLOWED_IDS: ${KULCHA_SUPERADMIN_ALLOWED_IDS:-}
       KULCHA_SUPERADMIN_MINI_APP_URL: https://${SUPERADMIN_DOMAIN:-superadmin.wekulcha.online}
       KULCHA_SUPPORT_LINK: ${KULCHA_SUPPORT_LINK:-https://t.me/wekulcha_sup_bot}
+      TELEGRAM_PROXY_URL: ${TELEGRAM_PROXY_URL:-}
 
   gateway:
     image: caddy:2.8-alpine

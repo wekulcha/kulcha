@@ -1,11 +1,20 @@
 from __future__ import annotations
 
 import logging
+import os
 from typing import Any
 
 import httpx
 
 logger = logging.getLogger(__name__)
+TELEGRAM_PROXY_URL = os.environ.get("TELEGRAM_PROXY_URL", "").strip()
+
+
+def _telegram_client(timeout: float = 15.0) -> httpx.AsyncClient:
+    kwargs: dict[str, Any] = {"timeout": timeout}
+    if TELEGRAM_PROXY_URL:
+        kwargs["proxy"] = TELEGRAM_PROXY_URL
+    return httpx.AsyncClient(**kwargs)
 
 
 async def send_message(
@@ -28,7 +37,7 @@ async def send_message(
 
     url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
     try:
-        async with httpx.AsyncClient(timeout=15.0) as client:
+        async with _telegram_client() as client:
             resp = await client.post(url, json=body)
             if resp.status_code < 200 or resp.status_code >= 300:
                 logger.warning("Telegram sendMessage failed: %s body=%s", resp.status_code, resp.text)
@@ -48,7 +57,7 @@ async def delete_message(bot_token: str, chat_id: int, message_id: int) -> bool:
         return False
     url = f"https://api.telegram.org/bot{bot_token}/deleteMessage"
     try:
-        async with httpx.AsyncClient(timeout=15.0) as client:
+        async with _telegram_client() as client:
             resp = await client.post(
                 url,
                 json={"chat_id": chat_id, "message_id": message_id},
