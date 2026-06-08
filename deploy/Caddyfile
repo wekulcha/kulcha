@@ -21,3 +21,26 @@
     encode zstd gzip
     reverse_proxy superadmin_panel:80
 }
+
+# Kulcha Market runs in a separate compose project. The existing Kulcha gateway
+# must be connected to that compose network:
+# docker network connect kulcha-market_default kulcha-gateway || true
+market.wekulcha.ru {
+    encode zstd gzip
+    reverse_proxy kulcha-market-user-panel:80
+}
+
+apimarket.wekulcha.ru {
+    encode zstd gzip
+    reverse_proxy kulcha-market-backend:8000
+}
+
+adminmarket.wekulcha.online {
+    encode zstd gzip
+    reverse_proxy kulcha-market-admin-panel:80
+}
+
+supadmin.wekulcha.online {
+    encode zstd gzip
+    reverse_proxy kulcha-market-superadmin-panel:80
+}
